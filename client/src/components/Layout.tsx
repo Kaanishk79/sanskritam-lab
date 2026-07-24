@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 
 const navSections = [
@@ -18,7 +19,7 @@ const navSections = [
   {
     title: 'Visualization',
     links: [
-      { to: '/visualization/3d', icon: '🎨', label: '3D Manuscript Viewer' },
+      { to: '/visualization/3d', icon: '🎨', label: '3D Viewer' },
       { to: '/visualization/grammar', icon: '🌳', label: 'Grammar Maps' },
       { to: '/visualization/timeline', icon: '📈', label: 'Timeline' },
     ],
@@ -28,7 +29,7 @@ const navSections = [
     links: [
       { to: '/teaching/dashboard', icon: '👨‍🏫', label: 'Teacher Dashboard' },
       { to: '/teaching/workspace', icon: '🧑‍🎓', label: 'Student Workspace' },
-      { to: '/teaching/assessment', icon: '📝', label: 'Assessment Engine' },
+      { to: '/teaching/assessment', icon: '📝', label: 'Assessment' },
     ],
   },
   {
@@ -41,12 +42,21 @@ const navSections = [
 ]
 
 export default function Layout() {
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+
   return (
     <div className="app-layout">
-      <nav className="sidebar">
+      <div className={`sidebar-overlay${sidebarOpen ? ' visible' : ''}`} onClick={() => setSidebarOpen(false)} />
+
+      <nav className={`sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="sidebar-header">
-          <h1>संस्कृतम्</h1>
-          <div className="subtitle">SanskritLab</div>
+          <div className="sidebar-brand">
+            <h1>संस्कृतम्</h1>
+            <div className="sidebar-subtitle">SanskritLab</div>
+          </div>
+          <button className="sidebar-close" onClick={() => setSidebarOpen(false)} aria-label="Close navigation">
+            ✕
+          </button>
         </div>
         {navSections.map((section) => (
           <div className="nav-section" key={section.title}>
@@ -57,6 +67,7 @@ export default function Layout() {
                 to={link.to}
                 end={link.to === '/'}
                 className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+                onClick={() => setSidebarOpen(false)}
               >
                 <span className="nav-icon">{link.icon}</span>
                 {link.label}
@@ -65,9 +76,18 @@ export default function Layout() {
           </div>
         ))}
       </nav>
-      <main className="main-content">
-        <Outlet />
-      </main>
+
+      <div className="main-wrapper">
+        <header className="mobile-header">
+          <button className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="Open navigation">
+            <span /><span /><span />
+          </button>
+          <span className="mobile-title">संस्कृतम्</span>
+        </header>
+        <main className="main-content">
+          <Outlet />
+        </main>
+      </div>
     </div>
   )
 }
