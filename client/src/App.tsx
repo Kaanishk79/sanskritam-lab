@@ -12,6 +12,11 @@ import StudentWorkspacePage from './pages/teaching/StudentWorkspacePage'
 import AssessmentPage from './pages/teaching/AssessmentPage'
 import VivaSimulatorPage from './pages/viva/VivaSimulatorPage'
 import AnalyticsPage from './pages/viva/AnalyticsPage'
+import SkillTreePage from './pages/learning/SkillTreePage'
+import LessonPage from './pages/learning/LessonPage'
+import ChildModePage from './pages/learning/ChildModePage'
+import ResearchWorkspacePage from './pages/learning/ResearchWorkspacePage'
+import CurriculumBuilderPage from './pages/learning/CurriculumBuilderPage'
 
 export default function App() {
   return (
@@ -30,6 +35,11 @@ export default function App() {
           <Route path="teaching/assessment" element={<AssessmentPage />} />
           <Route path="viva/simulator" element={<VivaSimulatorPage />} />
           <Route path="viva/analytics" element={<AnalyticsPage />} />
+          <Route path="learning/tree" element={<SkillTreePage />} />
+          <Route path="learning/lesson/:lessonId" element={<LessonPage />} />
+          <Route path="learning/child" element={<ChildModePage />} />
+          <Route path="learning/research" element={<ResearchWorkspacePage />} />
+          <Route path="learning/curriculum" element={<CurriculumBuilderPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

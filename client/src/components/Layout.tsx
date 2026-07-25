@@ -9,6 +9,15 @@ const navSections = [
     ],
   },
   {
+    title: 'Learning',
+    links: [
+      { to: '/learning/tree', icon: '🌳', label: 'Learning Path' },
+      { to: '/learning/child', icon: '🧒', label: 'Fun Mode (Kids)' },
+      { to: '/learning/research', icon: '🏛️', label: 'Research Workspace' },
+      { to: '/learning/curriculum', icon: '👨‍🏫', label: 'Curriculum Builder' },
+    ],
+  },
+  {
     title: 'Research Suite',
     links: [
       { to: '/research/corpus', icon: '📚', label: 'Corpus & Search' },
