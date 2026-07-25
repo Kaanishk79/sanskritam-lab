@@ -422,6 +422,40 @@ input:focus, textarea:focus, select:focus {
   .btn { padding: 12px 16px; font-size: 15px; white-space: normal; }
 }
 
+/* ─── LIGHT THEME ─── */
+[data-theme="light"] {
+  --sanskrit-dark: #f5f0e8;
+  --sanskrit-card: #fff;
+  color: #333;
+}
+[data-theme="light"] .sidebar { background: #fff; border-color: #ddd; }
+[data-theme="light"] .sidebar-header { border-color: #eee; }
+[data-theme="light"] .nav-link { color: #666; }
+[data-theme="light"] .nav-link:hover { color: #333; background: rgba(201,168,76,0.08); }
+[data-theme="light"] .nav-link.active { background: rgba(201,168,76,0.12); }
+[data-theme="light"] .nav-section { border-color: #eee; }
+[data-theme="light"] .main-content { color: #333; }
+[data-theme="light"] .page-header h2 { color: #222; }
+[data-theme="light"] .card, [data-theme="light"] .module-card, [data-theme="light"] .stat-card { background: #fff; border-color: #ddd; }
+[data-theme="light"] .text-item { background: rgba(0,0,0,0.02); border-color: #ddd; }
+[data-theme="light"] .text-title { color: #222; }
+[data-theme="light"] .text-meta { color: #999; }
+[data-theme="light"] input, [data-theme="light"] textarea, [data-theme="light"] select { background: #fff; color: #333; border-color: #ccc; }
+[data-theme="light"] .btn-secondary { background: #eee; color: #333; }
+[data-theme="light"] .btn-secondary:hover { background: #ddd; }
+[data-theme="light"] .mobile-header { background: #fff; border-color: #ddd; }
+[data-theme="light"] .hamburger span { background: #666; }
+[data-theme="light"] .mobile-title { color: var(--sanskrit-gold); }
+[data-theme="light"] .assessment-option { background: #f8f8f8; color: #333; border-color: #ddd; }
+[data-theme="light"] .viva-question { background: linear-gradient(135deg, #f0e8d8, #f5f0e8); color: #333; border-color: #ddd; }
+[data-theme="light"] .timeline-item { background: #fff; border-color: #ddd; }
+[data-theme="light"] .timeline-item h3 { color: #222; }
+[data-theme="light"] .timeline-item p { color: #666; }
+[data-theme="light"] .stat-card .stat-label { color: #999; }
+[data-theme="light"] .module-card h3 { color: #222; }
+[data-theme="light"] .module-card p { color: #666; }
+[data-theme="light"] .sidebar-overlay { background: rgba(0,0,0,0.3); }
+
 @media (max-width: 480px) {
   .main-content { padding: 16px 12px; }
   .page-header { margin-bottom: 20px; }

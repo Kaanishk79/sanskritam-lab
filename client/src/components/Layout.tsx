@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
+import { useTheme } from '../context/ThemeContext'
 
 const navSections = [
   {
@@ -52,6 +53,7 @@ const navSections = [
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const { theme, toggle } = useTheme()
 
   return (
     <div className="app-layout">
@@ -92,8 +94,18 @@ export default function Layout() {
             <span /><span /><span />
           </button>
           <span className="mobile-title">संस्कृतम्</span>
+          <div style={{ marginLeft: 'auto' }}>
+            <button className="btn btn-secondary" onClick={toggle} style={{ padding: '6px 12px', fontSize: 13 }}>
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
+          </div>
         </header>
         <main className="main-content">
+          <div style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 50 }}>
+            <button className="btn btn-secondary" onClick={toggle} style={{ padding: '10px 14px', fontSize: 18, borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
+              {theme === 'dark' ? '☀️' : '🌙'}
+            </button>
+          </div>
           <Outlet />
         </main>
       </div>
