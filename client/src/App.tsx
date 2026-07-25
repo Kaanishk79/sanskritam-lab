@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import './App.css'
 import Dashboard from './pages/dashboard/index'
 import CorpusPage from './pages/research/CorpusPage'
 import OCRPage from './pages/research/OCRPage'
