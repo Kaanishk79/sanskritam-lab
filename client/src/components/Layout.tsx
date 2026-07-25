@@ -62,8 +62,11 @@ export default function Layout() {
       <nav className={`sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
-            <h1>संस्कृतम्</h1>
-            <div className="sidebar-subtitle">SanskritLab</div>
+            <div className="sidebar-logo">ॐ</div>
+            <div className="sidebar-brand-text">
+              <h1>संस्कृतम्</h1>
+              <div className="subtitle">SanskritLab</div>
+            </div>
           </div>
           <button className="sidebar-close" onClick={() => setSidebarOpen(false)} aria-label="Close navigation">
             ✕
@@ -86,6 +89,12 @@ export default function Layout() {
             ))}
           </div>
         ))}
+        <div style={{ marginTop: 'auto', padding: '16px 24px', borderTop: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Theme</span>
+          <button onClick={toggle} style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--bg-elevated)', border: '1px solid var(--border-color)', cursor: 'pointer', fontSize: 16, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+        </div>
       </nav>
 
       <div className="main-wrapper">
@@ -101,11 +110,6 @@ export default function Layout() {
           </div>
         </header>
         <main className="main-content">
-          <div style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 50 }}>
-            <button className="btn btn-secondary" onClick={toggle} style={{ padding: '10px 14px', fontSize: 18, borderRadius: '50%', width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(0,0,0,0.3)' }}>
-              {theme === 'dark' ? '☀️' : '🌙'}
-            </button>
-          </div>
           <Outlet />
         </main>
       </div>
