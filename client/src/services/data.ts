@@ -16,7 +16,7 @@ export async function fetchTracks(): Promise<TrackInfo[]> {
       icon: t.icon as string,
       description: t.description as string,
       color: t.color as string,
-      ageRange: (t.age_range as string) ?? '',
+      classRange: (t.class_range as string) ?? '',
       levels: [t.min_level as Level, t.max_level as Level],
     }))
   }
@@ -38,6 +38,7 @@ export async function fetchLessons(level?: number): Promise<Lesson[]> {
       subtitle: l.subtitle as string,
       level: l.level as Level,
       track: l.track as Track,
+      govClassId: l.gov_class_id as Lesson['govClassId'] ?? 'class-1-2',
       duration: l.duration as string,
       content: l.content as Lesson['content'],
       quiz: l.quiz as Lesson['quiz'],
@@ -57,6 +58,7 @@ export async function fetchLesson(id: string): Promise<Lesson | null> {
       subtitle: data.subtitle,
       level: data.level,
       track: data.track,
+      govClassId: data.gov_class_id ?? 'class-1-2',
       duration: data.duration,
       content: data.content,
       quiz: data.quiz,
@@ -64,6 +66,70 @@ export async function fetchLesson(id: string): Promise<Lesson | null> {
     }
   }
   return localLessons.find((l) => l.id === id) ?? null
+}
+
+// ─── BOOKS ───
+export async function fetchBooks() {
+  if (!hasSupabase()) return null
+  const { data } = await supabase.from('books').select('*').order('sort_order')
+  return data ?? null
+}
+
+export async function fetchNCERTBooks() {
+  if (!hasSupabase()) return null
+  const { data } = await supabase.from('books').select('*').ilike('id', 'ncert%').order('gov_class_min')
+  return data ?? null
+}
+
+// ─── CHAPTERS ───
+export async function fetchChapters(bookIds: string[]) {
+  if (!hasSupabase() || bookIds.length === 0) return null
+  const { data } = await supabase.from('chapters').select('*').in('book_id', bookIds).order('chapter_number')
+  return data ?? null
+}
+
+// Fetches chapters for a single book from the DB, mapping snake_case columns.
+export async function fetchBookChapters(bookId: string) {
+  if (!hasSupabase()) return null
+  const { data } = await supabase
+    .from('chapters')
+    .select('id, book_id, chapter_number, title, title_sanskrit, verse_count, content_preview')
+    .eq('book_id', bookId)
+    .order('chapter_number')
+  return (data ?? []).map((c: Record<string, unknown>) => ({
+    id: c.id as string,
+    bookId: c.book_id as string,
+    chapterNumber: c.chapter_number as number,
+    title: c.title as string,
+    titleSanskrit: (c.title_sanskrit as string) ?? '',
+    verseCount: (c.verse_count as number) ?? 0,
+    contentPreview: (c.content_preview as string) ?? '',
+  }))
+}
+
+// Fetches verse content for a chapter (from the texts table, linked by book_id + chapter_number).
+export async function fetchChapterVerses(bookId: string, chapterNumber: number) {
+  if (!hasSupabase()) return []
+  const { data } = await supabase
+    .from('texts')
+    .select('id, title, title_hi, content, verse_number')
+    .eq('book_id', bookId)
+    .eq('chapter_number', chapterNumber)
+    .order('verse_number', { ascending: true })
+  return data ?? []
+}
+
+// ─── GRAMMAR BOOKS ───
+export async function fetchGrammarBooks() {
+  if (!hasSupabase()) return null
+  const { data } = await supabase.from('grammar_books').select('*').order('level')
+  return data ?? null
+}
+
+export async function fetchNCERTGrammarBooks() {
+  if (!hasSupabase()) return null
+  const { data } = await supabase.from('grammar_books').select('*').ilike('id', 'ncert%').order('level')
+  return data ?? null
 }
 
 // ─── TEXTS ───

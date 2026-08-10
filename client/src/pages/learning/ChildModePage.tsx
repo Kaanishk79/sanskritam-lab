@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLanguage } from '../../context/LanguageContext'
 
 const letters = [
   { dev: 'अ', trans: 'a', sound: 'u' as const },
@@ -42,6 +43,7 @@ const pictureWords = [
 ]
 
 export default function ChildModePage() {
+  const { t } = useLanguage()
   const [tab, setTab] = useState<'letters' | 'words' | 'color'>('letters')
   const [currentLetter, setCurrentLetter] = useState(0)
   const [currentPic, setCurrentPic] = useState(0)
@@ -63,16 +65,16 @@ export default function ChildModePage() {
   return (
     <div>
       <div className="page-header">
-        <h2>🧒 Fun Learning — Play Mode</h2>
-        <p>Learn Sanskrit through pictures, colors, and play. Perfect for young learners!</p>
+        <h2>🧒 {t('Fun Learning — Play Mode')}</h2>
+        <p>{t('Learn Sanskrit through pictures, colors, and play. Perfect for young learners!')}</p>
       </div>
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
         <button className={`btn ${tab === 'letters' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab('letters')}>
-          🔤 Alphabet Cards
+          🔤 {t('Alphabet Cards')}
         </button>
         <button className={`btn ${tab === 'words' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab('words')}>
-          🖼️ Picture Words
+          🖼️ {t('Picture Words')}
         </button>
       </div>
 
@@ -92,17 +94,17 @@ export default function ChildModePage() {
             {cl.dev}
           </div>
           <div style={{ fontSize: 18, marginBottom: 4 }}>
-            Say: <strong>{cl.trans}</strong>
+            {t('Say: ')}<strong>{cl.trans}</strong>
           </div>
           <div style={{ fontSize: 14, color: '#888', marginBottom: 20 }}>
-            Like the <strong>{cl.sound}</strong> in "{cl.sound === 'u' ? 'u' + 'p' : cl.sound === 'a' ? 'f' + 'a' + 'ther' : cl.sound === 'i' ? 's' + 'i' + 't' : cl.sound === 'ee' ? 's' + 'ee' : cl.sound === 'oo' ? 'm' + 'oo' + 'n' : cl.sound === 'o' ? 'g' + 'o' : 'u' + 'p'}"
+            {t('Like the ')}<strong>{cl.sound}</strong>{t(' in ')}"{cl.sound === 'u' ? 'u' + 'p' : cl.sound === 'a' ? 'f' + 'a' + 'ther' : cl.sound === 'i' ? 's' + 'i' + 't' : cl.sound === 'ee' ? 's' + 'ee' : cl.sound === 'oo' ? 'm' + 'oo' + 'n' : cl.sound === 'o' ? 'g' + 'o' : 'u' + 'p'}"
           </div>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="btn btn-secondary" onClick={() => setCurrentLetter((p) => (p - 1 + letters.length) % letters.length)}>
-              ← Previous
+              ← {t('Previous')}
             </button>
             <button className="btn btn-primary" onClick={() => setCurrentLetter((p) => (p + 1) % letters.length)}>
-              Next →
+              {t('Next')} →
             </button>
           </div>
           <div style={{ marginTop: 16, fontSize: 12, color: '#555', display: 'flex', justifyContent: 'center', gap: 4, flexWrap: 'wrap' }}>
@@ -126,16 +128,16 @@ export default function ChildModePage() {
           }}>
             {cp.emoji}
           </div>
-          <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>What is this in Sanskrit?</div>
+          <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>{t('What is this in Sanskrit?')}</div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 12 }}>
             <input
               value={guess}
               onChange={(e) => setGuess(e.target.value)}
-              placeholder="Type the Sanskrit word..."
+              placeholder={t('Type the Sanskrit word...')}
               style={{ maxWidth: 280 }}
               onKeyDown={(e) => e.key === 'Enter' && checkColorGuess()}
             />
-            <button className="btn btn-primary" onClick={checkColorGuess}>Check</button>
+            <button className="btn btn-primary" onClick={checkColorGuess}>{t('Check')}</button>
           </div>
           <div style={{ fontSize: 18, fontFamily: "'Noto Sans Devanagari', serif", color: 'var(--sanskrit-gold)' }}>
             {cp.word} — {cp.meaning}

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLanguage } from '../../context/LanguageContext'
 
 interface Question {
   prompt: string
@@ -33,6 +34,7 @@ export default function AssessmentPage() {
   const [selected, setSelected] = useState<number | null>(null)
   const [score, setScore] = useState(0)
   const [finished, setFinished] = useState(false)
+  const { t } = useLanguage()
 
   const q = sampleQuestions[currentQ]
 
@@ -55,24 +57,24 @@ export default function AssessmentPage() {
     return (
       <div>
         <div className="page-header">
-          <h2>📝 Assessment Engine</h2>
-          <p>Auto-generated drills for declensions, sandhi exercises, and timed practice quizzes</p>
+          <h2>📝 {t('Assessment Engine')}</h2>
+          <p>{t('Auto-generated drills for declensions, sandhi exercises, and timed practice quizzes')}</p>
         </div>
         <div className="card" style={{ textAlign: 'center', padding: 40 }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
-          <h3 style={{ fontSize: 24, marginBottom: 8 }}>Assessment Complete!</h3>
+          <h3 style={{ fontSize: 24, marginBottom: 8 }}>{t('Assessment Complete!')}</h3>
           <div style={{ fontSize: 48, fontWeight: 700, color: 'var(--sanskrit-gold)', margin: '16px 0' }}>
             {score}/{sampleQuestions.length}
           </div>
           <p style={{ color: '#888' }}>
-            {score === sampleQuestions.length ? 'Perfect score! Excellent Sanskrit knowledge!' : 'Review the explanations and try again.'}
+            {score === sampleQuestions.length ? t('Perfect score! Excellent Sanskrit knowledge!') : t('Review the explanations and try again.')}
           </p>
           <button
             className="btn btn-primary"
             style={{ marginTop: 20 }}
             onClick={() => { setCurrentQ(0); setSelected(null); setScore(0); setFinished(false) }}
           >
-            Retry
+            {t('Retry')}
           </button>
         </div>
       </div>
@@ -82,17 +84,17 @@ export default function AssessmentPage() {
   return (
     <div>
       <div className="page-header">
-        <h2>📝 Assessment Engine</h2>
-        <p>Auto-generated drills for declensions, sandhi exercises, and timed practice quizzes</p>
+        <h2>📝 {t('Assessment Engine')}</h2>
+        <p>{t('Auto-generated drills for declensions, sandhi exercises, and timed practice quizzes')}</p>
       </div>
 
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
           <span style={{ color: '#888', fontSize: 13 }}>
-            Question {currentQ + 1} of {sampleQuestions.length}
+            {t('Question')} {currentQ + 1} {t('of')} {sampleQuestions.length}
           </span>
           <span className="badge" style={{ background: 'var(--sanskrit-card)', color: 'var(--sanskrit-gold)' }}>
-            Score: {score}
+            {t('Score:')} {score}
           </span>
         </div>
 
@@ -116,7 +118,7 @@ export default function AssessmentPage() {
         {selected !== null && (
           <div style={{ padding: 16, background: 'rgba(0,0,0,0.2)', borderRadius: 8, marginBottom: 20 }}>
             <div style={{ color: selected === q.correctIdx ? '#4caf50' : '#f44336', fontWeight: 600, marginBottom: 8 }}>
-              {selected === q.correctIdx ? '✓ Correct!' : '✗ Incorrect'}
+              {selected === q.correctIdx ? '✓ ' + t('Correct!') : '✗ ' + t('Incorrect')}
             </div>
             <div style={{ color: '#aaa', fontSize: 14 }}>{q.explanation}</div>
           </div>
@@ -124,7 +126,7 @@ export default function AssessmentPage() {
 
         {selected !== null && (
           <button className="btn btn-primary" onClick={next}>
-            {currentQ < sampleQuestions.length - 1 ? 'Next Question →' : 'See Results'}
+            {currentQ < sampleQuestions.length - 1 ? t('Next Question →') : t('See Results')}
           </button>
         )}
       </div>

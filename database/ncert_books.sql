@@ -1,0 +1,110 @@
+INSERT INTO books (id, title, title_sanskrit, author, period, category, level_min, level_max, track, total_chapters, description, cover_icon, sort_order, gov_class_min, gov_class_max) VALUES
+('ncert-ruchira-6', 'Ruchira Prathamo Bhagah', 'रुचिरा प्रथमो भागः', 'NCERT', '2026-27', 'textbook', 1, 1, 'teen', 13, 'NCERT Class 6 Sanskrit textbook: alphabet, basic vocabulary, simple stories, and grammar', '📘', 36, 6, 6),
+('ncert-ruchira-7', 'Ruchira Dwitiyo Bhagah', 'रुचिरा द्वितीयो भागः', 'NCERT', '2026-27', 'textbook', 1, 1, 'teen', 15, 'NCERT Class 7 Sanskrit textbook: expanded vocabulary, declensions, tenses, and moral stories', '📘', 37, 7, 7),
+('ncert-ruchira-8', 'Ruchira Tritiyo Bhagah', 'रुचिरा तृतीयो भागः', 'NCERT', '2026-27', 'textbook', 1, 2, 'teen', 15, 'NCERT Class 8 Sanskrit textbook: advanced grammar, compounds, and classical prose', '📘', 38, 8, 8),
+('ncert-sharada-9', 'Sharada Bhag - 1', 'शारदा भाग - १', 'NCERT', '2026-27', 'textbook', 2, 2, 'teen', 11, 'NCERT Class 9 Sanskrit textbook (NEP 2020): ethics, AI, philosophy, and Sanatan values', '📕', 39, 9, 9),
+('ncert-shemushi-10', 'Shemushi Dwitiyo Bhag', 'शेमुषी द्वितीयो भागः', 'NCERT', '2026-27', 'textbook', 2, 2, 'teen', 10, 'NCERT Class 10 Sanskrit textbook: prose, poetry, grammar, and translation', '📕', 40, 10, 10),
+('ncert-bhaswati-11', 'Bhaswati Prathamo Bhagah', 'भास्वती प्रथमो भागः', 'NCERT', '2026-27', 'textbook', 2, 3, 'undergrad', 10, 'NCERT Class 11 Sanskrit textbook: classical literature, advanced grammar, and composition', '📙', 41, 11, 11),
+('ncert-bhaswati-12', 'Bhaswati Dwitiyo Bhagah', 'भास्वती द्वितीयो भागः', 'NCERT', '2026-27', 'textbook', 3, 3, 'undergrad', 10, 'NCERT Class 12 Sanskrit textbook: advanced literature, poetics, and textual analysis', '📙', 42, 12, 12)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO chapters (id, book_id, chapter_number, title, title_sanskrit, verse_count, content_preview) VALUES
+
+-- Ruchira Class 6 (13 chapters)
+('ch-ncert-6-1', 'ncert-ruchira-6', 1, 'Shabdaparichayah I', 'शब्दपरिचयः I', 10, 'Basic nouns and gender: boy, girl, fruit, flower'),
+('ch-ncert-6-2', 'ncert-ruchira-6', 2, 'Shabdaparichayah II', 'शब्दपरिचयः II', 10, 'More nouns: animals, body parts, objects'),
+('ch-ncert-6-3', 'ncert-ruchira-6', 3, 'Shabdaparichayah III', 'शब्दपरिचयः III', 10, 'Verbs and simple sentences'),
+('ch-ncert-6-4', 'ncert-ruchira-6', 4, 'Vidyalayah', 'विद्यालयः', 8, 'School vocabulary and everyday phrases'),
+('ch-ncert-6-5', 'ncert-ruchira-6', 5, 'Vrikshah', 'वृक्षाः', 8, 'Trees and nature vocabulary'),
+('ch-ncert-6-6', 'ncert-ruchira-6', 6, 'Samudratatah', 'समुद्रतटः', 8, 'Beach scene and descriptive language'),
+('ch-ncert-6-7', 'ncert-ruchira-6', 7, 'Bakasya Pratikarah', 'बकस्य प्रतीकारः', 10, 'Moral story: the heron''s revenge'),
+('ch-ncert-6-8', 'ncert-ruchira-6', 8, 'Suktistabakah', 'सूक्तिस्तबकः', 12, 'Collection of wise sayings'),
+('ch-ncert-6-9', 'ncert-ruchira-6', 9, 'Kridasprdha', 'क्रीडास्पर्धा', 8, 'Sports competition vocabulary'),
+('ch-ncert-6-10', 'ncert-ruchira-6', 10, 'Krishikah Karmavirah', 'कृषिकाः कर्मवीराः', 8, 'Farmers and hard work'),
+('ch-ncert-6-11', 'ncert-ruchira-6', 11, 'Pushpotsavah', 'पुष्पोत्सवः', 8, 'Flower festival description'),
+('ch-ncert-6-12', 'ncert-ruchira-6', 12, 'Dashamah Tvam Asi', 'दशमः त्वम् असि', 10, 'Story of the tenth man'),
+('ch-ncert-6-13', 'ncert-ruchira-6', 13, 'Aho Aah', 'अहो आः', 6, 'Interjections and exclamations'),
+
+-- Ruchira Class 7 (15 chapters)
+('ch-ncert-7-1', 'ncert-ruchira-7', 1, 'Subhashitani', 'सुभाषितानि', 12, 'Moral verses and wisdom sayings'),
+('ch-ncert-7-2', 'ncert-ruchira-7', 2, 'Durbuddhih Vinashyati', 'दुर्बुद्धिः विनश्यति', 10, 'Story: evil-minded gets destroyed'),
+('ch-ncert-7-3', 'ncert-ruchira-7', 3, 'Svavalambanam', 'स्वावलम्बनम्', 8, 'Self-reliance and independence'),
+('ch-ncert-7-4', 'ncert-ruchira-7', 4, 'Hasyabalakavisammelanam', 'हास्यबालकविसम्मेलनम्', 10, 'Humorous childrens poetry meet'),
+('ch-ncert-7-5', 'ncert-ruchira-7', 5, 'Pandita Ramabai', 'पण्डिता रमाबाई', 8, 'Biography of Pandita Ramabai'),
+('ch-ncert-7-6', 'ncert-ruchira-7', 6, 'Sadachararah', 'सदाचारः', 10, 'Ethics and good conduct'),
+('ch-ncert-7-7', 'ncert-ruchira-7', 7, 'Sankalpah Siddhidayah', 'सङ्कल्पः सिद्धिदायः', 8, 'Determination leads to success'),
+('ch-ncert-7-8', 'ncert-ruchira-7', 8, 'Trayah Varah', 'त्रयः वराः', 8, 'Three boons story'),
+('ch-ncert-7-9', 'ncert-ruchira-7', 9, 'Ekadaiva Vadet', 'एकदा एव वदेत्', 6, 'Speak once and speak well'),
+('ch-ncert-7-10', 'ncert-ruchira-7', 10, 'Kalpavrikshah', 'कल्पवृक्षः', 8, 'The wish-fulfilling tree'),
+('ch-ncert-7-11', 'ncert-ruchira-7', 11, 'Samvadah', 'संवादः', 8, 'Dialogue and conversation practice'),
+('ch-ncert-7-12', 'ncert-ruchira-7', 12, 'Vidyadhanam', 'विद्याधनम्', 8, 'Knowledge as wealth'),
+('ch-ncert-7-13', 'ncert-ruchira-7', 13, 'Amritam Samskritam', 'अमृतं संस्कृतम्', 10, 'Sanskrit the nectar language'),
+('ch-ncert-7-14', 'ncert-ruchira-7', 14, 'Anarikah Jeevanti', 'अनारिकाः जीवन्ति', 8, 'Honest people thrive'),
+('ch-ncert-7-15', 'ncert-ruchira-7', 15, 'Lalangeetam', 'लालनगीतम्', 6, 'Lullaby and affectionate verse'),
+
+-- Ruchira Class 8 (15 chapters)
+('ch-ncert-8-1', 'ncert-ruchira-8', 1, 'Sujanam Tathaiva Yogyah', 'सुजनम् तथैव योग्यः', 10, 'Good people and the worthy'),
+('ch-ncert-8-2', 'ncert-ruchira-8', 2, 'Bilasyavani', 'बिलस्यवानी', 8, 'The cats wisdom'),
+('ch-ncert-8-3', 'ncert-ruchira-8', 3, 'Bhagavadajjukiyam', 'भगवदज्जुकीयम्', 10, 'A humorous play on ascetics'),
+('ch-ncert-8-4', 'ncert-ruchira-8', 4, 'Sadaiva Puratanah', 'सदैव पुरातनः', 8, 'Sanskrits timeless nature'),
+('ch-ncert-8-5', 'ncert-ruchira-8', 5, 'Dharma Shiksha', 'धर्मशिक्षा', 8, 'Moral education'),
+('ch-ncert-8-6', 'ncert-ruchira-8', 6, 'Garimah Kasyapi', 'गरिमा कस्यापि', 8, 'True greatness'),
+('ch-ncert-8-7', 'ncert-ruchira-8', 7, 'Bharatavarsham', 'भारतवर्षम्', 8, 'India the great land'),
+('ch-ncert-8-8', 'ncert-ruchira-8', 8, 'Samsara Sagaram', 'संसारसागरम्', 8, 'The ocean of worldly life'),
+('ch-ncert-8-9', 'ncert-ruchira-8', 9, 'Saptabhaginyah', 'सप्तभगिन्यः', 8, 'Seven sisters of Northeast India'),
+('ch-ncert-8-10', 'ncert-ruchira-8', 10, 'Neetishloka', 'नीतिश्लोकाः', 12, 'Ethical verses'),
+('ch-ncert-8-11', 'ncert-ruchira-8', 11, 'Chitram Karma', 'चित्रं कर्म', 8, 'Wondrous deeds'),
+('ch-ncert-8-12', 'ncert-ruchira-8', 12, 'Kashchit Kalakarah', 'कश्चित् कालकारः', 8, 'A certain artisan'),
+('ch-ncert-8-13', 'ncert-ruchira-8', 13, 'Jalotsavah', 'जलोत्सवः', 8, 'Water festival'),
+('ch-ncert-8-14', 'ncert-ruchira-8', 14, 'Ashrama Bhoomi', 'आश्रमभूमिः', 8, 'Hermitage landscape'),
+('ch-ncert-8-15', 'ncert-ruchira-8', 15, 'Prahasyam Chitram', 'प्रहस्यं चित्रम्', 8, 'Humorous picture story'),
+
+-- Sharada Class 9 (11 chapters)
+('ch-ncert-9-1', 'ncert-sharada-9', 1, 'Satyam Shivam Sundaram Sanskritam', 'सत्यं शिवं सुन्दरं संस्कृतम्', 10, 'Significance of Sanskrit language'),
+('ch-ncert-9-2', 'ncert-sharada-9', 2, 'Sukhasya Mulam Dharmah', 'सुखस्य मूलं धर्मः', 8, 'Dharma as root of happiness'),
+('ch-ncert-9-3', 'ncert-sharada-9', 3, 'Atmavat Sarvabhuteshu', 'आत्मवत् सर्वभूतेषु', 8, 'Compassion for all beings'),
+('ch-ncert-9-4', 'ncert-sharada-9', 4, 'Na Khalu Vayastejaso Hetuh', 'न खलु वयस्तेजसो हेतुः', 8, 'Talent over age'),
+('ch-ncert-9-5', 'ncert-sharada-9', 5, 'Esha Sa Kritakabuddhih', 'एष स कृतकबुद्धिः', 10, 'Artificial Intelligence and human intellect'),
+('ch-ncert-9-6', 'ncert-sharada-9', 6, 'Manahputam Samacharet', 'मनःपूतं समाचरेत्', 8, 'Purity of mind and action'),
+('ch-ncert-9-7', 'ncert-sharada-9', 7, 'Upayam Chintayet Pragnah', 'उपायं चिन्तयेत् प्राज्ञः', 8, 'Wise thinking and strategy'),
+('ch-ncert-9-8', 'ncert-sharada-9', 8, 'Annad Anandam Prati', 'अन्नाद् आनन्दं प्रति', 8, 'Food nutrition and joy'),
+('ch-ncert-9-9', 'ncert-sharada-9', 9, 'Kritam Pratikritam Bhuyadesh', 'कृतं प्रतिकृतं भुयादेशः', 10, 'Sanatan values from Itihasa'),
+('ch-ncert-9-10', 'ncert-sharada-9', 10, 'Namo Arihantanam', 'नमो अरिहन्तानाम्', 8, 'Jain philosophy and Ahimsa'),
+('ch-ncert-9-11', 'ncert-sharada-9', 11, 'Varnochcharan Shiksha', 'वर्णोच्चारणशिक्षा', 6, 'Correct Sanskrit pronunciation'),
+
+-- Shemushi Class 10 (10 chapters)
+('ch-ncert-10-1', 'ncert-shemushi-10', 1, 'Shuchiparyavaranam', 'शुचिपर्यावरणम्', 8, 'Clean environment'),
+('ch-ncert-10-2', 'ncert-shemushi-10', 2, 'Gunvati Kanya', 'गुणवती कन्या', 8, 'A talented daughter'),
+('ch-ncert-10-3', 'ncert-shemushi-10', 3, 'Shishulalanam', 'शिशुलालनम्', 8, 'Caring for children'),
+('ch-ncert-10-4', 'ncert-shemushi-10', 4, 'Vidya Mahima', 'विद्या महिमा', 10, 'Glory of education'),
+('ch-ncert-10-5', 'ncert-shemushi-10', 5, 'Buddhi Shaktih', 'बुद्धिः शक्तिः', 8, 'Intellect is power'),
+('ch-ncert-10-6', 'ncert-shemushi-10', 6, 'Satyam Jayate', 'सत्यं जयते', 8, 'Truth prevails'),
+('ch-ncert-10-7', 'ncert-shemushi-10', 7, 'Vividha Jeevana', 'विविधं जीवनम्', 8, 'Diverse life'),
+('ch-ncert-10-8', 'ncert-shemushi-10', 8, 'Prakriti Shobha', 'प्रकृतिशोभा', 8, 'Beauty of nature'),
+('ch-ncert-10-9', 'ncert-shemushi-10', 9, 'Paryavaran Samrakshanam', 'पर्यावरणसंरक्षणम्', 8, 'Environmental protection'),
+('ch-ncert-10-10', 'ncert-shemushi-10', 10, 'Vaangmanah Praanaswaroopam', 'वाङ्मनःप्राणस्वरूपम्', 10, 'Nature of speech mind and life'),
+
+-- Bhaswati Class 11 (10 chapters)
+('ch-ncert-11-1', 'ncert-bhaswati-11', 1, 'Asmakam Upanyasah', 'अस्माकम् उपन्यासः', 10, 'Our heritage essay'),
+('ch-ncert-11-2', 'ncert-bhaswati-11', 2, 'Sanskrit Srijanam', 'संस्कृतसृजनम्', 8, 'Sanskrit creative writing'),
+('ch-ncert-11-3', 'ncert-bhaswati-11', 3, 'Ritusanchara', 'ऋतुसञ्चारः', 8, 'Seasonal changes'),
+('ch-ncert-11-4', 'ncert-bhaswati-11', 4, 'Bhagavata Katha', 'भागवतकथा', 10, 'Stories from Bhagavata'),
+('ch-ncert-11-5', 'ncert-bhaswati-11', 5, 'Kavyashastra', 'काव्यशास्त्रम्', 8, 'Principles of poetry'),
+('ch-ncert-11-6', 'ncert-bhaswati-11', 6, 'Anuvadabhyasah', 'अनुवादाभ्यासः', 6, 'Translation practice'),
+('ch-ncert-11-7', 'ncert-bhaswati-11', 7, 'Rachananuvadah', 'रचनानुवादः', 8, 'Composition and translation'),
+('ch-ncert-11-8', 'ncert-bhaswati-11', 8, 'Sahityamala', 'साहित्यमाला', 10, 'Garland of literature'),
+('ch-ncert-11-9', 'ncert-bhaswati-11', 9, 'Katha Kautukam', 'कथाकौतुकम्', 8, 'Interesting stories'),
+('ch-ncert-11-10', 'ncert-bhaswati-11', 10, 'Sanskrit Sampreshanam', 'संस्कृतसम्प्रेषणम्', 8, 'Communication in Sanskrit'),
+
+-- Bhaswati Class 12 (10 chapters)
+('ch-ncert-12-1', 'ncert-bhaswati-12', 1, 'Sahityavalokanam', 'साहित्यावलोकनम्', 10, 'Literary survey'),
+('ch-ncert-12-2', 'ncert-bhaswati-12', 2, 'Gadyakavyam', 'गद्यकाव्यम्', 8, 'Prose poetry'),
+('ch-ncert-12-3', 'ncert-bhaswati-12', 3, 'Champu Prabandhah', 'चम्पुप्रबन्धः', 8, 'Mixed prose-verse composition'),
+('ch-ncert-12-4', 'ncert-bhaswati-12', 4, 'Kavyam Vicharah', 'काव्यं विचारः', 8, 'Poetic analysis'),
+('ch-ncert-12-5', 'ncert-bhaswati-12', 5, 'Natya Shastra', 'नाट्यशास्त्रम्', 10, 'Dramatic theory'),
+('ch-ncert-12-6', 'ncert-bhaswati-12', 6, 'Vyakarana Vivekah', 'व्याकरणविवेकः', 8, 'Grammatical analysis'),
+('ch-ncert-12-7', 'ncert-bhaswati-12', 7, 'Chhandolankara', 'छन्दोऽलङ्कारः', 8, 'Metre and figures of speech'),
+('ch-ncert-12-8', 'ncert-bhaswati-12', 8, 'Tarkashastra', 'तर्कशास्त्रम्', 8, 'Logic and reasoning'),
+('ch-ncert-12-9', 'ncert-bhaswati-12', 9, 'Prabandha Rachana', 'प्रबन्धरचना', 8, 'Essay writing'),
+('ch-ncert-12-10', 'ncert-bhaswati-12', 10, 'Sanskrit Sampada', 'संस्कृतसम्पदा', 10, 'Sanskrits wealth')
+ON CONFLICT (id) DO NOTHING;

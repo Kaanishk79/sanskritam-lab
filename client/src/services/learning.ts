@@ -4,16 +4,18 @@ const STORAGE_KEY = 'sanskritlab-progress'
 
 const initialSkills: Record<string, Skill> = {
   'skill-alphabet': { id: 'skill-alphabet', name: 'Alphabet', description: 'Master Devanāgarī letters', icon: '🔤', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['alphabet-vowels', 'alphabet-consonants'] },
-  'skill-vocab-basics': { id: 'skill-vocab-basics', name: 'Basic Vocabulary', description: 'First 50 Sanskrit words', icon: '📖', unlocked: false, completed: false, progress: 0, prerequisites: ['skill-alphabet'], lessonIds: ['simple-words'] },
-  'skill-syntax': { id: 'skill-syntax', name: 'Sentence Structure', description: 'SOV order and agreement', icon: '🔗', unlocked: true, completed: false, progress: 0, prerequisites: ['skill-vocab-basics'], lessonIds: ['basic-sentences'] },
-  'skill-declensions': { id: 'skill-declensions', name: 'Declensions', description: '8 cases across 3 genders', icon: '📊', unlocked: false, completed: false, progress: 0, prerequisites: ['skill-syntax'], lessonIds: ['declensions'] },
-  'skill-sandhi': { id: 'skill-sandhi', name: 'Sandhi', description: 'Sound merger rules', icon: '🔊', unlocked: false, completed: false, progress: 0, prerequisites: ['skill-declensions'], lessonIds: ['sandhi-rules'] },
-  'skill-compounds': { id: 'skill-compounds', name: 'Compounds', description: 'Samāsa types', icon: '🧩', unlocked: false, completed: false, progress: 0, prerequisites: ['skill-declensions'], lessonIds: ['compounds'] },
-  'skill-classical-texts': { id: 'skill-classical-texts', name: 'Classical Texts', description: 'Read Kālidāsa and others', icon: '📜', unlocked: false, completed: false, progress: 0, prerequisites: ['skill-sandhi', 'skill-compounds'], lessonIds: ['kalidasa'] },
-  'skill-philosophy': { id: 'skill-philosophy', name: 'Philosophy', description: 'Darśana systems', icon: '🧠', unlocked: false, completed: false, progress: 0, prerequisites: ['skill-classical-texts'], lessonIds: ['nyaya-intro'] },
-  'skill-critical-edition': { id: 'skill-critical-edition', name: 'Textual Criticism', description: 'Establish critical editions', icon: '📐', unlocked: false, completed: false, progress: 0, prerequisites: ['skill-paleography'], lessonIds: ['textual-criticism'] },
-  'skill-paleography': { id: 'skill-paleography', name: 'Paleography', description: 'Read ancient scripts', icon: '🔍', unlocked: false, completed: false, progress: 0, prerequisites: ['skill-philosophy'], lessonIds: ['paleography'] },
-  'skill-phd-research': { id: 'skill-phd-research', name: 'PhD Research', description: 'Critical edition & publication', icon: '🏛️', unlocked: false, completed: false, progress: 0, prerequisites: ['skill-critical-edition'], lessonIds: ['critical-edition'] },
+  'skill-vocab-basics': { id: 'skill-vocab-basics', name: 'Basic Vocabulary', description: 'First 50 Sanskrit words — family, nature, body, food, directions', icon: '📖', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['simple-words', 'everyday-vocab', 'numbers-colors'] },
+  'skill-syntax': { id: 'skill-syntax', name: 'Sentence Structure', description: 'SOV order, adjective agreement, relative clauses', icon: '🔗', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['basic-sentences', 'relative-clauses'] },
+  'skill-conjugation': { id: 'skill-conjugation', name: 'Verb Conjugation', description: 'Tenses: present, imperfect, future, perfect — 9 forms each', icon: '🔊', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['verb-conjugation'] },
+  'skill-declensions': { id: 'skill-declensions', name: 'Declensions', description: '8 cases across 3 genders, 3 numbers', icon: '📊', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['declensions', 'declensions-practice'] },
+  'skill-sandhi': { id: 'skill-sandhi', name: 'Sandhi', description: 'Sound merger rules: Guṇa, Vṛddhi, Yaṇ, Visarga', icon: '🔊', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['sandhi-rules'] },
+  'skill-compounds': { id: 'skill-compounds', name: 'Compounds', description: 'Samāsa types: Tatpuruṣa, Bahuvrīhi, Dvandva, Avyayībhāva', icon: '🧩', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['compounds', 'avyayibhava'] },
+  'skill-grammar': { id: 'skill-grammar', name: 'Advanced Grammar', description: 'Kṛdanta & Taddhita: primary & secondary derivatives', icon: '📐', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['krdanta', 'taddhita'] },
+  'skill-classical-texts': { id: 'skill-classical-texts', name: 'Classical Texts', description: 'Kālidāsa, Vyāsa, Bhavabhūti, Daṇḍin', icon: '📜', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['kalidasa', 'kalidasa-works'] },
+  'skill-philosophy': { id: 'skill-philosophy', name: 'Philosophy', description: 'Nyāya, Sāṅkhya, Yoga, Vedānta, Mīmāṃsā', icon: '🧠', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['nyaya-intro', 'sankhya', 'yoga-sutra', 'upanishad'] },
+  'skill-critical-edition': { id: 'skill-critical-edition', name: 'Textual Criticism', description: 'Stemmatics, recension, emendation, critical apparatus', icon: '📐', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['textual-criticism', 'lexicography'] },
+  'skill-paleography': { id: 'skill-paleography', name: 'Paleography', description: 'Brāhmī, Gupta, Siddhamātṛkā, Nāgarī, Grantha scripts', icon: '🔍', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['paleography', 'manuscript-studies'] },
+  'skill-phd-research': { id: 'skill-phd-research', name: 'PhD Research', description: 'Critical edition preparation, publication ethics, thesis writing', icon: '🏛️', unlocked: true, completed: false, progress: 0, prerequisites: [], lessonIds: ['critical-edition', 'critical-edition-theory', 'digital-humanities', 'publication'] },
 }
 
 export function getDefaultProgress(): UserProgress {
@@ -22,6 +24,7 @@ export function getDefaultProgress(): UserProgress {
     quizScores: {},
     currentLevel: 0 as Level,
     currentTrack: 'child' as Track,
+    currentGovClass: 'class-1-2' as UserProgress['currentGovClass'],
     streak: 0,
     xp: 0,
     skills: { ...initialSkills },

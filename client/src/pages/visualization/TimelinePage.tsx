@@ -1,3 +1,5 @@
+import { useLanguage } from '../../context/LanguageContext'
+
 const events = [
   { year: '1500-1200 BCE', title: 'Ṛgveda Composition', description: 'Earliest extant Sanskrit texts, hymns to deities', category: 'text' as const },
   { year: '~1000 BCE', title: 'Brāhmaṇas & Āraṇyakas', description: 'Ritual manuals and forest treatises', category: 'text' as const },
@@ -10,17 +12,19 @@ const events = [
 ]
 
 export default function TimelinePage() {
+  const { t } = useLanguage()
+
   return (
     <div>
       <div className="page-header">
-        <h2>📈 Evolutionary Timeline</h2>
-        <p>Interactive timeline showing how Sanskrit language and philosophy evolved over centuries</p>
+        <h2>📈 {t('Evolutionary Timeline')}</h2>
+        <p>{t('Interactive timeline showing how Sanskrit language and philosophy evolved over centuries')}</p>
       </div>
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
         {(['all', 'text', 'grammar', 'philosophy'] as const).map((cat) => (
           <button key={cat} className="btn btn-secondary">
-            {cat === 'all' ? 'All Events' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+            {cat === 'all' ? t('All Events') : t(cat.charAt(0).toUpperCase() + cat.slice(1))}
           </button>
         ))}
       </div>

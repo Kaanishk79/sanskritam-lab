@@ -82,6 +82,30 @@ export const assessmentDb = {
     supabase.from('assessment_attempts').select('*, lessons(title)').eq('user_id', userId).order('created_at', { ascending: false }),
 }
 
+// ─── BOOKS ───
+export const booksDb = {
+  list: () => supabase.from('books').select('*').order('sort_order'),
+  getByCategory: (category: string) =>
+    supabase.from('books').select('*').eq('category', category).order('sort_order'),
+  getNCERT: () =>
+    supabase.from('books').select('*').ilike('id', 'ncert%').order('gov_class_min'),
+}
+
+// ─── CHAPTERS ───
+export const chaptersDb = {
+  listByBook: (bookId: string) =>
+    supabase.from('chapters').select('*').eq('book_id', bookId).order('chapter_number'),
+  listByBooks: (bookIds: string[]) =>
+    supabase.from('chapters').select('*').in('book_id', bookIds).order('chapter_number'),
+}
+
+// ─── GRAMMAR BOOKS ───
+export const grammarBooksDb = {
+  list: () => supabase.from('grammar_books').select('*').order('level'),
+  getNCERT: () =>
+    supabase.from('grammar_books').select('*').ilike('id', 'ncert%').order('level'),
+}
+
 // ─── DICTIONARY ───
 export const dictionaryDb = {
   lookup: (word: string) =>

@@ -1,129 +1,201 @@
-import { tracks } from '../../data/tracks'
-import { useProgress } from '../../hooks/useProgress'
-import { lessons } from '../../data/lessons'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useProgress } from '../../hooks/useProgress'
+import { tracks } from '../../data/tracks'
+import { classLevels, getGovClassFor } from '../../data/classes'
+import { books } from '../../data/books'
+import { lessons } from '../../data/lessons'
+import type { GovClassId, ClassInfo } from '../../types/curriculum'
+import { useLanguage } from '../../context/LanguageContext'
 
 export default function SkillTreePage() {
-  const { progress, switchTrack, recommendedTrack } = useProgress()
+  const { progress, switchTrack } = useProgress()
   const navigate = useNavigate()
+  const { t } = useLanguage()
+
+  const recommendedClass = getGovClassFor(progress.xp, progress.completedLessons.length)
+  const currentClass = progress.currentGovClass as GovClassId || recommendedClass
+  const currentClassInfo = classLevels.find((c) => c.id === currentClass)!
+
+  const [expandedClass, setExpandedClass] = useState<string | null>(currentClass)
 
   return (
-    <div>
+    <div className="learning-path">
       <div className="page-header">
-        <h2>🌳 Learning Path</h2>
-        <p>Your journey from the alphabet to critical editions. Choose your track and start learning.</p>
+        <h2>📖 {t('Learning Path — Government Sanskrit Curriculum')}</h2>
+        <p>{t('Follow the NCERT → UGC syllabus from Class 1 to PhD')}</p>
       </div>
 
-      <div className="analytics-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))' }}>
-        <div className="stat-card">
-          <div className="stat-value">{progress.xp}</div>
-          <div className="stat-label">XP</div>
+      <div className="stats-bar">
+        <div className="stat">
+          <span className="stat-value">{progress.xp}</span>
+          <span className="stat-label">{t('Total XP')}</span>
         </div>
-        <div className="stat-card">
-          <div className="stat-value">{progress.streak}</div>
-          <div className="stat-label">Day Streak</div>
+        <div className="stat">
+          <span className="stat-value">{progress.streak}</span>
+          <span className="stat-label">{t('Day Streak')}</span>
         </div>
-        <div className="stat-card">
-          <div className="stat-value">{progress.completedLessons.length}</div>
-          <div className="stat-label">Lessons Done</div>
+        <div className="stat">
+          <span className="stat-value">{progress.completedLessons.length}</span>
+          <span className="stat-label">{t('Lessons Done')}</span>
         </div>
-        <div className="stat-card">
-          <div className="stat-value">{Object.values(progress.skills).filter((s) => s.completed).length}</div>
-          <div className="stat-label">Skills</div>
+        <div className="stat">
+          <span className="stat-value">{Object.values(progress.skills).filter((s) => s.completed).length}</span>
+          <span className="stat-label">{t('Skills Mastered')}</span>
+        </div>
+        <div className="stat">
+          <span className="stat-value">{currentClassInfo.label}</span>
+          <span className="stat-label">{t('Current Class')}</span>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
-        {tracks.map((track) => (
-          <button
-            key={track.id}
-            className={`btn ${progress.currentTrack === track.id ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => switchTrack(track.id)}
-            style={progress.currentTrack === track.id ? { border: `2px solid ${track.color}` } : undefined}
-          >
-            {track.icon} {track.label}
-          </button>
-        ))}
+      {/* Class Progression */}
+      <div className="class-progression">
+        <h3 className="section-title">🎯 {t('Class Progression')}</h3>
+        <div className="class-scroll">
+          {classLevels.map((cl) => {
+            const isCurrent = cl.id === currentClass
+            const isPast = classLevels.findIndex((c) => c.id === cl.id) < classLevels.findIndex((c) => c.id === currentClass)
+            const isRecommended = cl.id === recommendedClass
+            return (
+              <div
+                key={cl.id}
+                className={`class-step ${isCurrent ? 'current' : ''} ${isPast ? 'completed' : ''} ${isRecommended && !isCurrent ? 'recommended' : ''}`}
+                onClick={() => setExpandedClass(cl.id === expandedClass ? null : cl.id)}
+                style={{ borderColor: cl.color }}
+              >
+                <span className="class-step-icon">{cl.icon}</span>
+                <span className="class-step-label">{cl.shortLabel}</span>
+                {isCurrent && <span className="class-step-badge">{t('You are here')}</span>}
+                {isRecommended && !isCurrent && <span className="class-step-badge recommended">{t('Recommended')}</span>}
+              </div>
+            )
+          })}
+        </div>
       </div>
 
-      {progress.currentTrack !== recommendedTrack && progress.completedLessons.length > 0 && (
-        <div style={{ padding: 14, background: 'rgba(201,168,76,0.1)', borderRadius: 8, marginBottom: 20, border: '1px solid rgba(201,168,76,0.3)', fontSize: 14, color: '#ccc' }}>
-          💡 Based on your XP ({progress.xp}), we recommend the <strong>{tracks.find((t) => t.id === recommendedTrack)?.label}</strong> track.
+      {/* Expanded Class Detail */}
+      {expandedClass && (
+        <ClassDetail
+          classInfo={classLevels.find((c) => c.id === expandedClass)!}
+          books={books.filter((b) => {
+            const ci = classLevels.find((c) => c.id === expandedClass)!
+            return b.govClassMin <= ci.govClassMin && b.govClassMax >= ci.govClassMin
+          }).sort((a, b) => a.sortOrder - b.sortOrder)}
+          lessons={lessons.filter((l) => l.govClassId === expandedClass)}
+          completedLessons={progress.completedLessons}
+          onNavigate={navigate}
+        />
+      )}
+
+      {/* Track Filter Strip */}
+      <div className="track-strip">
+        <h3 className="section-title">📂 {t('Filter by Track')}</h3>
+        <div className="track-buttons">
+          {tracks.map((t) => (
+            <button
+              key={t.id}
+              className={`btn btn-sm ${progress.currentTrack === t.id ? 'btn-primary' : 'btn-secondary'}`}
+              style={progress.currentTrack === t.id ? { backgroundColor: t.color, borderColor: t.color } : {}}
+              onClick={() => switchTrack(t.id)}
+            >
+              {t.icon} {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function ClassDetail({ classInfo, books: classBooks, lessons: classLessons, completedLessons, onNavigate }: {
+  classInfo: ClassInfo
+  books: typeof books
+  lessons: typeof lessons
+  completedLessons: string[]
+  onNavigate: (path: string) => void
+}) {
+  const { t } = useLanguage()
+  const ncertBook = classInfo.ncertBookId ? books.find((b) => b.id === classInfo.ncertBookId) : null
+
+  return (
+    <div className="class-detail" style={{ borderColor: classInfo.color }}>
+      <div className="class-detail-header" style={{ borderLeftColor: classInfo.color }}>
+        <span className="class-detail-icon">{classInfo.icon}</span>
+        <div>
+          <h3>{classInfo.label}</h3>
+          <p className="class-detail-desc">{classInfo.description}</p>
+          <span className="class-detail-badge" style={{ backgroundColor: classInfo.color }}>
+            {classInfo.track === 'child' ? t('Class 1-5') :
+             classInfo.track === 'teen' ? t('Class 6-10') :
+             classInfo.track === 'undergrad' ? t('Class 11 – BA') :
+             classInfo.track === 'graduate' ? t('MA – MPhil') : t('PhD')}
+          </span>
+        </div>
+      </div>
+
+      {/* NCERT / Govt Book */}
+      {ncertBook && (
+        <div className="class-section">
+          <h4>📖 {t('Prescribed Textbook')}</h4>
+          <div className="class-book-card" onClick={() => onNavigate('/tools/bookshelf')}>
+            <span className="class-book-icon">{ncertBook.coverIcon}</span>
+            <div>
+              <div className="class-book-title">{ncertBook.title}</div>
+              <div className="class-book-sanskrit">{ncertBook.titleSanskrit}</div>
+              <div className="class-book-author">{ncertBook.author}{ncertBook.publisher ? ` · ${ncertBook.publisher}` : ''}</div>
+              <div className="class-book-chapters">{ncertBook.totalChapters}{t(' chapters')}</div>
+            </div>
+          </div>
         </div>
       )}
 
-      <div className="grid-2" style={{ alignItems: 'start' }}>
-        <div className="card">
-          <h3 style={{ marginBottom: 16 }}>Skills</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {Object.values(progress.skills).map((skill) => {
-              const unlocked = skill.unlocked || progress.completedLessons.some((id) => skill.lessonIds.includes(id))
-              return (
-                <div
-                  key={skill.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    padding: '10px 14px',
-                    background: unlocked ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.01)',
-                    borderRadius: 8,
-                    opacity: unlocked ? 1 : 0.4,
-                    border: skill.completed ? '1px solid rgba(76,175,80,0.3)' : '1px solid transparent',
-                  }}
-                >
-                  <span style={{ fontSize: 24 }}>{skill.icon}</span>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                      <span style={{ fontSize: 14, color: '#e0e0e0' }}>{skill.name}</span>
-                      <span style={{ fontSize: 12, color: skill.completed ? '#4caf50' : skill.unlocked ? 'var(--sanskrit-gold)' : '#555' }}>
-                        {skill.completed ? '✓ Completed' : skill.unlocked ? 'In Progress' : '🔒 Locked'}
-                      </span>
-                    </div>
-                    <div style={{ fontSize: 12, color: '#777' }}>{skill.description}</div>
-                    <div style={{ width: '100%', height: 4, background: '#1e1e3a', borderRadius: 2, marginTop: 6 }}>
-                      <div style={{ width: `${skill.progress}%`, height: '100%', background: 'var(--sanskrit-gold)', borderRadius: 2, transition: 'width 0.3s' }} />
-                    </div>
-                  </div>
+      {/* Reference Books */}
+      {classBooks.filter((b) => b.id !== classInfo.ncertBookId).length > 0 && (
+        <div className="class-section">
+          <h4>📚 {t('Reference Books at this Level')}</h4>
+          <div className="class-ref-books">
+            {classBooks.filter((b) => b.id !== classInfo.ncertBookId).slice(0, 5).map((b) => (
+              <div key={b.id} className="class-ref-card" onClick={() => onNavigate('/tools/bookshelf')}>
+                <span>{b.coverIcon}</span>
+                <div>
+                  <div className="class-ref-title">{b.title}</div>
+                  <div className="class-ref-author">{b.author ?? ''}</div>
                 </div>
-              )
-            })}
+              </div>
+            ))}
           </div>
         </div>
+      )}
 
-        <div className="card">
-          <h3 style={{ marginBottom: 16 }}>Available Lessons</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {lessons.filter((l) => {
-              const trackLevels: Record<string, number[]> = { child: [0, 1], teen: [1, 2, 3], undergrad: [2, 3, 4], graduate: [3, 4, 5], phd: [5, 6] }
-              return trackLevels[progress.currentTrack]?.includes(l.level)
-            }).map((lesson) => {
-              const done = progress.completedLessons.includes(lesson.id)
-              const score = progress.quizScores[lesson.id]
-              const skill = Object.values(progress.skills).find((s) => s.lessonIds.includes(lesson.id))
-              const blocked = skill && !skill.unlocked
+      {/* Lessons */}
+      <div className="class-section">
+        <h4>📝 {t('Available Lessons')} ({classLessons.length})</h4>
+        {classLessons.length > 0 ? (
+          <div className="class-lesson-list">
+            {classLessons.map((lesson) => {
+              const done = completedLessons.includes(lesson.id)
+              const score = done ? 100 : 0
               return (
                 <div
                   key={lesson.id}
-                  className="text-item"
-                  onClick={() => !blocked && navigate(`/learning/lesson/${lesson.id}`)}
-                  style={{ opacity: blocked ? 0.4 : 1, cursor: blocked ? 'not-allowed' : 'pointer' }}
+                  className={`class-lesson-card ${done ? 'completed' : ''}`}
+                  onClick={() => onNavigate(`/learning/lesson/${lesson.id}`)}
                 >
-                  <div>
-                    <div className="text-title">{done ? '✓' : '○'} {lesson.title}</div>
-                    <div className="text-meta">Level {lesson.level} · {lesson.duration} · {lesson.subtitle}</div>
+                  <span className="lesson-status">{done ? '✅' : '○'}</span>
+                  <div className="lesson-info">
+                    <div className="lesson-title">{lesson.title}</div>
+                    <div className="lesson-subtitle">{lesson.subtitle}</div>
                   </div>
-                  {score !== undefined && (
-                    <span style={{ fontSize: 13, color: score >= 0.7 ? '#4caf50' : '#f44336' }}>
-                      {Math.round(score * 100)}%
-                    </span>
-                  )}
-                  {blocked && <span style={{ fontSize: 13, color: '#555' }}>🔒</span>}
+                  <span className="lesson-duration">{lesson.duration}</span>
+                  {done && <span className="lesson-score">{score}%</span>}
                 </div>
               )
             })}
           </div>
-        </div>
+        ) : (
+          <p className="empty-state">{t('No lessons available yet for this class. Check the prescribed textbook above.')}</p>
+        )}
       </div>
     </div>
   )

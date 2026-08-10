@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useLanguage } from '../../context/LanguageContext'
 
 const rules = [
   { id: '1.1.1', rule: 'वृद्धिरादैच्', meaning: 'vṛddhi is denoted by ā, ai, au', category: 'vṛddhi' },
@@ -16,12 +17,13 @@ const philosophies = [
 
 export default function GrammarMapsPage() {
   const [activeTab, setActiveTab] = useState<'grammar' | 'philosophy'>('grammar')
+  const { t } = useLanguage()
 
   return (
     <div>
       <div className="page-header">
-        <h2>🌳 Grammar & Philosophy Maps</h2>
-        <p>3D branching diagrams of Pāṇini's grammar and visual network maps of Indian philosophy</p>
+        <h2>🌳 {t('Grammar & Philosophy Maps')}</h2>
+        <p>{t("3D branching diagrams of Pāṇini's grammar and visual network maps of Indian philosophy")}</p>
       </div>
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
@@ -29,13 +31,13 @@ export default function GrammarMapsPage() {
           className={`btn ${activeTab === 'grammar' ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setActiveTab('grammar')}
         >
-          Pāṇini Grammar Rules
+          {t('Pāṇini Grammar Rules')}
         </button>
         <button
           className={`btn ${activeTab === 'philosophy' ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setActiveTab('philosophy')}
         >
-          Philosophy Networks
+          {t('Philosophy Networks')}
         </button>
       </div>
 
@@ -56,7 +58,7 @@ export default function GrammarMapsPage() {
               justifyContent: 'center',
             }}
           >
-            <div style={{ fontSize: 14, color: '#5a7a9a', marginBottom: 12 }}>3D GRAMMAR GRAPH</div>
+            <div style={{ fontSize: 14, color: '#5a7a9a', marginBottom: 12 }}>{t('3D GRAMMAR GRAPH')}</div>
             <div style={{ position: 'relative', width: '100%', maxWidth: 500, height: 250 }}>
               {rules.map((r, i) => {
                 const angle = (i / rules.length) * 2 * Math.PI - Math.PI / 2
@@ -106,8 +108,8 @@ export default function GrammarMapsPage() {
               style={{ borderTop: `3px solid ${p.color}` }}
             >
               <h3>{p.name}</h3>
-              <p style={{ marginTop: 8 }}><strong>Focus:</strong> {p.focus}</p>
-              <p style={{ marginTop: 4 }}><strong>Texts:</strong> {p.texts}</p>
+              <p style={{ marginTop: 8 }}><strong>{t('Focus:')}</strong> {p.focus}</p>
+              <p style={{ marginTop: 4 }}><strong>{t('Texts:')}</strong> {p.texts}</p>
             </div>
           ))}
         </div>

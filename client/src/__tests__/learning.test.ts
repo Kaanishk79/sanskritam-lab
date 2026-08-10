@@ -15,20 +15,22 @@ describe('getDefaultProgress', () => {
     expect(p.completedLessons).toEqual([])
     expect(p.currentTrack).toBe('child')
     expect(p.currentLevel).toBe(0)
+    expect(p.currentGovClass).toBe('class-1-2')
   })
 
-  it('has all 11 skills defined', () => {
+  it('has all 13 skills defined', () => {
     const p = getDefaultProgress()
-    expect(Object.keys(p.skills)).toHaveLength(11)
+    expect(Object.keys(p.skills)).toHaveLength(13)
     expect(p.skills['skill-alphabet']).toBeDefined()
     expect(p.skills['skill-phd-research']).toBeDefined()
   })
 
-  it('starts with alphabet and syntax unlocked', () => {
+  it('starts with all skills unlocked', () => {
     const p = getDefaultProgress()
     expect(p.skills['skill-alphabet'].unlocked).toBe(true)
     expect(p.skills['skill-syntax'].unlocked).toBe(true)
-    expect(p.skills['skill-declensions'].unlocked).toBe(false)
+    expect(p.skills['skill-declensions'].unlocked).toBe(true)
+    expect(p.skills['skill-phd-research'].unlocked).toBe(true)
   })
 })
 

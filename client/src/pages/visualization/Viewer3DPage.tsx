@@ -1,70 +1,208 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { useLanguage } from '../../context/LanguageContext'
 
-const manuscripts = [
-  { id: 1, name: 'Palm-leaf MS 1 — Devanāgarī', script: 'Devanagari', period: '12th CE', transcription: 'अग्निमीळे पुरोहितं यज्ञस्य देवं रत्वीजम्' },
-  { id: 2, name: 'Palm-leaf MS 2 — Grantha', script: 'Grantha', period: '14th CE', transcription: 'वृद्धिरादैच् । अदेङ् गुणः ।' },
+interface Manuscript {
+  id: number
+  name: string
+  script: string
+  period: string
+  transcription: string
+  color: string
+}
+
+const manuscripts: Manuscript[] = [
+  { id: 1, name: 'Ṛgveda MS — Devanāgarī (12th CE)', script: 'Devanagari', period: '12th CE', color: '#c9a84c', transcription: 'अग्निमीळे पुरोहितं यज्ञस्य देवं रत्वीजम् । होतारं रत्नधातमम् ॥' },
+  { id: 2, name: 'Aṣṭādhyāyī MS — Grantha (14th CE)', script: 'Grantha', period: '14th CE', color: '#8b7355', transcription: 'वृद्धिरादैच् । अदेङ् गुणः ।' },
+  { id: 3, name: 'Śākuntalam — Devanāgarī (15th CE)', script: 'Devanagari', period: '15th CE', color: '#a0896a', transcription: 'आसीदुदन्तुमूलेषु सचेताः प्रभवः स्वयम्' },
+  { id: 4, name: 'Nyāya Sūtra — Grantha (16th CE)', script: 'Grantha', period: '16th CE', color: '#7a6b50', transcription: 'प्रमाणप्रमेयसंशयप्रयोजनदृष्टान्तसिद्धान्तावयवः' },
+  { id: 5, name: 'Yoga Sūtra — Grantha (16th CE)', script: 'Grantha', period: '16th CE', color: '#8b7355', transcription: 'अथ योगानुशासनम् । योगः चित्तवृत्तिनिरोधः ॥' },
+  { id: 6, name: 'Raghuvaṃśa — Devanāgarī (13th CE)', script: 'Devanagari', period: '13th CE', color: '#c9a84c', transcription: 'वागर्थाविव सम्पृक्तौ वागर्थप्रतिपत्तये' },
 ]
+
+function Manuscript3DScene({ manuscript, isDark }: { manuscript: Manuscript; isDark: boolean }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const sceneRef = useRef<{ scene: THREE.Scene; camera: THREE.PerspectiveCamera; renderer: THREE.WebGLRenderer; controls: OrbitControls; leaf: THREE.Mesh; frame: number } | null>(null)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+    const container = containerRef.current
+    const w = container.clientWidth
+    const h = container.clientHeight
+
+    const scene = new THREE.Scene()
+    scene.background = new THREE.Color(isDark ? 0x1a1a2e : 0xf5f0e8)
+
+    const camera = new THREE.PerspectiveCamera(35, w / h, 0.1, 100)
+    camera.position.set(0, 1.5, 5)
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true })
+    renderer.setSize(w, h)
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.shadowMap.enabled = true
+    container.appendChild(renderer.domElement)
+
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.enableDamping = true
+    controls.dampingFactor = 0.08
+    controls.autoRotate = true
+    controls.autoRotateSpeed = 1.5
+    controls.minDistance = 2.5
+    controls.maxDistance = 10
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+    scene.add(ambientLight)
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2)
+    dirLight.position.set(3, 5, 4)
+    dirLight.castShadow = true
+    scene.add(dirLight)
+
+    const backLight = new THREE.DirectionalLight(0xffd700, 0.4)
+    backLight.position.set(-2, 1, -3)
+    scene.add(backLight)
+
+    const leafGroup = new THREE.Group()
+
+    const leafGeo = new THREE.BoxGeometry(2.8, 0.08, 0.35)
+    const leafMat = new THREE.MeshStandardMaterial({
+      color: manuscript.color,
+      roughness: 0.7,
+      metalness: 0.05,
+      flatShading: false,
+    })
+    const leaf = new THREE.Mesh(leafGeo, leafMat)
+    leaf.castShadow = true
+    leafGroup.add(leaf)
+
+    const edgeGeo = new THREE.BoxGeometry(2.82, 0.01, 0.37)
+    const edgeMat = new THREE.MeshStandardMaterial({ color: 0x3a2a1a, roughness: 0.9 })
+    const edge = new THREE.Mesh(edgeGeo, edgeMat)
+    edge.position.y = -0.05
+    leafGroup.add(edge)
+
+    const lineMat = new THREE.MeshStandardMaterial({ color: 0x5a4a3a, transparent: true, opacity: 0.3 })
+    for (let i = -3; i <= 3; i++) {
+      const line = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.01, 0.02), lineMat)
+      line.position.set(0, 0.06, i * 0.04)
+      leafGroup.add(line)
+    }
+
+    leafGroup.rotation.x = -0.1
+    leafGroup.rotation.y = 0.3
+    leafGroup.position.y = 0.5
+    scene.add(leafGroup)
+
+    const textCanvas = document.createElement('canvas')
+    textCanvas.width = 1024
+    textCanvas.height = 128
+    const ctx = textCanvas.getContext('2d')!
+    ctx.fillStyle = isDark ? '#1a1a2e' : '#f5f0e8'
+    ctx.fillRect(0, 0, 1024, 128)
+    ctx.fillStyle = manuscript.color
+    ctx.font = 'bold 32px "Noto Sans Devanagari", serif'
+    ctx.textAlign = 'center'
+    const displayText = manuscript.transcription.length > 50
+      ? manuscript.transcription.slice(0, 50) + '...'
+      : manuscript.transcription
+    ctx.fillText(displayText, 512, 72)
+
+    const textTexture = new THREE.CanvasTexture(textCanvas)
+    textTexture.needsUpdate = true
+    const textMat = new THREE.SpriteMaterial({ map: textTexture, transparent: true, opacity: 0.9 })
+    const textSprite = new THREE.Sprite(textMat)
+    textSprite.scale.set(2.6, 0.32, 1)
+    textSprite.position.set(0, 0.12, 0)
+    leafGroup.add(textSprite)
+
+    const frameId = requestAnimationFrame(function animate() {
+      controls.update()
+      renderer.render(scene, camera)
+      requestAnimationFrame(animate)
+    })
+
+    const handleResize = () => {
+      const nw = container.clientWidth
+      const nh = container.clientHeight
+      camera.aspect = nw / nh
+      camera.updateProjectionMatrix()
+      renderer.setSize(nw, nh)
+    }
+    window.addEventListener('resize', handleResize)
+
+    sceneRef.current = { scene, camera, renderer, controls, leaf, frame: frameId }
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      window.removeEventListener('resize', handleResize)
+      container.removeChild(renderer.domElement)
+      renderer.dispose()
+    }
+  }, [manuscript, isDark])
+
+  useEffect(() => {
+    if (sceneRef.current) {
+      sceneRef.current.scene.background = new THREE.Color(isDark ? 0x1a1a2e : 0xf5f0e8)
+    }
+  }, [isDark])
+
+  return (
+    <div
+      ref={containerRef}
+      className="viewer-3d-canvas"
+      style={{ width: '100%', height: 480, borderRadius: 12, overflow: 'hidden', cursor: 'grab' }}
+    />
+  )
+}
 
 export default function Viewer3DPage() {
   const [activeMs, setActiveMs] = useState(manuscripts[0])
+  const [isDark, setIsDark] = useState(false)
+  const { t } = useLanguage()
+
+  useEffect(() => {
+    const check = () => {
+      setIsDark(document.body.classList.contains('dark') || document.documentElement.classList.contains('dark'))
+    }
+    check()
+    const obs = new MutationObserver(check)
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => obs.disconnect()
+  }, [])
 
   return (
     <div>
       <div className="page-header">
-        <h2>🎨 3D Manuscript Viewer</h2>
-        <p>Interactive 3D models of real palm-leaf manuscripts with digitized text overlays</p>
+        <h2>🎨 {t('3D Manuscript Viewer')}</h2>
+        <p>{t('Interactive Three.js 3D models of palm-leaf manuscripts with digitized text overlays')}</p>
       </div>
 
       <div className="grid-2" style={{ alignItems: 'start' }}>
         <div>
-          <div
-            style={{
-              aspectRatio: '3/4',
-              background: 'linear-gradient(135deg, #2a1a0a 0%, #3a2a1a 50%, #2a1a0a 100%)',
-              borderRadius: 12,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '1px solid #4a3a2a',
-              position: 'relative',
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{
-                position: 'absolute',
-                top: 0, left: 0, right: 0, bottom: 0,
-                background: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px)',
-              }}
-            />
-            <div style={{ textAlign: 'center', zIndex: 1 }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🌴</div>
-              <div style={{ fontSize: 22, fontFamily: "'Noto Sans Devanagari', serif", color: '#c9a84c', lineHeight: 1.6, maxWidth: '80%' }}>
-                {activeMs.transcription}
-              </div>
-              <div style={{ marginTop: 16, fontSize: 12, color: '#887a6a' }}>
-                Drag to rotate · Scroll to zoom
-              </div>
-            </div>
+          <Manuscript3DScene manuscript={activeMs} isDark={isDark} />
+          <div className="viewer-controls-hint">
+            <span>🖱 {t('Drag to rotate · Scroll to zoom · Auto-rotating')}</span>
           </div>
         </div>
 
         <div>
-          <h3 style={{ marginBottom: 16, color: '#f0f0f0' }}>Available Manuscripts</h3>
-          {manuscripts.map((ms) => (
-            <div
-              key={ms.id}
-              className="text-item"
-              onClick={() => setActiveMs(ms)}
-              style={activeMs.id === ms.id ? { borderColor: 'var(--sanskrit-gold)' } : undefined}
-            >
-              <div>
-                <div className="text-title">{ms.name}</div>
-                <div className="text-meta">{ms.script} · {ms.period}</div>
+          <h3 style={{ marginBottom: 16, color: 'var(--text)' }}>{t('Available Manuscripts')}</h3>
+          <div className="ms-list">
+            {manuscripts.map((ms) => (
+              <div
+                key={ms.id}
+                className={`text-item ${activeMs.id === ms.id ? 'active' : ''}`}
+                onClick={() => setActiveMs(ms)}
+              >
+                <div>
+                  <div className="text-title">{ms.name}</div>
+                  <div className="text-meta">{ms.script} · {ms.period}</div>
+                </div>
+                {activeMs.id === ms.id && <span className="ms-active-badge">{t('Viewing')}</span>}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

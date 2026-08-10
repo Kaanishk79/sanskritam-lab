@@ -1,77 +1,103 @@
-const API_BASE = 'http://127.0.0.1:8080/api'
-const GO_API_BASE = 'http://127.0.0.1:9090/api'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ''
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
+const API_BASE = `${supabaseUrl}/functions/v1/apiv2`
+const TUTOR_API_BASE = `${supabaseUrl}/functions/v1/tutor-g`
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      apikey: anonKey,
+      Authorization: `Bearer ${anonKey}`,
+      ...(init?.headers ?? {}),
+    },
     ...init,
   })
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '')
+    throw new Error(detail || `API error: ${res.status}`)
+  }
   return res.json()
 }
 
 export const api = {
-  health: () => fetchJson<{ status: string }>(`${API_BASE}/health`),
+  health: () => fetchJson<{ status: string; timestamp?: string }>(`${API_BASE}/health`),
 
   corpus: {
-    search: (q: string, period?: string) =>
-      fetchJson<{ id: string; title: string; snippet: string; period: string; score: number }[]>(
-        `${API_BASE}/corpus/search?q=${encodeURIComponent(q)}${period ? `&period=${encodeURIComponent(period)}` : ''}`
+    search: (q: string, opts?: { page?: number; size?: number }) =>
+      fetchJson<{ items: { id: string; title: string; snippet?: string; period?: string; score?: number }[]; total: number }>(
+        `${API_BASE}/corpus?search=${encodeURIComponent(q)}&page=${opts?.page ?? 1}&size=${opts?.size ?? 20}`
       ),
-    listTexts: () => fetchJson<{ id: string; title: string; author: string; period: string; language: string }[]>(
-      `${API_BASE}/corpus/texts`
-    ),
-    getText: (id: string) => fetchJson<{ id: string; title: string; content: string }>(
-      `${API_BASE}/corpus/texts/${id}`
-    ),
+    listTexts: (opts?: { page?: number; size?: number }) =>
+      fetchJson<{ items: { id: string; title: string; title_iast?: string; language?: string }[]; total: number }>(
+        `${API_BASE}/corpus?page=${opts?.page ?? 1}&size=${opts?.size ?? 100}`
+      ),
+    getText: (id: string) =>
+      fetchJson<{ id: string; title: string; content: string; language?: string }>(
+        `${API_BASE}/corpus/${encodeURIComponent(id)}`
+      ),
   },
 
-  grammar: {
-    parse: (text: string) =>
-      fetchJson<{ tokens: { word: string; root: string; pos: string }[]; syntaxTree: string }>(
-        `${API_BASE}/grammar/parse`,
-        { method: 'POST', body: JSON.stringify({ text }) }
+  courses: {
+    list: (opts?: { language?: string; level?: string }) =>
+      fetchJson<{ id: string; title: string; description?: string; language?: string; level?: string }[]>(
+        `${API_BASE}/courses?language=${encodeURIComponent(opts?.language ?? 'sa')}&level=${encodeURIComponent(opts?.level ?? '')}`
       ),
-    sandhiSplit: (text: string) =>
-      fetchJson<{ splits: string[] }>(`${API_BASE}/grammar/sandhi`, {
-        method: 'POST',
-        body: JSON.stringify({ text }),
-      }),
+    getLessons: (courseId: string) =>
+      fetchJson<{ id: string; title: string; content?: string; order?: number }[]>(
+        `${API_BASE}/courses/${encodeURIComponent(courseId)}/lessons`
+      ),
+  },
+
+  tutor: {
+    chat: (messages: { role: string; content: string }[], opts?: { mode?: string }) =>
+      fetchJson<{ reply: string; citations?: string[]; difficulty?: string; suggested_exercise?: string; mode?: string }>(
+        `${TUTOR_API_BASE}/chat`,
+        { method: 'POST', body: JSON.stringify({ messages, mode: opts?.mode ?? 'tutor' }) }
+      ),
+    translate: (text: string, source = 'sa', target = 'hi') =>
+      fetchJson<{ translated_text: string; word_count?: number; source?: string; target?: string }>(
+        `${TUTOR_API_BASE}/translate`,
+        { method: 'POST', body: JSON.stringify({ text, source, target }) }
+      ),
   },
 
   dictionary: {
     lookup: (word: string) =>
-      fetchJson<{ word: string; meanings: string[]; root: string }>(
+      fetchJson<{ word: string; meanings: string[]; root?: string; derivations?: string[]; pos?: string } | null>(
         `${API_BASE}/dictionary/lookup?word=${encodeURIComponent(word)}`
-      ),
+      ).catch(() => null),
     compoundSplit: (compound: string) =>
       fetchJson<{ components: string[]; explanation: string }>(
         `${API_BASE}/dictionary/compound-split`,
         { method: 'POST', body: JSON.stringify({ compound }) }
-      ),
+      ).catch(() => ({ components: [], explanation: '' })),
   },
 
   assessment: {
     generate: (topic: string, count: number) =>
       fetchJson<{ questions: { prompt: string; options: string[]; correctIdx: number; explanation: string }[] }>(
-        `${GO_API_BASE}/assessment/generate`,
+        `${API_BASE}/assessment/generate`,
         { method: 'POST', body: JSON.stringify({ topic, count, language: 'sa' }) }
-      ),
+      ).catch(() => ({ questions: [] })),
   },
 
   analytics: {
     evaluate: (userId: string, module: string, score: number, weakAreas: string[]) =>
       fetchJson<{ recommendations: string[]; nextModule: string }>(
-        `${GO_API_BASE}/analytics/evaluate`,
+        `${API_BASE}/analytics/evaluate`,
         { method: 'POST', body: JSON.stringify({ user_id: userId, module, score, weak_areas: weakAreas }) }
-      ),
+      ).catch(() => ({
+        recommendations: ['Revise the fundamentals and practice the exercises for this module.'],
+        nextModule: module,
+      })),
   },
 
   viva: {
     startSession: () =>
       fetchJson<{ sessionId: string; status: string; questions: string[] }>(
-        `${GO_API_BASE}/viva/session`,
+        `${API_BASE}/viva/session`,
         { method: 'POST' }
-      ),
+      ).catch(() => ({ sessionId: 'offline', status: 'ready', questions: [] })),
   },
 }

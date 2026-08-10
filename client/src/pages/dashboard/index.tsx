@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { tracks } from '../../data/tracks'
+import { useLanguage } from '../../context/LanguageContext'
 
 const features = [
   { icon: '📜', title: 'Manuscript Digitization', desc: 'Convert scanned Devanāgarī & Grantha manuscripts into searchable Unicode with OCR.', link: '/research/ocr' },
@@ -14,6 +15,9 @@ const features = [
   { icon: '🎙️', title: 'AI Viva Simulator', desc: 'Oral exams with audio evaluation and real-time pronunciation feedback.', link: '/viva/simulator' },
   { icon: '📊', title: 'Analytics Engine', desc: 'Track performance, find weak areas, get customized study paths.', link: '/viva/analytics' },
   { icon: '🧒', title: 'Fun Learning Mode', desc: 'Kid-friendly flashcards, picture-word games, and colorful activities.', link: '/learning/child' },
+  { icon: '🤖', title: 'AI Sanskrit Tutor', desc: 'Chat with an AI tutor about Sanskrit grammar, texts, and philosophy.', link: '/tools/tutor' },
+  { icon: '📇', title: 'SRS Flashcards', desc: 'Anki-style spaced repetition for vocabulary, grammar, and more.', link: '/tools/flashcards' },
+  { icon: '🔐', title: 'Account & Auth', desc: 'Sign up or sign in to track your progress across devices.', link: '/auth/login' },
 ]
 
 const testimonials = [
@@ -25,6 +29,7 @@ const testimonials = [
 
 export default function Dashboard() {
   const navigate = useNavigate()
+  const { t } = useLanguage()
 
   return (
     <>
@@ -32,37 +37,36 @@ export default function Dashboard() {
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-content">
-            <div className="hero-tag">🌟 India's Most Advanced Sanskrit Platform</div>
+            <div className="hero-tag">🌟 {t("India's Most Advanced Sanskrit Platform")}</div>
             <h1>
-              Bridge <span className="highlight">Ancient Wisdom</span><br />with Modern Technology
+              {t('Bridge ')}<span className="highlight">{t('Ancient Wisdom')}</span><br />{t('with Modern Technology')}
             </h1>
             <p>
-              From playful alphabet games for children to PhD-level critical edition tools — 
-              SanskritLab brings 3000 years of language, literature, and philosophy to your fingertips.
+              {t('From playful alphabet games for children to PhD-level critical edition tools — \n              SanskritLab brings 3000 years of language, literature, and philosophy to your fingertips.')}
             </p>
             <div className="hero-actions">
               <button className="btn btn-primary" onClick={() => navigate('/learning/tree')}>
-                Start Learning Free →
+                {t('Start Learning Free →')}
               </button>
               <button className="btn btn-outline" onClick={() => navigate('/research/corpus')}>
-                Explore Corpus
+                {t('Explore Corpus')}
               </button>
             </div>
           </div>
           <div className="hero-right">
             <div className="hero-card">
-              <div className="price">100% Free</div>
-              <div className="price-label">Lifetime access · No hidden fees</div>
+              <div className="price">{t('100% Free')}</div>
+              <div className="price-label">{t('Lifetime access · No hidden fees')}</div>
               <ul>
-                <li>12+ curated lessons</li>
-                <li>5 learning tracks (Child → PhD)</li>
-                <li>AI viva simulator</li>
-                <li>Research & annotation tools</li>
-                <li>3D manuscript viewer</li>
-                <li>Open source</li>
+                <li>{t('12+ curated lessons')}</li>
+                <li>{t('5 learning tracks (Child → PhD)')}</li>
+                <li>{t('AI viva simulator')}</li>
+                <li>{t('Research & annotation tools')}</li>
+                <li>{t('3D manuscript viewer')}</li>
+                <li>{t('Open source')}</li>
               </ul>
               <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => navigate('/learning/tree')}>
-                Get Started Free
+                {t('Get Started Free')}
               </button>
             </div>
           </div>
@@ -73,39 +77,67 @@ export default function Dashboard() {
       <div className="stats-bar">
         <div className="stat-item">
           <div className="stat-value">3,000+</div>
-          <div className="stat-label">Years of Texts</div>
+          <div className="stat-label">{t('Years of Texts')}</div>
         </div>
         <div className="stat-item">
           <div className="stat-value">12</div>
-          <div className="stat-label">Curated Lessons</div>
+          <div className="stat-label">{t('Curated Lessons')}</div>
         </div>
         <div className="stat-item">
           <div className="stat-value">5</div>
-          <div className="stat-label">Learning Tracks</div>
+          <div className="stat-label">{t('Learning Tracks')}</div>
         </div>
         <div className="stat-item">
           <div className="stat-value">2.1k+</div>
-          <div className="stat-label">Lines of Code</div>
+          <div className="stat-label">{t('Lines of Code')}</div>
         </div>
         <div className="stat-item">
           <div className="stat-value">100%</div>
-          <div className="stat-label">Free & Open</div>
+          <div className="stat-label">{t('Free & Open')}</div>
         </div>
       </div>
+
+      {/* NCERT CTA BANNER */}
+      <section className="section" style={{ paddingTop: 8 }}>
+        <div
+          className="ncert-hero-banner"
+          onClick={() => navigate('/research/ncert')}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 20,
+            padding: '24px 32px',
+            borderRadius: 12,
+            background: 'linear-gradient(135deg, #2ecc71, #2980b9)',
+            color: '#fff',
+            cursor: 'pointer',
+            marginBottom: 8,
+          }}
+        >
+          <span style={{ fontSize: 48 }}>📘</span>
+          <div style={{ flex: 1 }}>
+            <h3 style={{ margin: 0, fontSize: 22, color: '#fff' }}>{t('NCERT Sanskrit Curriculum')}</h3>
+            <p style={{ margin: '4px 0 0', opacity: 0.9, fontSize: 14 }}>
+              {t('Class 6–12 textbooks (Deepakam, Shemushi, Bhaswati & Shashwati) — all NCERT content in one place')}
+            </p>
+          </div>
+          <span style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>{t('Browse Library →')}</span>
+        </div>
+      </section>
 
       {/* LEARNING TRACKS */}
       <section className="section">
         <div className="section-header">
-          <h2>Choose Your Learning Path</h2>
-          <p>From young beginners to doctoral researchers — a track for every stage</p>
+          <h2>{t('Choose Your Learning Path')}</h2>
+          <p>{t('From young beginners to doctoral researchers — a track for every stage')}</p>
         </div>
         <div className="track-row">
           {tracks.map((track) => (
             <div key={track.id} className="track-card" onClick={() => navigate('/learning/tree')}>
               <span className="track-icon">{track.icon}</span>
-              <h3>{track.label}</h3>
-              <div className="track-desc">{track.description}</div>
-              <div className="track-age">{track.ageRange}</div>
+              <h3>{t(track.label)}</h3>
+              <div className="track-desc">{t(track.description)}</div>
+              <div className="track-age">{t(track.classRange)}</div>
             </div>
           ))}
         </div>
@@ -114,16 +146,16 @@ export default function Dashboard() {
       {/* FEATURES */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="section-header">
-          <h2>Everything You Need</h2>
-          <p>Research tools, visualization, teaching, assessment — all in one platform</p>
+          <h2>{t('Everything You Need')}</h2>
+          <p>{t('Research tools, visualization, teaching, assessment — all in one platform')}</p>
         </div>
         <div className="card-grid">
           {features.map((f) => (
             <div key={f.title} className="vt-card" onClick={() => navigate(f.link)}>
               <div className="card-icon">{f.icon}</div>
-              <h3>{f.title}</h3>
-              <p>{f.desc}</p>
-              <span className="card-link">Explore →</span>
+              <h3>{t(f.title)}</h3>
+              <p>{t(f.desc)}</p>
+              <span className="card-link">{t('Explore →')}</span>
             </div>
           ))}
         </div>
@@ -132,19 +164,19 @@ export default function Dashboard() {
       {/* TESTIMONIALS */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="section-header">
-          <h2>What Our Users Say</h2>
-          <p>Loved by students, teachers, and researchers worldwide</p>
+          <h2>{t('What Our Users Say')}</h2>
+          <p>{t('Loved by students, teachers, and researchers worldwide')}</p>
         </div>
         <div className="testimonial-row">
-          {testimonials.map((t) => (
-            <div key={t.author} className="testimonial-card">
+          {testimonials.map((tm) => (
+            <div key={tm.author} className="testimonial-card">
               <div className="stars">★★★★★</div>
-              <div className="quote">"{t.text}"</div>
+              <div className="quote">"{t(tm.text)}"</div>
               <div className="author">
-                <div className="avatar">{t.initial}</div>
+                <div className="avatar">{tm.initial}</div>
                 <div>
-                  <div className="name">{t.author}</div>
-                  <div className="role">{t.role}</div>
+                  <div className="name">{tm.author}</div>
+                  <div className="role">{t(tm.role)}</div>
                 </div>
               </div>
             </div>
@@ -154,10 +186,10 @@ export default function Dashboard() {
 
       {/* CTA */}
       <div className="cta-bar">
-        <h2>Ready to Begin Your Journey?</h2>
-        <p>Join thousands of learners exploring Sanskrit through cutting-edge technology. Free forever.</p>
+        <h2>{t('Ready to Begin Your Journey?')}</h2>
+        <p>{t('Join thousands of learners exploring Sanskrit through cutting-edge technology. Free forever.')}</p>
         <button className="btn" onClick={() => navigate('/learning/tree')}>
-          Start Learning Now 🚀
+          {t('Start Learning Now 🚀')}
         </button>
       </div>
     </>
