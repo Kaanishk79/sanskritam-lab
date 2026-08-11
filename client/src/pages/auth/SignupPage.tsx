@@ -1,11 +1,38 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { signUp, getAuthState, onAuthChange, updateAccountMeta } from '../../services/auth'
+import { signUp, getAuthState, onAuthChange, updateAccountMeta, resendConfirmation } from '../../services/auth'
 import { supabase } from '../../services/supabase'
 import { schoolsApi } from '../../services/schools'
 import { useLanguage } from '../../context/LanguageContext'
 
 export const PENDING_SCHOOL_KEY = 'sanskritlab-pending-school'
+
+function ResendConfirmation({ email }: { email: string }) {
+  const { t } = useLanguage()
+  const [busy, setBusy] = useState(false)
+  const [done, setDone] = useState(false)
+  const [err, setErr] = useState('')
+  const resend = async () => {
+    setBusy(true)
+    setErr('')
+    try {
+      await resendConfirmation(email)
+      setDone(true)
+    } catch (e: any) {
+      setErr(e.message)
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <span>
+      <button className="btn btn-secondary" disabled={busy} onClick={resend}>
+        {busy ? '⏳' : done ? '✅ ' + t('Sent!') : t('Resend email')}
+      </button>
+      {err && <span style={{ color: '#e55', fontSize: 12, marginLeft: 8 }}>{err}</span>}
+    </span>
+  )
+}
 
 type AccountType = 'learner' | 'institution' | 'teacher' | 'student'
 
@@ -97,7 +124,10 @@ export default function SignupPage() {
               {t('We sent a confirmation link to ')}<strong>{email}</strong>.<br />
               {t('After you confirm and sign in, your school')} <strong>{schoolName}</strong> {t('will be registered to your account automatically.')}
             </p>
-            <button className="btn btn-primary" onClick={() => navigate('/auth/login')}>{t('Go to Sign In')}</button>
+            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+              <button className="btn btn-primary" onClick={() => navigate('/auth/login')}>{t('Go to Sign In')}</button>
+              <ResendConfirmation email={email} />
+            </div>
           </div>
         ) : user ? (
           <div className="card" style={{ textAlign: 'center', padding: 32 }}>

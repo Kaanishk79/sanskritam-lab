@@ -129,3 +129,8 @@ export async function updateAccountMeta(data: Record<string, unknown>): Promise<
   if (!user) throw new Error('Failed to update profile')
   return user
 }
+
+export async function resendConfirmation(email: string): Promise<void> {
+  const { error } = await supabase.auth.resend({ type: 'signup', email })
+  if (error) throw new Error(error.message)
+}

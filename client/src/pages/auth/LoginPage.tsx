@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { signIn, getAuthState, onAuthChange } from '../../services/auth'
+import { signIn, getAuthState, onAuthChange, resendConfirmation } from '../../services/auth'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function LoginPage() {
@@ -10,6 +10,9 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [notConfirmed, setNotConfirmed] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [resent, setResent] = useState(false)
 
   useEffect(() => {
     const unsub = onAuthChange((s) => { if (s.user) navigate('/') })
@@ -19,14 +22,35 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+    setNotConfirmed(false)
     setLoading(true)
     try {
       await signIn(email, password)
       navigate('/')
     } catch (err: any) {
-      setError(err.message)
+      const msg = err.message || ''
+      if (/not confirmed/i.test(msg) || /email_not_confirmed/i.test(msg)) {
+        setNotConfirmed(true)
+        setError(t('Your email is not confirmed yet — click the link we sent you, or resend it below.'))
+      } else {
+        setError(msg)
+      }
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleResend = async () => {
+    setResending(true)
+    setResent(false)
+    try {
+      await resendConfirmation(email)
+      setResent(true)
+      setError(null)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setResending(false)
     }
   }
 
@@ -60,6 +84,14 @@ export default function LoginPage() {
             <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={loading}>
               {loading ? t('Signing in...') : t('Sign In')}
             </button>
+            {notConfirmed && (
+              <div className="auth-error" style={{ marginTop: 12, textAlign: 'center' }}>
+                {resent && <p style={{ color: '#4caf50' }}>📬 {t('Confirmation email sent — check your inbox and spam folder.')}</p>}
+                <button type="button" className="btn btn-sm btn-secondary" disabled={resending} onClick={handleResend}>
+                  {resending ? '⏳' : t('Resend confirmation email')}
+                </button>
+              </div>
+            )}
           </form>
         )}
 
