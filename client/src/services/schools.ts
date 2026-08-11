@@ -129,6 +129,7 @@ export const schoolsApi = {
   update: (id: string, body: Record<string, unknown>) =>
     api<{ data: School }>(`/${id}`, { method: 'PATCH', body }).then((r) => r.data),
   deactivate: (id: string) => api<{ data: { id: string } }>(`/${id}`, { method: 'DELETE' }),
+  claim: (id: string) => api<{ data: School; already_owner?: boolean }>(`/${id}`, { method: 'POST' }).then((r) => r.data),
 
   listClasses: (schoolId: string) =>
     api<{ data: SchoolClass[] }>(`/${schoolId}/classes`).then((r) => r.data),

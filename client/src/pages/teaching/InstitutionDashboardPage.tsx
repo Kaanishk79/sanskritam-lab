@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useRole } from '../../context/RoleContext'
 import { schoolsApi } from '../../services/schools'
-import type { Student, Teacher } from '../../services/schools'
+import type { School, Student, Teacher } from '../../services/schools'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function InstitutionDashboardPage() {
@@ -18,6 +18,55 @@ export default function InstitutionDashboardPage() {
 
   const [newStudent, setNewStudent] = useState<Partial<Student>>({})
   const [newTeacher, setNewTeacher] = useState<Partial<Teacher>>({})
+
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState<School[]>([])
+  const [searching, setSearching] = useState(false)
+  const [claiming, setClaiming] = useState('')
+  const [registering, setRegistering] = useState(false)
+  const [newSchool, setNewSchool] = useState<{ name: string; city: string; state: string; school_type: string }>({ name: '', city: '', state: '', school_type: 'Senior Secondary School' })
+
+  const doSearch = async () => {
+    if (!searchQuery.trim()) return
+    setSearching(true)
+    try {
+      const res = await schoolsApi.list({ q: searchQuery })
+      setSearchResults(res.data)
+    } catch (e: any) {
+      setNotice('❌ ' + e.message)
+    } finally {
+      setSearching(false)
+    }
+  }
+
+  const doClaim = async (schoolId: string) => {
+    setClaiming(schoolId)
+    setNotice('')
+    try {
+      await schoolsApi.claim(schoolId)
+      await refreshSchool()
+      setNotice('✅ ' + t('School claimed — welcome to your Institution HQ!'))
+    } catch (e: any) {
+      setNotice('❌ ' + e.message)
+    } finally {
+      setClaiming('')
+    }
+  }
+
+  const doRegister = async () => {
+    if (!newSchool.name.trim()) return
+    setRegistering(true)
+    setNotice('')
+    try {
+      await schoolsApi.create(newSchool)
+      await refreshSchool()
+      setNotice('✅ ' + t('School registered — welcome to your Institution HQ!'))
+    } catch (e: any) {
+      setNotice('❌ ' + e.message)
+    } finally {
+      setRegistering(false)
+    }
+  }
 
   const run = async (key: string, fn: () => Promise<unknown>) => {
     setBusy(key)
@@ -60,10 +109,66 @@ export default function InstitutionDashboardPage() {
 
   if (!school) {
     return (
-      <div className="card" style={{ padding: 32, textAlign: 'center', maxWidth: 480, margin: '40px auto' }}>
-        <h3>🏫 {t('No school registered yet')}</h3>
-        <p>{t('Register your school to get started.')}</p>
-        <button className="btn btn-primary" onClick={() => navigate('/auth/signup')}>{t('Register School')}</button>
+      <div style={{ maxWidth: 720, margin: '0 auto' }}>
+        <div className="page-header">
+          <h2>🏫 {t('Institution HQ')}</h2>
+          <p>{t('No school is linked to your account yet. Claim your school from the directory or register a new one.')}</p>
+          {notice && <p style={{ color: '#4caf50', fontWeight: 600 }}>{notice}</p>}
+        </div>
+
+        <div className="card">
+          <h3 style={{ marginBottom: 16 }}>🔍 {t('Find & claim your school')}</h3>
+          <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+            <input
+              style={{ flex: 1 }}
+              placeholder={t('Search school name, city, or short code…')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && doSearch()}
+            />
+            <button className="btn btn-primary btn-sm" disabled={searching || !searchQuery.trim()} onClick={doSearch}>
+              {searching ? '⏳' : t('Search')}
+            </button>
+          </div>
+          <div className="text-list">
+            {searchResults.map((s) => (
+              <div className="text-item" key={s.id}>
+                <div style={{ flex: 1 }}>
+                  <div className="text-title">{s.name}</div>
+                  <div className="text-meta">
+                    {s.city || ''}{s.city && s.state ? ', ' : ''}{s.state || ''} · {s.school_type || 'School'} · {s.board || ''} · {t('Code')}: {s.short_code || '—'}
+                  </div>
+                  {s.owner_id && <div className="text-meta" style={{ color: '#e55' }}>{t('Already claimed by another account')}</div>}
+                </div>
+                <button
+                  className="btn btn-sm btn-primary"
+                  disabled={claiming === s.id || !!s.owner_id}
+                  onClick={() => doClaim(s.id)}
+                >
+                  {claiming === s.id ? '⏳' : t('Claim')}
+                </button>
+              </div>
+            ))}
+            {!searchResults.length && <p style={{ color: '#888' }}>{t('Search the CBSE school directory — your school may already be listed.')}</p>}
+          </div>
+        </div>
+
+        <div className="card" style={{ marginTop: 16 }}>
+          <h3 style={{ marginBottom: 16 }}>➕ {t('Register a new school')}</h3>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <input style={{ gridColumn: '1 / -1' }} placeholder={t('School name *')} value={newSchool.name} onChange={(e) => setNewSchool({ ...newSchool, name: e.target.value })} />
+            <input placeholder={t('City')} value={newSchool.city} onChange={(e) => setNewSchool({ ...newSchool, city: e.target.value })} />
+            <input placeholder={t('State')} value={newSchool.state} onChange={(e) => setNewSchool({ ...newSchool, state: e.target.value })} />
+            <select style={{ gridColumn: '1 / -1' }} value={newSchool.school_type} onChange={(e) => setNewSchool({ ...newSchool, school_type: e.target.value })}>
+              {['Primary School', 'Middle School', 'Secondary School', 'Senior Secondary School', 'Other'].map((x) => (
+                <option key={x} value={x}>{x}</option>
+              ))}
+            </select>
+          </div>
+          <button className="btn btn-primary btn-sm" style={{ marginTop: 12 }} disabled={registering || !newSchool.name.trim()} onClick={doRegister}>
+            {registering ? '⏳' : t('Register School')}
+          </button>
+        </div>
       </div>
     )
   }
