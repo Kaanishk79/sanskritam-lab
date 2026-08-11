@@ -5,7 +5,7 @@ import {
 } from '../../services/labProjects'
 import { readingPassages, listeningItems, writingItems } from '../../data/languageLab'
 import { useLanguage } from '../../context/LanguageContext'
-import { getAuthState, onAuthChange } from '../../services/auth'
+import { useRole } from '../../context/RoleContext'
 import '../viva/languageLab.css'
 
 interface Props {
@@ -88,16 +88,47 @@ function ContentPicker({ content, setContent }: { content: LabProjectContent; se
 
 export default function LabAssignments({ activeProject, onOpenProject }: Props) {
   const { t } = useLanguage()
-  const [authUser, setAuthUser] = useState(getAuthState().user)
+  const { user, school } = useRole()
   const [profile, setProfile] = useState<LabProfile>(loadProfile)
   const [projects, setProjects] = useState<LabProject[]>(loadProjects)
   const [submissions, setSubmissions] = useState<LabSubmission[]>(loadSubmissions)
   const [designing, setDesigning] = useState(false)
   const [adminAssigning, setAdminAssigning] = useState(false)
 
-  useEffect(() => onAuthChange((s) => setAuthUser(s.user)), [])
+  const accountType = user?.accountType || 'learner'
 
-  const ownerName = authUser?.displayName || profile.ownerName || 'Admin'
+  const schoolClasses = useMemo(() => {
+    if (!school) return [] as string[]
+    const out: string[] = []
+    for (const c of school.classes.filter((x) => x.is_active)) {
+      const secs = (c.sections || []).filter((x) => x.is_active)
+      if (secs.length) secs.forEach((sec) => out.push(`${c.name} — ${sec.name}`))
+      else out.push(c.name)
+    }
+    return out
+  }, [school])
+
+  const classOptions = useMemo(() => [...schoolClasses, ...labClasses], [schoolClasses])
+
+  useEffect(() => {
+    if (accountType === 'institution' || accountType === 'teacher') {
+      setProfile((p) => (p.mode === 'institution' && p.role === 'admin' && p.ownerName === (user?.displayName || p.ownerName)
+        ? p
+        : { ...p, mode: 'institution', role: 'admin', ownerName: user?.displayName || p.ownerName }))
+    } else if (accountType === 'student') {
+      setProfile((p) => (p.mode === 'institution' && p.role === 'student'
+        ? p
+        : { ...p, mode: 'institution', role: 'student' }))
+    }
+  }, [user?.id, user?.displayName, accountType])
+
+  useEffect(() => {
+    if (profile.mode === 'institution' && schoolClasses.length && !classOptions.includes(profile.className)) {
+      setProfile((p) => ({ ...p, className: schoolClasses[0] }))
+    }
+  }, [schoolClasses.join('|'), classOptions.join('|'), profile.mode])
+
+  const ownerName = user?.displayName || profile.ownerName || 'Admin'
 
   useEffect(() => saveProfile(profile), [profile])
   useEffect(() => saveProjects(projects), [projects])
@@ -148,26 +179,31 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
 
       {profile.mode === 'institution' && (
         <div className="lab-institution-bar">
-          <span>{t('I am:')}</span>
-          <button
-            className={`btn btn-sm ${profile.role === 'admin' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setProfile((p) => ({ ...p, role: 'admin' }))}
-          >
-            {t('👩‍🏫 Admin')}
-          </button>
-          <button
-            className={`btn btn-sm ${profile.role === 'student' ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setProfile((p) => ({ ...p, role: 'student' }))}
-          >
-            {t('🎓 Student')}
-          </button>
+          <span className="lab-mode-label">🏫 {school?.name || t('My Institution')} · 👤 {ownerName}</span>
+          {accountType !== 'institution' && accountType !== 'teacher' && (
+            <>
+              <span>{t('I am:')}</span>
+              <button
+                className={`btn btn-sm ${profile.role === 'admin' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setProfile((p) => ({ ...p, role: 'admin' }))}
+              >
+                {t('👩‍🏫 Admin')}
+              </button>
+              <button
+                className={`btn btn-sm ${profile.role === 'student' ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setProfile((p) => ({ ...p, role: 'student' }))}
+              >
+                {t('🎓 Student')}
+              </button>
+            </>
+          )}
           <span className="lab-mode-label">{t('My class:')}</span>
           <select
             className="lab-class-select"
             value={profile.className}
             onChange={(e) => setProfile((p) => ({ ...p, className: e.target.value }))}
           >
-            {labClasses.map((c) => (
+            {classOptions.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
@@ -267,6 +303,7 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
       {profile.mode === 'institution' && profile.role === 'admin' && adminAssigning && (
         <AdminAssigner
           ownerName={ownerName}
+          classOptions={classOptions}
           onSave={(p) => {
             setProjects((ps) => [...ps, p])
             setAdminAssigning(false)
@@ -356,10 +393,10 @@ function IndividualDesigner({ ownerName, onSave, onCancel }: { ownerName: string
   )
 }
 
-function AdminAssigner({ ownerName, onSave, onCancel }: { ownerName: string; onSave: (p: LabProject) => void; onCancel: () => void }) {
+function AdminAssigner({ ownerName, classOptions, onSave, onCancel }: { ownerName: string; classOptions: string[]; onSave: (p: LabProject) => void; onCancel: () => void }) {
   const { t } = useLanguage()
   const [title, setTitle] = useState('')
-  const [targetClass, setTargetClass] = useState(labClasses[0])
+  const [targetClass, setTargetClass] = useState(classOptions[0] || labClasses[0])
   const [dueDate, setDueDate] = useState('')
   const [content, setContent] = useState<LabProjectContent>({ passageIds: [], listeningIds: [], writingIds: [], readingIds: [] })
 
@@ -384,7 +421,7 @@ function AdminAssigner({ ownerName, onSave, onCancel }: { ownerName: string; onS
         <label>
           <span>{t('Assign to class/grade:')}</span>
           <select value={targetClass} onChange={(e) => setTargetClass(e.target.value)}>
-            {labClasses.map((c) => <option key={c} value={c}>{c}</option>)}
+            {classOptions.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </label>
         <label>
