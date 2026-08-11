@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signUp, getAuthState, onAuthChange, updateAccountMeta } from '../../services/auth'
+import { supabase } from '../../services/supabase'
 import { schoolsApi } from '../../services/schools'
 import { useLanguage } from '../../context/LanguageContext'
+
+export const PENDING_SCHOOL_KEY = 'sanskritlab-pending-school'
 
 type AccountType = 'learner' | 'institution' | 'teacher' | 'student'
 
@@ -26,6 +29,7 @@ export default function SignupPage() {
   const [schoolType, setSchoolType] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [needsConfirmation, setNeedsConfirmation] = useState(false)
 
   useEffect(() => {
     const unsub = onAuthChange((s) => { if (s.user) navigate('/') })
@@ -42,8 +46,10 @@ export default function SignupPage() {
     setLoading(true)
     try {
       await signUp(email, password, name, { accountType })
+      const session = supabase.auth.getSession() as unknown as { data?: { session?: unknown } } | null
+      const hasSession = !!session?.data?.session
       if (accountType === 'institution') {
-        const school = await schoolsApi.create({
+        const schoolBody = {
           name: schoolName.trim(),
           city: schoolCity.trim() || null,
           state: schoolState.trim() || null,
@@ -51,14 +57,20 @@ export default function SignupPage() {
           board: 'CBSE',
           affiliation_status: 'pending',
           source: 'self-registered',
-        })
-        try {
-          await updateAccountMeta({ school_id: school.id })
-        } catch {
-          /* school created; metadata link best-effort */
+        }
+        if (hasSession) {
+          const school = await schoolsApi.create(schoolBody)
+          try {
+            await updateAccountMeta({ school_id: school.id })
+          } catch {
+            /* school created; metadata link best-effort */
+          }
+        } else {
+          localStorage.setItem(PENDING_SCHOOL_KEY, JSON.stringify(schoolBody))
+          setNeedsConfirmation(true)
         }
       }
-      navigate('/')
+      if (hasSession) navigate('/')
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -77,7 +89,17 @@ export default function SignupPage() {
           <p>{t('Join SanskritLab — free forever')}</p>
         </div>
 
-        {user ? (
+        {needsConfirmation ? (
+          <div className="card" style={{ textAlign: 'center', padding: 32 }}>
+            <p style={{ fontSize: 40, margin: '0 0 12px' }}>📬</p>
+            <h3 style={{ marginBottom: 12 }}>{t('Check your email')}</h3>
+            <p style={{ color: '#aaa', marginBottom: 16 }}>
+              {t('We sent a confirmation link to ')}<strong>{email}</strong>.<br />
+              {t('After you confirm and sign in, your school')} <strong>{schoolName}</strong> {t('will be registered to your account automatically.')}
+            </p>
+            <button className="btn btn-primary" onClick={() => navigate('/auth/login')}>{t('Go to Sign In')}</button>
+          </div>
+        ) : user ? (
           <div className="card" style={{ textAlign: 'center', padding: 32 }}>
             <p style={{ color: '#4caf50', marginBottom: 16 }}>{t('You are signed in as ')}{user.email}</p>
             <button className="btn btn-primary" onClick={() => navigate('/')}>{t('Go to Dashboard')}</button>
@@ -144,7 +166,7 @@ export default function SignupPage() {
             </div>
             <div className="form-group">
               <label>{t('Password')}</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('At least 6 characters')} required minLength={6} />
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('At least 8 characters')} required minLength={8} />
             </div>
             <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={loading}>
               {loading ? t('Creating account...') : t('Create Account')}

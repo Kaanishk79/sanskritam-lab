@@ -72,6 +72,19 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
           } catch {
             /* non-fatal */
           }
+        } else {
+          const pendingRaw = localStorage.getItem('sanskritlab-pending-school')
+          if (pendingRaw) {
+            try {
+              const pending = JSON.parse(pendingRaw)
+              const created = await schoolsApi.create(pending)
+              localStorage.removeItem('sanskritlab-pending-school')
+              await updateAccountMeta({ school_id: created.id })
+              detail = await schoolsApi.get(created.id)
+            } catch (e) {
+              console.error('Pending school creation failed', e)
+            }
+          }
         }
       }
       setSchool(detail)
