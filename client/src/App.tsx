@@ -12,6 +12,7 @@ import GrammarMapsPage from './pages/visualization/GrammarMapsPage'
 import TimelinePage from './pages/visualization/TimelinePage'
 import TeacherDashboardPage from './pages/teaching/TeacherDashboardPage'
 import StudentWorkspacePage from './pages/teaching/StudentWorkspacePage'
+import InstitutionDashboardPage from './pages/teaching/InstitutionDashboardPage'
 import AssessmentPage from './pages/teaching/AssessmentPage'
 import VivaSimulatorPage from './pages/viva/VivaSimulatorPage'
 import LanguageLabPage from './pages/viva/LanguageLabPage'
@@ -49,6 +50,7 @@ export default function App() {
           <Route path="visualization/timeline" element={<TimelinePage />} />
           <Route path="teaching/dashboard" element={<TeacherDashboardPage />} />
           <Route path="teaching/workspace" element={<StudentWorkspacePage />} />
+          <Route path="teaching/school" element={<InstitutionDashboardPage />} />
           <Route path="teaching/assessment" element={<AssessmentPage />} />
           <Route path="viva/simulator" element={<VivaSimulatorPage />} />
           <Route path="viva/lab" element={<LanguageLabPage />} />

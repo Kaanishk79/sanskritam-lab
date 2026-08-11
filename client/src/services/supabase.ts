@@ -3,20 +3,24 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || ''
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
+export const SUPABASE_URL = supabaseUrl
+export const SUPABASE_ANON_KEY = supabaseAnonKey
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // ─── AUTH ───
 export const auth = {
-  signUp: (email: string, password: string, displayName?: string) =>
+  signUp: (email: string, password: string, meta?: Record<string, unknown>) =>
     supabase.auth.signUp({
       email,
       password,
-      options: { data: { display_name: displayName } },
+      options: { data: meta || { display_name: email.split('@')[0] } },
     }),
   signIn: (email: string, password: string) =>
     supabase.auth.signInWithPassword({ email, password }),
   signOut: () => supabase.auth.signOut(),
   getUser: () => supabase.auth.getUser(),
+  updateUser: (data: Record<string, unknown>) => supabase.auth.updateUser({ data }),
   onAuthChange: (callback: (event: string, session: unknown) => void) =>
     supabase.auth.onAuthStateChange(callback),
 }

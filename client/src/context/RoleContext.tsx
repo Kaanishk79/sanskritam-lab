@@ -1,0 +1,110 @@
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { getAuthState, onAuthChange, updateAccountMeta } from '../services/auth'
+import type { AuthUser } from '../services/auth'
+import { schoolsApi } from '../services/schools'
+import type { SchoolDetail } from '../services/schools'
+
+export type ViewRole = 'institution' | 'teacher' | 'student'
+
+interface RoleContextValue {
+  user: AuthUser | null
+  role: ViewRole | 'learner'
+  setRole: (r: ViewRole) => void
+  canSwitch: boolean
+  school: SchoolDetail | null
+  schoolLoading: boolean
+  refreshSchool: () => Promise<void>
+}
+
+const RoleContext = createContext<RoleContextValue | null>(null)
+
+const ROLE_KEY = 'sanskritlab-view-role'
+
+export function RoleProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<AuthUser | null>(() => getAuthState().user)
+  const [role, setRoleState] = useState<ViewRole | 'learner'>('learner')
+  const [school, setSchool] = useState<SchoolDetail | null>(null)
+  const [schoolLoading, setSchoolLoading] = useState(false)
+  const sessionUserRef = useRef<AuthUser | null>(user)
+
+  useEffect(() => {
+    const unsub = onAuthChange((s) => {
+      setUser(s.user)
+      sessionUserRef.current = s.user
+    })
+    return unsub
+  }, [])
+
+  const isInstitution = user?.accountType === 'institution'
+  const canSwitch = isInstitution
+
+  useEffect(() => {
+    const stored = localStorage.getItem(ROLE_KEY) as ViewRole | null
+    if (isInstitution) {
+      setRoleState(stored && ['institution', 'teacher', 'student'].includes(stored) ? stored : 'institution')
+    } else if (user?.accountType === 'teacher' || user?.accountType === 'student') {
+      setRoleState(user.accountType as ViewRole)
+    } else {
+      setRoleState('learner')
+    }
+  }, [user?.id, isInstitution])
+
+  const loadSchool = async (u: AuthUser | null) => {
+    if (!u) {
+      setSchool(null)
+      return
+    }
+    if (u.accountType !== 'institution') {
+      setSchool(null)
+      return
+    }
+    setSchoolLoading(true)
+    try {
+      let detail: SchoolDetail | null = null
+      if (u.schoolId) {
+        detail = await schoolsApi.get(u.schoolId)
+      } else if (u.email) {
+        const found = await schoolsApi.findMy(u.email)
+        if (found) {
+          detail = await schoolsApi.get(found.id)
+          try {
+            await updateAccountMeta({ school_id: found.id })
+          } catch {
+            /* non-fatal */
+          }
+        }
+      }
+      setSchool(detail)
+    } catch {
+      setSchool(null)
+    } finally {
+      setSchoolLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    void loadSchool(user)
+  }, [user?.id, user?.schoolId])
+
+  const refreshSchool = async () => {
+    if (sessionUserRef.current) await loadSchool(sessionUserRef.current)
+  }
+
+  const setRole = (r: ViewRole) => {
+    if (!canSwitch) return
+    setRoleState(r)
+    localStorage.setItem(ROLE_KEY, r)
+  }
+
+  return (
+    <RoleContext.Provider value={{ user, role, setRole, canSwitch, school, schoolLoading, refreshSchool }}>
+      {children}
+    </RoleContext.Provider>
+  )
+}
+
+export function useRole(): RoleContextValue {
+  const ctx = useContext(RoleContext)
+  if (!ctx) throw new Error('useRole must be used within RoleProvider')
+  return ctx
+}

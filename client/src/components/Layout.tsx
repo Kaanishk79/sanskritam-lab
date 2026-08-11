@@ -3,6 +3,9 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
 import { useKeyboard } from '../context/KeyboardContext'
 import { useLanguage } from '../context/LanguageContext'
+import { useRole } from '../context/RoleContext'
+import { signOut } from '../services/auth'
+import type { ViewRole } from '../context/RoleContext'
 
 const navSections = [
   {
@@ -45,6 +48,7 @@ const navSections = [
   {
     title: 'Teaching',
     links: [
+      { to: '/teaching/school', icon: '🏫', label: 'Institution HQ' },
       { to: '/teaching/dashboard', icon: '👨‍🏫', label: 'Teacher Dashboard' },
       { to: '/teaching/workspace', icon: '🧑‍🎓', label: 'Student Workspace' },
       { to: '/teaching/assessment', icon: '📝', label: 'Assessment' },
@@ -75,7 +79,19 @@ export default function Layout() {
   const navigate = useNavigate()
   const { keyboardVisible, toggleKeyboard } = useKeyboard()
   const { t, lang, toggle: toggleLang } = useLanguage()
+  const { user, role, setRole, canSwitch } = useRole()
   const kbDummyRef = useRef<HTMLTextAreaElement | null>(null)
+
+  const ROLE_OPTIONS: { value: ViewRole; icon: string; label: string }[] = [
+    { value: 'institution', icon: '🏫', label: 'School' },
+    { value: 'teacher', icon: '👨‍🏫', label: 'Teacher' },
+    { value: 'student', icon: '🧑‍🎓', label: 'Student' },
+  ]
+
+  const handleSignOut = () => {
+    signOut()
+    navigate('/')
+  }
 
   return (
     <div className="app-layout">
@@ -151,7 +167,31 @@ export default function Layout() {
             </button>
             <button className="btn-signin" onClick={toggle} title={t('Toggle theme')}>{theme === 'dark' ? '☀️' : '🌙'}</button>
             <button className="btn btn-sm btn-outline" style={{ marginLeft: 8 }} onClick={() => navigate('/tools/tutor')}>🤖 {t('Tutor')}</button>
-            <button className="btn btn-sm btn-outline" style={{ marginLeft: 8 }} onClick={() => navigate('/auth/login')}>{t('Sign In')}</button>
+            {canSwitch && (
+              <div className="role-switcher" style={{ marginLeft: 8, display: 'inline-flex', background: 'rgba(255,140,0,0.12)', border: '1px solid rgba(255,140,0,0.4)', borderRadius: 8, padding: 2 }}>
+                {ROLE_OPTIONS.map((o) => (
+                  <button
+                    key={o.value}
+                    className={`btn btn-sm ${role === o.value ? 'btn-primary' : ''}`}
+                    style={{ border: 'none', padding: '4px 10px', borderRadius: 6 }}
+                    onClick={() => setRole(o.value)}
+                    title={t('View as') + ': ' + t(o.label)}
+                  >
+                    {o.icon} {o.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {user ? (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginLeft: 8 }}>
+                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: '#fff', background: 'rgba(255,140,0,0.15)', padding: '4px 10px', borderRadius: 8 }}>
+                  {user.accountType === 'institution' ? '🏫' : user.accountType === 'teacher' ? '👨‍🏫' : user.accountType === 'student' ? '🧑‍🎓' : '🧑‍🎓'} {user.displayName}
+                </span>
+                <button className="btn btn-sm btn-outline" onClick={handleSignOut}>{t('Sign Out')}</button>
+              </div>
+            ) : (
+              <button className="btn btn-sm btn-outline" style={{ marginLeft: 8 }} onClick={() => navigate('/auth/login')}>{t('Sign In')}</button>
+            )}
           </div>
         </div>
 

@@ -6,6 +6,8 @@ export interface AuthUser {
   email: string
   displayName: string
   avatarUrl?: string
+  accountType: string
+  schoolId?: string | null
 }
 
 export interface AuthState {
@@ -23,6 +25,8 @@ function toAuthUser(u: User): AuthUser {
     email: u.email ?? '',
     displayName: (meta.display_name as string) ?? u.email?.split('@')[0] ?? 'Learner',
     avatarUrl: (u.user_metadata?.avatar_url as string) || meta.avatar_url as string | undefined,
+    accountType: (meta.account_type as string) || 'learner',
+    schoolId: (meta.school_id as string) || null,
   }
 }
 
@@ -74,7 +78,12 @@ export async function signIn(email: string, password: string): Promise<AuthUser>
   return user
 }
 
-export async function signUp(email: string, password: string, displayName: string): Promise<AuthUser> {
+export async function signUp(
+  email: string,
+  password: string,
+  displayName: string,
+  opts: { accountType?: string; schoolId?: string } = {},
+): Promise<AuthUser> {
   state = { ...state, isLoading: true, error: null }
 
   if (!email || !password || !displayName) {
@@ -89,7 +98,11 @@ export async function signUp(email: string, password: string, displayName: strin
     throw new Error(msg)
   }
 
-  const { data, error } = await supabaseAuth.signUp(email, password, displayName)
+  const meta: Record<string, unknown> = { display_name: displayName }
+  if (opts.accountType) meta.account_type = opts.accountType
+  if (opts.schoolId) meta.school_id = opts.schoolId
+
+  const { data, error } = await supabaseAuth.signUp(email, password, meta)
 
   if (error) {
     state = { ...state, isLoading: false, error: error.message }
@@ -106,4 +119,13 @@ export async function signUp(email: string, password: string, displayName: strin
 export function signOut(): void {
   void supabaseAuth.signOut()
   state = { user: null, isLoading: false, error: null }
+}
+
+export async function updateAccountMeta(data: Record<string, unknown>): Promise<AuthUser> {
+  const { data: res, error } = await supabaseAuth.updateUser({ data })
+  if (error) throw new Error(error.message)
+  const user = res.user ? toAuthUser(res.user) : null
+  if (user) state = { user, isLoading: false, error: null }
+  if (!user) throw new Error('Failed to update profile')
+  return user
 }
