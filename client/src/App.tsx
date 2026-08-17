@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import SchoolOnly from './components/SchoolOnly'
 import { KeyboardProvider } from './context/KeyboardContext'
 import './App.css'
 import Dashboard from './pages/dashboard/index'
@@ -62,7 +63,7 @@ export default function App() {
           <Route path="teaching/school" element={<InstitutionDashboardPage />} />
           <Route path="teaching/assessment" element={<AssessmentPage />} />
           <Route path="viva/simulator" element={<VivaSimulatorPage />} />
-          <Route path="viva/lab" element={<LanguageLabPage />} />
+          <Route path="viva/lab" element={<SchoolOnly><LanguageLabPage /></SchoolOnly>} />
           <Route path="viva/analytics" element={<AnalyticsPage />} />
           <Route path="learning/tree" element={<SkillTreePage />} />
           <Route path="learning/lesson/:lessonId" element={<LessonPage />} />

@@ -80,7 +80,7 @@ const navSections = [
     title: 'Exam Practice',
     links: [
       { to: '/viva/simulator', icon: '🎙️', label: 'Viva Simulator' },
-      { to: '/viva/lab', icon: '🗣️', label: 'Language Lab' },
+      { to: '/viva/lab', icon: '🗣️', label: 'Language Lab', schoolOnly: true },
       { to: '/viva/analytics', icon: '📊', label: 'Analytics' },
     ],
   },
@@ -125,7 +125,7 @@ export default function Layout() {
         {navSections.map((section) => (
           <div className="nav-section" key={section.title}>
             <div className="nav-section-title">{t(section.title)}</div>
-            {section.links.map((link) => (
+            {section.links.filter((l) => !('schoolOnly' in l) || (l as { schoolOnly?: boolean }).schoolOnly !== true || user?.accountType === 'institution').map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
