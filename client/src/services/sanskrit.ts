@@ -445,19 +445,35 @@ export async function searchAll(q: string, limit = 8): Promise<SearchResult[]> {
   const query = q.trim()
   if (!query) return []
   const results: SearchResult[] = []
-  const [dict, lessons, texts, corpus] = await Promise.all([
+  const [dict, dictEn, lessons, texts, corpus] = await Promise.all([
     supabase.from('dictionary').select('word, meanings').ilike('word', `%${query}%`).limit(limit),
+    supabase.from('dictionary').select('word, meanings').contains('meanings', [query]).limit(limit),
     supabase.from('lessons').select('id, title, level').ilike('title', `%${query}%`).limit(limit),
     supabase.from('texts').select('id, title, author').ilike('title', `%${query}%`).limit(limit),
     supabase.from('corpus_texts').select('id, title').ilike('title', `%${query}%`).limit(limit),
   ])
+  const seen = new Set<string>()
   if (dict.data) {
     for (const d of dict.data) {
+      seen.add(d.word)
       results.push({
         kind: 'dictionary',
         id: d.word,
         title: d.word,
         sub: (d.meanings || []).slice(0, 2).join(' · '),
+        extra: toIAST(d.word),
+      })
+    }
+  }
+  if (dictEn.data) {
+    for (const d of dictEn.data) {
+      if (seen.has(d.word)) continue
+      seen.add(d.word)
+      results.push({
+        kind: 'dictionary',
+        id: d.word,
+        title: `${d.word} — ${(d.meanings || [])[0] || ''}`,
+        sub: (d.meanings || []).slice(1, 3).join(' · ') || 'English meaning match',
         extra: toIAST(d.word),
       })
     }
