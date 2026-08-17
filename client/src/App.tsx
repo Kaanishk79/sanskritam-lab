@@ -27,6 +27,14 @@ import SignupPage from './pages/auth/SignupPage'
 import AITutorPage from './pages/tools/AITutorPage'
 import FlashcardPage from './pages/tools/FlashcardPage'
 import BookshelfPage from './pages/tools/BookshelfPage'
+import SearchPage from './pages/tools/SearchPage'
+import ExplorePage from './pages/tools/ExplorePage'
+import DictionaryPage from './pages/tools/DictionaryPage'
+import DailyPage from './pages/tools/DailyPage'
+import TransliteratePage from './pages/tools/TransliteratePage'
+import SandhiToolPage from './pages/tools/SandhiToolPage'
+import DhatuPage from './pages/tools/DhatuPage'
+import ShlokaPage from './pages/tools/ShlokaPage'
 import JeopardyHomePage from './pages/tools/JeopardyHomePage'
 import JeopardyPlayPage from './pages/tools/JeopardyPlayPage'
 import JeopardyTestPage from './pages/tools/JeopardyTestPage'
@@ -63,6 +71,15 @@ export default function App() {
           <Route path="tools/tutor" element={<AITutorPage />} />
           <Route path="tools/flashcards" element={<FlashcardPage />} />
           <Route path="tools/bookshelf" element={<BookshelfPage />} />
+          <Route path="search" element={<SearchPage />} />
+          <Route path="explore" element={<ExplorePage />} />
+          <Route path="explore/:word" element={<ExplorePage />} />
+          <Route path="dictionary" element={<DictionaryPage />} />
+          <Route path="daily" element={<DailyPage />} />
+          <Route path="tools/transliterate" element={<TransliteratePage />} />
+          <Route path="tools/sandhi" element={<SandhiToolPage />} />
+          <Route path="tools/dhatu" element={<DhatuPage />} />
+          <Route path="tools/shloka" element={<ShlokaPage />} />
           <Route path="tools/jeopardy" element={<JeopardyHomePage />} />
           <Route path="tools/jeopardy/play" element={<JeopardyPlayPage />} />
           <Route path="tools/jeopardy/test" element={<JeopardyTestPage />} />

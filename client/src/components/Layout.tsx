@@ -15,6 +15,15 @@ const navSections = [
     ],
   },
   {
+    title: 'Discover',
+    links: [
+      { to: '/search', icon: '🔍', label: 'Sanskrit Search' },
+      { to: '/explore', icon: '✨', label: 'Explore Mode' },
+      { to: '/dictionary', icon: '📖', label: 'Dictionary' },
+      { to: '/daily', icon: '🌅', label: 'Daily Sanskrit' },
+    ],
+  },
+  {
     title: 'NCERT Curriculum',
     links: [
       { to: '/research/ncert', icon: '📘', label: 'NCERT Library' },
@@ -60,6 +69,10 @@ const navSections = [
       { to: '/tools/tutor', icon: '🤖', label: 'AI Sanskrit Tutor' },
       { to: '/tools/flashcards', icon: '📇', label: 'Flashcards (SRS)' },
       { to: '/tools/bookshelf', icon: '📚', label: 'Bookshelf' },
+      { to: '/tools/transliterate', icon: '🔤', label: 'Transliteration' },
+      { to: '/tools/sandhi', icon: '🔊', label: 'Sandhi Tool' },
+      { to: '/tools/dhatu', icon: '🌱', label: 'Dhātu Explorer' },
+      { to: '/tools/shloka', icon: '🪔', label: 'Shloka Explorer' },
       { to: '/tools/jeopardy', icon: '🎮', label: 'Sanskrit Jeopardy' },
     ],
   },

@@ -3,9 +3,17 @@ import { tracks } from '../../data/tracks'
 import { useLanguage } from '../../context/LanguageContext'
 
 const features = [
+  { icon: '🔍', title: 'Sanskrit Search', desc: 'Search words, lessons, texts and topics in Sanskrit or English with live suggestions.', link: '/search' },
+  { icon: '✨', title: 'Explore Mode', desc: 'Click any word — राम — and see meaning, grammar, pronunciation, related words and text references.', link: '/explore' },
+  { icon: '📖', title: 'Sanskrit Dictionary', desc: 'Word meaning, Devanagari, transliteration, English meanings, examples and related words.', link: '/dictionary' },
+  { icon: '🌅', title: 'Daily Sanskrit', desc: 'Word, phrase and verse of the day plus a 5-minute challenge — every day.', link: '/daily' },
   { icon: '📜', title: 'Manuscript Digitization', desc: 'Convert scanned Devanāgarī & Grantha manuscripts into searchable Unicode with OCR.', link: '/research/ocr' },
-  { icon: '🔍', title: 'Smart Corpus & Search', desc: 'Explore texts by time period with semantic search and dictionary integration.', link: '/research/corpus' },
+  { icon: '🏛️', title: 'Smart Corpus & Search', desc: 'Explore texts by time period with semantic search and dictionary integration.', link: '/research/corpus' },
   { icon: '🏛️', title: 'Layered Annotation', desc: 'Add grammar breakdowns, commentaries, and translations to any text.', link: '/research/annotate' },
+  { icon: '🪔', title: 'Shloka Explorer', desc: 'Classical verses with translation alongside — click any word to see its meaning.', link: '/tools/shloka' },
+  { icon: '🔤', title: 'Transliteration Tool', desc: 'Live Devanagari ⇄ IAST conversion in both directions.', link: '/tools/transliterate' },
+  { icon: '🔊', title: 'Sandhi Tool', desc: 'Join words and see the exact sandhi rule — Guṇa, Vṛddhi, Yaṇ, Visarga — explained.', link: '/tools/sandhi' },
+  { icon: '🌱', title: 'Dhātu Explorer', desc: 'Browse verbal roots: gaṇa, meaning and present-tense forms.', link: '/tools/dhatu' },
   { icon: '🎨', title: '3D Manuscript Viewer', desc: 'Interactive 3D palm-leaf models with digitized text overlays.', link: '/visualization/3d' },
   { icon: '🌳', title: 'Grammar & Mind Maps', desc: 'Pāṇini\'s rules as branching diagrams. Philosophy networks visualized.', link: '/visualization/grammar' },
   { icon: '📈', title: 'Evolutionary Timeline', desc: '3000 years of Sanskrit evolution on an interactive timeline.', link: '/visualization/timeline' },
