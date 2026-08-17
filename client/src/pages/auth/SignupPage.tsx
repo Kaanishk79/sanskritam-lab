@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { signUp, getAuthState, onAuthChange, updateAccountMeta, resendConfirmation } from '../../services/auth'
 import { supabase } from '../../services/supabase'
 import { schoolsApi } from '../../services/schools'
@@ -45,11 +45,15 @@ const ACCOUNT_TYPES: { value: AccountType; icon: string; label: string; desc: st
 
 export default function SignupPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { t } = useLanguage()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [accountType, setAccountType] = useState<AccountType>('learner')
+  const [accountType, setAccountType] = useState<AccountType>(() => {
+    const preset = searchParams.get('type')
+    return preset === 'institution' || preset === 'teacher' || preset === 'student' ? (preset as AccountType) : 'learner'
+  })
   const [schoolName, setSchoolName] = useState('')
   const [schoolCity, setSchoolCity] = useState('')
   const [schoolState, setSchoolState] = useState('')

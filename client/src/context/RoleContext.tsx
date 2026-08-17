@@ -14,15 +14,20 @@ interface RoleContextValue {
   school: SchoolDetail | null
   schoolLoading: boolean
   refreshSchool: () => Promise<void>
+  guest: boolean
+  beginGuest: () => void
+  endGuest: () => void
 }
 
 const RoleContext = createContext<RoleContextValue | null>(null)
 
 const ROLE_KEY = 'sanskritlab-view-role'
+const GUEST_KEY = 'sanskritlab-guest'
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => getAuthState().user)
   const [role, setRoleState] = useState<ViewRole | 'learner'>('learner')
+  const [guest, setGuest] = useState<boolean>(() => !getAuthState().user && localStorage.getItem(GUEST_KEY) === '1')
   const [school, setSchool] = useState<SchoolDetail | null>(null)
   const [schoolLoading, setSchoolLoading] = useState(false)
   const sessionUserRef = useRef<AuthUser | null>(user)
@@ -31,6 +36,7 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     const unsub = onAuthChange((s) => {
       setUser(s.user)
       sessionUserRef.current = s.user
+      if (s.user) setGuest(false)
     })
     return unsub
   }, [])
@@ -109,8 +115,18 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(ROLE_KEY, r)
   }
 
+  const beginGuest = () => {
+    localStorage.setItem(GUEST_KEY, '1')
+    setGuest(true)
+  }
+
+  const endGuest = () => {
+    localStorage.removeItem(GUEST_KEY)
+    setGuest(false)
+  }
+
   return (
-    <RoleContext.Provider value={{ user, role, setRole, canSwitch, school, schoolLoading, refreshSchool }}>
+    <RoleContext.Provider value={{ user, role, setRole, canSwitch, school, schoolLoading, refreshSchool, guest, beginGuest, endGuest }}>
       {children}
     </RoleContext.Provider>
   )

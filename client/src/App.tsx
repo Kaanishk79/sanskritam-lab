@@ -24,6 +24,7 @@ import ResearchWorkspacePage from './pages/learning/ResearchWorkspacePage'
 import CurriculumBuilderPage from './pages/learning/CurriculumBuilderPage'
 import LoginPage from './pages/auth/LoginPage'
 import SignupPage from './pages/auth/SignupPage'
+import RolePickPage from './pages/auth/RolePickPage'
 import AITutorPage from './pages/tools/AITutorPage'
 import FlashcardPage from './pages/tools/FlashcardPage'
 import BookshelfPage from './pages/tools/BookshelfPage'
@@ -86,6 +87,7 @@ export default function App() {
           <Route path="tools/jeopardy/prep" element={<JeopardyPrepPage />} />
           <Route path="tools/jeopardy/news" element={<JeopardyNewsPage />} />
           <Route path="tools/jeopardy/builder" element={<JeopardyBuilderPage />} />
+          <Route path="auth" element={<RolePickPage />} />
           <Route path="auth/login" element={<LoginPage />} />
           <Route path="auth/signup" element={<SignupPage />} />
         </Route>

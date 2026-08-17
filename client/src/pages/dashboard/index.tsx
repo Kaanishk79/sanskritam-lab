@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { tracks } from '../../data/tracks'
 import { useLanguage } from '../../context/LanguageContext'
+import { useRole } from '../../context/RoleContext'
 
 const features = [
   { icon: '🔍', title: 'Sanskrit Search', desc: 'Search words, lessons, texts and topics in Sanskrit or English with live suggestions.', link: '/search' },
@@ -25,7 +26,7 @@ const features = [
   { icon: '🧒', title: 'Fun Learning Mode', desc: 'Kid-friendly flashcards, picture-word games, and colorful activities.', link: '/learning/child' },
   { icon: '🤖', title: 'AI Sanskrit Tutor', desc: 'Chat with an AI tutor about Sanskrit grammar, texts, and philosophy.', link: '/tools/tutor' },
   { icon: '📇', title: 'SRS Flashcards', desc: 'Anki-style spaced repetition for vocabulary, grammar, and more.', link: '/tools/flashcards' },
-  { icon: '🔐', title: 'Account & Auth', desc: 'Sign up or sign in to track your progress across devices.', link: '/auth/login' },
+  { icon: '🔐', title: 'Account & Auth', desc: 'Sign up or sign in to track your progress across devices.', link: '/auth' },
 ]
 
 const testimonials = [
@@ -38,10 +39,22 @@ const testimonials = [
 export default function Dashboard() {
   const navigate = useNavigate()
   const { t } = useLanguage()
+  const { guest } = useRole()
 
   return (
     <>
       {/* HERO */}
+      {guest && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'wrap',
+          padding: '10px 16px', margin: '12px 0', borderRadius: 10,
+          background: 'rgba(255,140,0,0.1)', border: '1px solid rgba(255,140,0,0.35)',
+        }}>
+          <span style={{ fontSize: 13, color: '#fff' }}>🆓 {t('You are in Guest mode — progress is kept on this device only.')}</span>
+          <button className="btn btn-sm btn-primary" onClick={() => navigate('/auth')}>{t('Create Free Account')}</button>
+          <button className="btn btn-sm btn-outline" onClick={() => navigate('/auth/login')}>{t('Sign In')}</button>
+        </div>
+      )}
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-content">

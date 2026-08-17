@@ -92,7 +92,7 @@ export default function Layout() {
   const navigate = useNavigate()
   const { keyboardVisible, toggleKeyboard } = useKeyboard()
   const { t, lang, toggle: toggleLang } = useLanguage()
-  const { user, role, setRole, canSwitch } = useRole()
+  const { user, role, setRole, canSwitch, guest, endGuest } = useRole()
   const kbDummyRef = useRef<HTMLTextAreaElement | null>(null)
 
   const ROLE_OPTIONS: { value: ViewRole; icon: string; label: string }[] = [
@@ -102,6 +102,7 @@ export default function Layout() {
   ]
 
   const handleSignOut = () => {
+    endGuest()
     signOut()
     navigate('/')
   }
@@ -202,8 +203,13 @@ export default function Layout() {
                 </span>
                 <button className="btn btn-sm btn-outline" onClick={handleSignOut}>{t('Sign Out')}</button>
               </div>
+            ) : guest ? (
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginLeft: 8 }}>
+                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: '#fff', background: 'rgba(255,140,0,0.15)', padding: '4px 10px', borderRadius: 8 }}>🆓 Guest</span>
+                <button className="btn btn-sm btn-outline" onClick={handleSignOut}>{t('Leave Guest')}</button>
+              </div>
             ) : (
-              <button className="btn btn-sm btn-outline" style={{ marginLeft: 8 }} onClick={() => navigate('/auth/login')}>{t('Sign In')}</button>
+              <button className="btn btn-sm btn-outline" style={{ marginLeft: 8 }} onClick={() => navigate('/auth')}>{t('Sign In')}</button>
             )}
           </div>
         </div>
