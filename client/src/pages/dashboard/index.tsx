@@ -34,6 +34,9 @@ const features = [
   { icon: '🗣️', title: 'Who Said It?', desc: 'Match famous Sanskrit verses to their speakers — from the Gītā to Kālidāsa.', link: '/tools/whosaid' },
   { icon: '🌱', title: 'Etymology Tree', desc: 'One verbal root, many words — watch Sanskrit words grow from their roots.', link: '/tools/etymology' },
   { icon: '🔎', title: 'Concept Explorer', desc: 'Grammar, philosophy, values and texts — big Sanskrit ideas, plainly explained.', link: '/tools/concepts' },
+  { icon: '🎮', title: 'Learn Through Games', desc: 'Word match, number blitz and sandhi chase — three quick games to keep Sanskrit sharp.', link: '/tools/games' },
+  { icon: '⚔️', title: 'Debate Mode', desc: 'Pick a topic and a side — argue in Sanskrit and hear the counter-argument.', link: '/tools/debate' },
+  { icon: '🎨', title: 'Creative Studio', desc: 'Compose your own verse — pick a theme and meter, hear it come alive.', link: '/tools/studio' },
   { icon: '📇', title: 'SRS Flashcards', desc: 'Anki-style spaced repetition for vocabulary, grammar, and more.', link: '/tools/flashcards' },
   { icon: '🔐', title: 'Account & Auth', desc: 'Sign up or sign in to track your progress across devices.', link: '/auth' },
 ]

@@ -36,6 +36,9 @@ import CultureCalendarPage from './pages/tools/CultureCalendarPage'
 import WhoSaidItPage from './pages/tools/WhoSaidItPage'
 import EtymologyTreePage from './pages/tools/EtymologyTreePage'
 import ConceptExplorerPage from './pages/tools/ConceptExplorerPage'
+import GamesPage from './pages/tools/GamesPage'
+import DebatePage from './pages/tools/DebatePage'
+import CreativeStudioPage from './pages/tools/CreativeStudioPage'
 import FlashcardPage from './pages/tools/FlashcardPage'
 import BookshelfPage from './pages/tools/BookshelfPage'
 import SearchPage from './pages/tools/SearchPage'
@@ -89,6 +92,9 @@ export default function App() {
           <Route path="tools/whosaid" element={<WhoSaidItPage />} />
           <Route path="tools/etymology" element={<EtymologyTreePage />} />
           <Route path="tools/concepts" element={<ConceptExplorerPage />} />
+          <Route path="tools/games" element={<GamesPage />} />
+          <Route path="tools/debate" element={<DebatePage />} />
+          <Route path="tools/studio" element={<CreativeStudioPage />} />
           <Route path="tools/flashcards" element={<FlashcardPage />} />
           <Route path="tools/bookshelf" element={<BookshelfPage />} />
           <Route path="search" element={<SearchPage />} />
