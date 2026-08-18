@@ -57,9 +57,20 @@ export interface Student {
   mother_name: string | null
   phone: string | null
   address: string | null
+  lab_code: string | null
   status: string | null
   is_active: boolean
   created_at: string
+}
+
+export interface LabJoinResult {
+  student_id: string
+  name: string
+  roll_no: string | null
+  class_name: string | null
+  section_name: string | null
+  school_id: string
+  school_name: string
 }
 
 export interface Section {
@@ -158,6 +169,9 @@ export const schoolsApi = {
     api<{ data: Teacher }>(`/${schoolId}/teachers`, { method: 'POST', body }).then((r) => r.data),
   deactivateTeacher: (schoolId: string, teacherId: string) =>
     api<{ data: { id: string } }>(`/${schoolId}/teachers/${teacherId}`, { method: 'DELETE' }),
+
+  joinLab: (schoolCode: string, labCode: string) =>
+    api<{ data: LabJoinResult }>('/join-lab', { method: 'POST', body: { school_code: schoolCode, lab_code: labCode } }).then((r) => r.data),
 
   getSettings: (schoolId: string) =>
     api<{ data: SchoolSettings | null }>(`/${schoolId}/settings`).then((r) => r.data),

@@ -63,7 +63,7 @@ export default function App() {
           <Route path="teaching/school" element={<InstitutionDashboardPage />} />
           <Route path="teaching/assessment" element={<AssessmentPage />} />
           <Route path="viva/simulator" element={<VivaSimulatorPage />} />
-          <Route path="viva/lab" element={<SchoolOnly><LanguageLabPage /></SchoolOnly>} />
+          <Route path="viva/lab" element={<LanguageLabPage />} />
           <Route path="viva/analytics" element={<AnalyticsPage />} />
           <Route path="learning/tree" element={<SkillTreePage />} />
           <Route path="learning/lesson/:lessonId" element={<LessonPage />} />
@@ -87,7 +87,7 @@ export default function App() {
           <Route path="tools/jeopardy/test" element={<JeopardyTestPage />} />
           <Route path="tools/jeopardy/prep" element={<JeopardyPrepPage />} />
           <Route path="tools/jeopardy/news" element={<JeopardyNewsPage />} />
-          <Route path="tools/jeopardy/builder" element={<JeopardyBuilderPage />} />
+          <Route path="tools/jeopardy/builder" element={<SchoolOnly><JeopardyBuilderPage /></SchoolOnly>} />
           <Route path="auth" element={<RolePickPage />} />
           <Route path="auth/login" element={<LoginPage />} />
           <Route path="auth/signup" element={<SignupPage />} />

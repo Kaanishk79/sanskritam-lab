@@ -5,22 +5,25 @@ import type { LabProject } from '../../services/labProjects'
 import LabAssignments from './LabAssignments'
 import { useKeyboard } from '../../context/KeyboardContext'
 import { useLanguage } from '../../context/LanguageContext'
+import { useRole } from '../../context/RoleContext'
+import { schoolsApi, type LabJoinResult, type Student } from '../../services/schools'
 import './languageLab.css'
 
-type LabTab = 'library' | 'listening' | 'speaking' | 'reading' | 'writing' | 'report' | 'assignments'
+type LabTab = 'library' | 'listening' | 'speaking' | 'reading' | 'writing' | 'report' | 'assignments' | 'students'
 
-const STORAGE_KEY = 'sanskrit-lab-stats'
+const STATS_PREFIX = 'sanskrit-lab-stats'
+const SESSION_KEY = 'sanskrit-lab-session'
 
-const loadStats = (): Record<string, LabSkillStats> => {
+const loadStats = (key: string): Record<string, LabSkillStats> => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = localStorage.getItem(key)
     if (raw) return { ...emptyLabStats(), ...JSON.parse(raw) }
   } catch { /* ignore */ }
   return emptyLabStats()
 }
 
-const saveStats = (s: Record<string, LabSkillStats>) => {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)) } catch { /* ignore */ }
+const saveStats = (key: string, s: Record<string, LabSkillStats>) => {
+  try { localStorage.setItem(key, JSON.stringify(s)) } catch { /* ignore */ }
 }
 
 const normalize = (s: string) =>
@@ -66,8 +69,26 @@ function useAudioRecorder() {
 export default function LanguageLabPage() {
   const { t, lang } = useLanguage()
   const { toggleKeyboard } = useKeyboard()
+  const { user, school, refreshSchool } = useRole()
+  const isSchool = user?.accountType === 'institution'
+  const [session, setSession] = useState<LabJoinResult | null>(() => {
+    try {
+      const raw = localStorage.getItem(SESSION_KEY)
+      return raw ? JSON.parse(raw) : null
+    } catch { return null }
+  })
+  const inStudentMode = !isSchool && !!session
+  const statsKey = STATS_PREFIX + (inStudentMode ? '-' + session!.student_id : '')
   const [tab, setTab] = useState<LabTab>('library')
-  const [stats, setStats] = useState<Record<string, LabSkillStats>>(loadStats)
+  const [stats, setStats] = useState<Record<string, LabSkillStats>>(() => loadStats(statsKey))
+  const [joinSchoolCode, setJoinSchoolCode] = useState('')
+  const [joinLabCode, setJoinLabCode] = useState('')
+  const [joinErr, setJoinErr] = useState('')
+  const [joinBusy, setJoinBusy] = useState(false)
+  const [studentForm, setStudentForm] = useState<Record<string, string>>({})
+  const [roster, setRoster] = useState<Student[]>([])
+  const [rosterBusy, setRosterBusy] = useState(false)
+  const [copyMsg, setCopyMsg] = useState('')
   const [activePassage, setActivePassage] = useState<ReadingPassage>(readingPassages[0])
   const [spokenIndex, setSpokenIndex] = useState(0)
   const [recognitionText, setRecognitionText] = useState('')
@@ -110,7 +131,7 @@ export default function LanguageLabPage() {
     return writingItems.filter((w) => activeProject.content.writingIds.includes(w.id))
   }, [activeProject])
 
-  useEffect(() => saveStats(stats), [stats])
+  useEffect(() => saveStats(statsKey, stats), [stats])
 
   useEffect(() => {
     const unsub = onSpeechResult((r) => {
@@ -124,10 +145,117 @@ export default function LanguageLabPage() {
       const prev = s[key] ?? { score: 0, attempts: 0 }
       const n = prev.attempts + 1
       const next = { score: Math.round((prev.score * prev.attempts + score) / n), attempts: n }
-      saveStats({ ...s, [key]: next })
+      saveStats(statsKey, { ...s, [key]: next })
       return { ...s, [key]: next }
     })
   }
+
+  const doJoin = async () => {
+    setJoinErr('')
+    const sc = joinSchoolCode.trim().toUpperCase()
+    const lc = joinLabCode.trim().toUpperCase()
+    if (!sc || !lc) {
+      setJoinErr(t('Enter both the school code and your student code'))
+      return
+    }
+    setJoinBusy(true)
+    try {
+      const res = await schoolsApi.joinLab(sc, lc)
+      localStorage.setItem(SESSION_KEY, JSON.stringify(res))
+      setSession(res)
+      setStats(loadStats(STATS_PREFIX + '-' + res.student_id))
+      setJoinSchoolCode('')
+      setJoinLabCode('')
+    } catch (e) {
+      setJoinErr((e as Error).message || t('Could not join the lab'))
+    } finally {
+      setJoinBusy(false)
+    }
+  }
+
+  const leaveLab = () => {
+    localStorage.removeItem(SESSION_KEY)
+    setSession(null)
+  }
+
+  const loadRoster = async () => {
+    if (!school) return
+    setRosterBusy(true)
+    try {
+      const res = await schoolsApi.listStudents(school.id, { size: '100' })
+      setRoster(res.data)
+    } catch { /* keep old roster */ } finally {
+      setRosterBusy(false)
+    }
+  }
+
+  useEffect(() => {
+    if (tab === 'students' && isSchool) loadRoster()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab])
+
+  const addStudent = async () => {
+    if (!school) return
+    setJoinErr('')
+    if (!studentForm.name?.trim()) {
+      setJoinErr(t('Student name is required'))
+      return
+    }
+    if (!studentForm.class_id) {
+      setJoinErr(t('Choose a class for the student'))
+      return
+    }
+    setJoinBusy(true)
+    try {
+      const body: Record<string, unknown> = {
+        name: studentForm.name.trim(),
+        class_id: studentForm.class_id || null,
+        section_id: studentForm.section_id || null,
+        admission_no: studentForm.admission_no?.trim() || null,
+        roll_no: studentForm.roll_no?.trim() || null,
+        gender: studentForm.gender || null,
+        date_of_birth: studentForm.date_of_birth || null,
+        father_name: studentForm.father_name?.trim() || null,
+        mother_name: studentForm.mother_name?.trim() || null,
+        phone: studentForm.phone?.trim() || null,
+        address: studentForm.address?.trim() || null,
+        lab_code: studentForm.lab_code?.trim() || undefined,
+      }
+      await schoolsApi.createStudent(school.id, body)
+      setStudentForm({})
+      await loadRoster()
+      await refreshSchool()
+      setJoinErr('')
+    } catch (e) {
+      setJoinErr((e as Error).message || t('Could not add student'))
+    } finally {
+      setJoinBusy(false)
+    }
+  }
+
+  const regenCode = async (st: Student) => {
+    if (!school) return
+    const suffix = st.roll_no || st.name.replace(/\s+/g, '').slice(0, 4)
+    const next = `${school.short_code || 'SCH'}-${String(suffix).toUpperCase()}${Math.floor(10 + Math.random() * 89)}`
+    try {
+      await schoolsApi.updateStudent(school.id, st.id, { lab_code: next })
+      await loadRoster()
+    } catch (e) {
+      setJoinErr((e as Error).message || t('Could not update code'))
+    }
+  }
+
+  const copyCode = (code: string) => {
+    try {
+      navigator.clipboard?.writeText(code)
+      setCopyMsg(`${code} ✓`)
+      setTimeout(() => setCopyMsg(''), 1500)
+    } catch { /* ignore */ }
+  }
+
+  const suggestedCode = school
+    ? `${school.short_code || 'SCH'}-${(roster.length + 1) * 7}`
+    : ''
 
   const toggleRecognition = () => {
     if (recognizing) {
@@ -185,6 +313,7 @@ export default function LanguageLabPage() {
     { id: 'reading', label: 'Reading', icon: '📖' },
     { id: 'writing', label: 'Writing', icon: '✍️' },
     { id: 'report', label: 'Report', icon: '📊' },
+    ...(isSchool ? [{ id: 'students' as LabTab, label: 'Students', icon: '👨🏫' }] : []),
   ]
 
   const viewPassage = scopedPassages.find((p) => p.id === activePassage.id) ?? scopedPassages[0]
@@ -194,8 +323,48 @@ export default function LanguageLabPage() {
       <div className="page-header">
         <h2>{t('🗣️ Sanskrit Language Lab')}</h2>
         <p>{t('Digital language lab — Listening, Speaking, Reading & Writing practice with record & playback')}</p>
+        {inStudentMode && (
+          <div className="lab-entry-chip">
+            <span>🎓 {session!.name} · {session!.school_name}</span>
+            <button className="btn btn-sm btn-secondary" onClick={leaveLab}>{t('Leave Lab')}</button>
+          </div>
+        )}
       </div>
 
+      {!isSchool && !session ? (
+        <div className="lab-card lab-entry">
+          <h3>{t('🔑 Student Lab Entry')}</h3>
+          <p>{t('Ask your Sanskrit teacher for your school code and student code, then enter them below.')}</p>
+          <div className="lab-input-row">
+            <input
+              className="lab-input"
+              value={joinSchoolCode}
+              onChange={(e) => setJoinSchoolCode(e.target.value)}
+              placeholder={t('School code (e.g. EEV8435)')}
+            />
+          </div>
+          <div className="lab-input-row">
+            <input
+              className="lab-input"
+              value={joinLabCode}
+              onChange={(e) => setJoinLabCode(e.target.value)}
+              placeholder={t('Student code (e.g. EEV8435-14)')}
+            />
+          </div>
+          {joinErr && <p className="lab-feedback no">{joinErr}</p>}
+          <div className="lab-actions">
+            <button className="btn btn-primary" onClick={doJoin} disabled={joinBusy}>
+              {joinBusy ? t('Joining…') : t('Enter Lab')}
+            </button>
+          </div>
+          <p className="lab-report-note">
+            {t('Are you a teacher or school?')}{' '}
+            <a href="#/auth/signup?type=institution">{t('Register your school')}</a>{' '}
+            {t('or')} <a href="#/auth">{t('sign in')}</a> {t('to manage your own lab.')}
+          </p>
+        </div>
+      ) : (
+      <>
       <div className="lab-tabs">
         {tabs.map((tb) => (
           <button
@@ -216,6 +385,95 @@ export default function LanguageLabPage() {
 
       {tab === 'assignments' && (
         <LabAssignments activeProject={activeProject} onOpenProject={setActiveProject} />
+      )}
+
+      {tab === 'students' && isSchool && (
+        <div className="lab-card">
+          <h3>{t('👨🏫 Students & Lab Codes')}</h3>
+          <p>{t('Add students and share each student code so they can enter the lab with your school code.')}</p>
+          {copyMsg && <p className="lab-feedback ok">{copyMsg}</p>}
+          <div className="lab-student-form">
+            <h4>{t('➕ Add Student')}</h4>
+            <div className="lab-input-row">
+              <input className="lab-input" value={studentForm.name ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, name: e.target.value }))} placeholder={t('Full name *')} />
+            </div>
+            <div className="lab-input-row">
+              <select className="lab-input" value={studentForm.class_id ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, class_id: e.target.value, section_id: '' }))}>
+                <option value="">{t('Class *')}</option>
+                {school?.classes?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+              <select className="lab-input" value={studentForm.section_id ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, section_id: e.target.value }))} disabled={!studentForm.class_id}>
+                <option value="">{t('Section (optional)')}</option>
+                {school?.classes?.find((c) => c.id === studentForm.class_id)?.sections?.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </div>
+            <div className="lab-input-row">
+              <input className="lab-input" value={studentForm.roll_no ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, roll_no: e.target.value }))} placeholder={t('Roll no (optional)')} />
+              <input className="lab-input" value={studentForm.admission_no ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, admission_no: e.target.value }))} placeholder={t('Admission no (optional)')} />
+            </div>
+            <div className="lab-input-row">
+              <input className="lab-input" value={studentForm.gender ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, gender: e.target.value }))} placeholder={t('Gender (optional)')} />
+              <input className="lab-input" type="date" value={studentForm.date_of_birth ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, date_of_birth: e.target.value }))} />
+            </div>
+            <div className="lab-input-row">
+              <input className="lab-input" value={studentForm.father_name ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, father_name: e.target.value }))} placeholder={t('Father name (optional)')} />
+              <input className="lab-input" value={studentForm.mother_name ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, mother_name: e.target.value }))} placeholder={t('Mother name (optional)')} />
+            </div>
+            <div className="lab-input-row">
+              <input className="lab-input" value={studentForm.phone ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, phone: e.target.value }))} placeholder={t('Phone (optional)')} />
+              <input className="lab-input" value={studentForm.address ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, address: e.target.value }))} placeholder={t('Address (optional)')} />
+            </div>
+            <div className="lab-input-row">
+              <input className="lab-input" value={studentForm.lab_code ?? suggestedCode} onChange={(e) => setStudentForm((f) => ({ ...f, lab_code: e.target.value }))} placeholder={t('Student code (auto-suggested)')} />
+              <button className="btn btn-sm btn-secondary" onClick={() => setStudentForm((f) => ({ ...f, lab_code: suggestedCode }))}>{t('Suggest')}</button>
+            </div>
+            {joinErr && <p className="lab-feedback no">{joinErr}</p>}
+            <button className="btn btn-primary" onClick={addStudent} disabled={joinBusy || !studentForm.name?.trim()}>
+              {joinBusy ? t('Adding…') : t('➕ Add Student')}
+            </button>
+          </div>
+
+          <div className="lab-roster">
+            <h4>{t('Students (')}{roster.length}{t(')')}</h4>
+            {rosterBusy && <p>{t('Loading…')}</p>}
+            {roster.length === 0 && !rosterBusy && <p className="lab-report-note">{t('No students yet — add your first student above.')}</p>}
+            <table className="lab-roster-table">
+              <thead>
+                <tr>
+                  <th>{t('Name')}</th>
+                  <th>{t('Class')}</th>
+                  <th>{t('Roll')}</th>
+                  <th>{t('Student Code')}</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {roster.map((st) => {
+                  const cls = school?.classes?.find((c) => c.id === st.class_id)
+                  const sec = cls?.sections?.find((s) => s.id === st.section_id)
+                  const code = st.lab_code || '—'
+                  return (
+                    <tr key={st.id}>
+                      <td>{st.name}</td>
+                      <td>{cls ? `${cls.name}${sec ? '-' + sec.name : ''}` : '—'}</td>
+                      <td>{st.roll_no || '—'}</td>
+                      <td className="lab-code-cell">
+                        <code>{code}</code>
+                        {st.lab_code && (
+                          <button className="btn btn-sm btn-secondary" onClick={() => copyCode(st.lab_code!)}>📋 {t('Copy')}</button>
+                        )}
+                        <button className="btn btn-sm btn-secondary" onClick={() => regenCode(st)} title={t('Generate new code')}>🔄</button>
+                      </td>
+                      <td>
+                        <button className="btn btn-sm btn-secondary" onClick={() => schoolsApi.deactivateStudent(school!.id, st.id).then(loadRoster)}>{t('Remove')}</button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
 
       {tab === 'library' && (
@@ -456,8 +714,10 @@ export default function LanguageLabPage() {
             ))}
           </div>
           <p className="lab-report-note">{t('Report is generated from your practice sessions — attempt each drill to build your report.')}</p>
-          <button className="btn btn-sm btn-secondary" onClick={() => { setStats(emptyLabStats()); saveStats(emptyLabStats()) }}>{t('Reset Report')}</button>
+          <button className="btn btn-sm btn-secondary" onClick={() => { setStats(emptyLabStats()); saveStats(statsKey, emptyLabStats()) }}>{t('Reset Report')}</button>
         </div>
+      )}
+      </>
       )}
     </div>
   )

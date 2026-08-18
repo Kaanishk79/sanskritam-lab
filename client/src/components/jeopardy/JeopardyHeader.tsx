@@ -1,5 +1,6 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useLanguage } from '../../context/LanguageContext'
+import { useRole } from '../../context/RoleContext'
 
 const navItems = [
   { to: '/tools/jeopardy', label: 'Sanskrit Jeopardy', icon: '🎮', end: true },
@@ -7,12 +8,13 @@ const navItems = [
   { to: '/tools/jeopardy/test', label: 'Anytime Test', icon: '⏱️' },
   { to: '/tools/jeopardy/prep', label: 'Prep Center', icon: '📚' },
   { to: '/tools/jeopardy/news', label: 'Read', icon: '📰' },
-  { to: '/tools/jeopardy/builder', label: 'Quiz Builder', icon: '✏️' },
+  { to: '/tools/jeopardy/builder', label: 'Quiz Builder', icon: '✏️', schoolOnly: true },
 ]
 
 export default function JeopardyHeader() {
   const { t } = useLanguage()
   const navigate = useNavigate()
+  const { user } = useRole()
 
   return (
     <div className="j-site-header">
@@ -21,7 +23,7 @@ export default function JeopardyHeader() {
         <span className="j-logo-word j-logo-accent">JEOPARDY!</span>
       </button>
       <nav className="j-site-nav">
-        {navItems.map((item) => (
+        {navItems.filter((i) => !('schoolOnly' in i) || i.schoolOnly !== true || user?.accountType === 'institution').map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
