@@ -28,6 +28,9 @@ const features = [
   { icon: '🎤', title: 'Voice Mode', desc: 'Speak in Sanskrit or Hindi — hear the word, its meaning, and a spoken reply. Works offline.', link: '/tools/voice' },
   { icon: '🧩', title: 'Sentence Builder', desc: 'Tap word cards in order to build Sanskrit sentences — learn word order through play.', link: '/tools/sentence' },
   { icon: '🩺', title: 'Fix My Sanskrit', desc: 'Paste any sentence and get instant grammar fixes: punctuation, sandhi, missing spaces and more.', link: '/tools/fix' },
+  { icon: '📖', title: 'Story Generator', desc: 'Pick a theme and two words — get a Sanskrit story with translation, ready to hear aloud.', link: '/tools/story' },
+  { icon: '🌍', title: 'Sanskrit → Real World', desc: 'Ancient ideas alive today: karma, yoga, zero, dharma — the word behind daily life.', link: '/tools/realworld' },
+  { icon: '🪔', title: 'Culture Calendar', desc: 'Festivals, tithis and the six seasons — the Sanskrit year on your calendar.', link: '/tools/calendar' },
   { icon: '📇', title: 'SRS Flashcards', desc: 'Anki-style spaced repetition for vocabulary, grammar, and more.', link: '/tools/flashcards' },
   { icon: '🔐', title: 'Account & Auth', desc: 'Sign up or sign in to track your progress across devices.', link: '/auth' },
 ]

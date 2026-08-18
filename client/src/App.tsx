@@ -30,6 +30,9 @@ import AITutorPage from './pages/tools/AITutorPage'
 import VoiceModePage from './pages/tools/VoiceModePage'
 import SentenceBuilderPage from './pages/tools/SentenceBuilderPage'
 import FixMySanskritPage from './pages/tools/FixMySanskritPage'
+import StoryGeneratorPage from './pages/tools/StoryGeneratorPage'
+import RealWorldPage from './pages/tools/RealWorldPage'
+import CultureCalendarPage from './pages/tools/CultureCalendarPage'
 import FlashcardPage from './pages/tools/FlashcardPage'
 import BookshelfPage from './pages/tools/BookshelfPage'
 import SearchPage from './pages/tools/SearchPage'
@@ -77,6 +80,9 @@ export default function App() {
           <Route path="tools/voice" element={<VoiceModePage />} />
           <Route path="tools/sentence" element={<SentenceBuilderPage />} />
           <Route path="tools/fix" element={<FixMySanskritPage />} />
+          <Route path="tools/story" element={<StoryGeneratorPage />} />
+          <Route path="tools/realworld" element={<RealWorldPage />} />
+          <Route path="tools/calendar" element={<CultureCalendarPage />} />
           <Route path="tools/flashcards" element={<FlashcardPage />} />
           <Route path="tools/bookshelf" element={<BookshelfPage />} />
           <Route path="search" element={<SearchPage />} />
