@@ -33,6 +33,9 @@ import FixMySanskritPage from './pages/tools/FixMySanskritPage'
 import StoryGeneratorPage from './pages/tools/StoryGeneratorPage'
 import RealWorldPage from './pages/tools/RealWorldPage'
 import CultureCalendarPage from './pages/tools/CultureCalendarPage'
+import WhoSaidItPage from './pages/tools/WhoSaidItPage'
+import EtymologyTreePage from './pages/tools/EtymologyTreePage'
+import ConceptExplorerPage from './pages/tools/ConceptExplorerPage'
 import FlashcardPage from './pages/tools/FlashcardPage'
 import BookshelfPage from './pages/tools/BookshelfPage'
 import SearchPage from './pages/tools/SearchPage'
@@ -83,6 +86,9 @@ export default function App() {
           <Route path="tools/story" element={<StoryGeneratorPage />} />
           <Route path="tools/realworld" element={<RealWorldPage />} />
           <Route path="tools/calendar" element={<CultureCalendarPage />} />
+          <Route path="tools/whosaid" element={<WhoSaidItPage />} />
+          <Route path="tools/etymology" element={<EtymologyTreePage />} />
+          <Route path="tools/concepts" element={<ConceptExplorerPage />} />
           <Route path="tools/flashcards" element={<FlashcardPage />} />
           <Route path="tools/bookshelf" element={<BookshelfPage />} />
           <Route path="search" element={<SearchPage />} />

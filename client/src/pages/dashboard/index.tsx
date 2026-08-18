@@ -31,6 +31,9 @@ const features = [
   { icon: '📖', title: 'Story Generator', desc: 'Pick a theme and two words — get a Sanskrit story with translation, ready to hear aloud.', link: '/tools/story' },
   { icon: '🌍', title: 'Sanskrit → Real World', desc: 'Ancient ideas alive today: karma, yoga, zero, dharma — the word behind daily life.', link: '/tools/realworld' },
   { icon: '🪔', title: 'Culture Calendar', desc: 'Festivals, tithis and the six seasons — the Sanskrit year on your calendar.', link: '/tools/calendar' },
+  { icon: '🗣️', title: 'Who Said It?', desc: 'Match famous Sanskrit verses to their speakers — from the Gītā to Kālidāsa.', link: '/tools/whosaid' },
+  { icon: '🌱', title: 'Etymology Tree', desc: 'One verbal root, many words — watch Sanskrit words grow from their roots.', link: '/tools/etymology' },
+  { icon: '🔎', title: 'Concept Explorer', desc: 'Grammar, philosophy, values and texts — big Sanskrit ideas, plainly explained.', link: '/tools/concepts' },
   { icon: '📇', title: 'SRS Flashcards', desc: 'Anki-style spaced repetition for vocabulary, grammar, and more.', link: '/tools/flashcards' },
   { icon: '🔐', title: 'Account & Auth', desc: 'Sign up or sign in to track your progress across devices.', link: '/auth' },
 ]
