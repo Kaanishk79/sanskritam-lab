@@ -25,6 +25,9 @@ const features = [
   { icon: '📊', title: 'Analytics Engine', desc: 'Track performance, find weak areas, get customized study paths.', link: '/viva/analytics' },
   { icon: '🧒', title: 'Fun Learning Mode', desc: 'Kid-friendly flashcards, picture-word games, and colorful activities.', link: '/learning/child' },
   { icon: '🤖', title: 'AI Sanskrit Tutor', desc: 'Chat with an AI tutor about Sanskrit grammar, texts, and philosophy.', link: '/tools/tutor' },
+  { icon: '🎤', title: 'Voice Mode', desc: 'Speak in Sanskrit or Hindi — hear the word, its meaning, and a spoken reply. Works offline.', link: '/tools/voice' },
+  { icon: '🧩', title: 'Sentence Builder', desc: 'Tap word cards in order to build Sanskrit sentences — learn word order through play.', link: '/tools/sentence' },
+  { icon: '🩺', title: 'Fix My Sanskrit', desc: 'Paste any sentence and get instant grammar fixes: punctuation, sandhi, missing spaces and more.', link: '/tools/fix' },
   { icon: '📇', title: 'SRS Flashcards', desc: 'Anki-style spaced repetition for vocabulary, grammar, and more.', link: '/tools/flashcards' },
   { icon: '🔐', title: 'Account & Auth', desc: 'Sign up or sign in to track your progress across devices.', link: '/auth' },
 ]

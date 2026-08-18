@@ -67,6 +67,9 @@ const navSections = [
     title: 'AI Tools',
     links: [
       { to: '/tools/tutor', icon: '🤖', label: 'AI Sanskrit Tutor' },
+      { to: '/tools/voice', icon: '🎤', label: 'Voice Mode' },
+      { to: '/tools/sentence', icon: '🧩', label: 'Sentence Builder' },
+      { to: '/tools/fix', icon: '🩺', label: 'Fix My Sanskrit' },
       { to: '/tools/flashcards', icon: '📇', label: 'Flashcards (SRS)' },
       { to: '/tools/bookshelf', icon: '📚', label: 'Bookshelf' },
       { to: '/tools/transliterate', icon: '🔤', label: 'Transliteration' },

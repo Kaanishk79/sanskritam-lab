@@ -27,6 +27,9 @@ import LoginPage from './pages/auth/LoginPage'
 import SignupPage from './pages/auth/SignupPage'
 import RolePickPage from './pages/auth/RolePickPage'
 import AITutorPage from './pages/tools/AITutorPage'
+import VoiceModePage from './pages/tools/VoiceModePage'
+import SentenceBuilderPage from './pages/tools/SentenceBuilderPage'
+import FixMySanskritPage from './pages/tools/FixMySanskritPage'
 import FlashcardPage from './pages/tools/FlashcardPage'
 import BookshelfPage from './pages/tools/BookshelfPage'
 import SearchPage from './pages/tools/SearchPage'
@@ -71,6 +74,9 @@ export default function App() {
           <Route path="learning/research" element={<ResearchWorkspacePage />} />
           <Route path="learning/curriculum" element={<CurriculumBuilderPage />} />
           <Route path="tools/tutor" element={<AITutorPage />} />
+          <Route path="tools/voice" element={<VoiceModePage />} />
+          <Route path="tools/sentence" element={<SentenceBuilderPage />} />
+          <Route path="tools/fix" element={<FixMySanskritPage />} />
           <Route path="tools/flashcards" element={<FlashcardPage />} />
           <Route path="tools/bookshelf" element={<BookshelfPage />} />
           <Route path="search" element={<SearchPage />} />
