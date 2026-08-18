@@ -7,6 +7,7 @@ import { useKeyboard } from '../../context/KeyboardContext'
 import { useLanguage } from '../../context/LanguageContext'
 import { useRole } from '../../context/RoleContext'
 import { schoolsApi, type LabJoinResult, type Student } from '../../services/schools'
+import { syncLabStatsFromDb, persistLabStatsToDb } from '../../services/userDb'
 import './languageLab.css'
 
 type LabTab = 'library' | 'listening' | 'speaking' | 'reading' | 'writing' | 'report' | 'assignments' | 'students'
@@ -132,6 +133,19 @@ export default function LanguageLabPage() {
   }, [activeProject])
 
   useEffect(() => saveStats(statsKey, stats), [stats])
+
+  useEffect(() => {
+    syncLabStatsFromDb().then((map) => {
+      if (map && map[statsKey]) {
+        setStats((prev) => ({ ...prev, ...(map[statsKey] as Record<string, LabSkillStats>) }))
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    persistLabStatsToDb(statsKey, stats as unknown as Record<string, unknown>)
+  }, [stats, statsKey])
 
   useEffect(() => {
     const unsub = onSpeechResult((r) => {

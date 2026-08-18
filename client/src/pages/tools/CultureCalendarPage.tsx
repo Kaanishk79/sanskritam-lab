@@ -1,30 +1,66 @@
-import { useMemo, useState } from 'react'
-import { FESTIVALS, nextFestival, currentRitu } from '../../data/cultureCalendar'
+import { useEffect, useMemo, useState } from 'react'
+import { FESTIVALS, RITUS, type Festival, type Ritu } from '../../data/cultureCalendar'
+import { loadFestivals, loadRitus } from '../../services/contentDb'
 import { toIAST } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 
+function findNext(festivals: Festival[], now: Date): { f: Festival; days: number } {
+  let best = festivals[0]
+  let bestDays = 9999
+  for (const f of festivals) {
+    const d = new Date(now.getFullYear(), f.month - 1, f.day)
+    let days = Math.round((d.getTime() - now.getTime()) / 86400000)
+    if (days < 0) {
+      const nextYr = new Date(now.getFullYear() + 1, f.month - 1, f.day)
+      days = Math.round((nextYr.getTime() - now.getTime()) / 86400000)
+    }
+    if (days < bestDays) {
+      bestDays = days
+      best = f
+    }
+  }
+  return { f: best, days: bestDays }
+}
+
+function findRitu(ritus: Ritu[], now: Date): Ritu {
+  const m = now.getMonth()
+  if (m >= 2 && m <= 4) return ritus[0]
+  if (m >= 4 && m <= 6) return ritus[1]
+  if (m >= 6 && m <= 8) return ritus[2]
+  if (m >= 8 && m <= 10) return ritus[3]
+  if (m >= 10 || m === 0) return m === 0 ? ritus[5] : ritus[4]
+  return ritus[4]
+}
+
 export default function CultureCalendarPage() {
   const { t } = useLanguage()
+  const [festivals, setFestivals] = useState<Festival[]>(FESTIVALS)
+  const [ritus, setRitus] = useState<Ritu[]>(RITUS)
   const [selId, setSelId] = useState<string | null>(null)
   const [speaking, setSpeaking] = useState(false)
 
-  const next = useMemo(() => nextFestival(), [])
-  const ritu = useMemo(() => currentRitu(), [])
+  useEffect(() => {
+    loadFestivals().then(setFestivals)
+    loadRitus().then(setRitus)
+  }, [])
 
-  const sel = FESTIVALS.find((f) => f.id === selId) || next.f
+  const next = useMemo(() => findNext(festivals, new Date()), [festivals])
+  const ritu = useMemo(() => findRitu(ritus, new Date()), [ritus])
+
+  const sel = festivals.find((f) => f.id === selId) || next.f
 
   const speak = (text: string) => speakWithFallback(text, (s) => setSpeaking(s))
 
   const byMonth = useMemo(() => {
     const map: Record<number, typeof FESTIVALS> = {}
-    for (const f of FESTIVALS) {
+    for (const f of festivals) {
       ;(map[f.month] ||= []).push(f)
     }
     return map
-  }, [])
+  }, [festivals])
 
   return (
     <div>

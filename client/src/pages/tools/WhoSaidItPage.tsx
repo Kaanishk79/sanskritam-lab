@@ -1,25 +1,27 @@
-import { useMemo, useState, type CSSProperties } from 'react'
-import { QUOTES, SPEAKERS, quoteOfDay, type Quote } from '../../data/quotes'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { QUOTES, type Quote } from '../../data/quotes'
+import { loadQuotes } from '../../services/contentDb'
 import { toIAST } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
 
 const NUM_Q = 10
 
-function makeQuiz(): Quote[] {
-  const pool = [...QUOTES].sort(() => Math.random() - 0.5)
-  return pool.slice(0, NUM_Q)
+function makeQuiz(pool: Quote[]): Quote[] {
+  const p = [...pool].sort(() => Math.random() - 0.5)
+  return p.slice(0, NUM_Q)
 }
 
-function makeOptions(q: Quote): string[] {
-  const others = SPEAKERS.filter((s) => s !== q.speaker).sort(() => Math.random() - 0.5).slice(0, 3)
+function makeOptions(q: Quote, speakers: string[]): string[] {
+  const others = speakers.filter((s) => s !== q.speaker).sort(() => Math.random() - 0.5).slice(0, 3)
   return [q.speaker, ...others].sort(() => Math.random() - 0.5)
 }
 
 export default function WhoSaidItPage() {
   const { t } = useLanguage()
+  const [quotes, setQuotes] = useState<Quote[]>(QUOTES)
   const [mode, setMode] = useState<'quiz' | 'learn'>('quiz')
-  const [quiz, setQuiz] = useState<Quote[]>(makeQuiz)
+  const [quiz, setQuiz] = useState<Quote[]>(() => makeQuiz(QUOTES))
   const [qi, setQi] = useState(0)
   const [options, setOptions] = useState<string[]>([])
   const [answered, setAnswered] = useState<string | null>(null)
@@ -28,16 +30,21 @@ export default function WhoSaidItPage() {
   const [speaking, setSpeaking] = useState(false)
   const [cat, setCat] = useState('all')
 
+  useEffect(() => {
+    loadQuotes().then(setQuotes)
+  }, [])
+
   const q = quiz[qi]
-  const dayQ = useMemo(quoteOfDay, [])
+  const speakers = useMemo(() => [...new Set(quotes.map((qq) => qq.speaker))], [quotes])
+  const dayQ = useMemo(() => quotes[Math.floor(Date.now() / 86400000) % quotes.length], [quotes])
 
   const start = (fresh = true) => {
-    setQuiz(fresh ? makeQuiz() : quiz)
+    setQuiz(fresh ? makeQuiz(quotes) : quiz)
     setQi(0)
     setScore(0)
     setFinished(false)
     setAnswered(null)
-    setOptions(makeOptions(quiz[0]))
+    setOptions(makeOptions(quiz[0], speakers))
   }
 
   const pick = (s: string) => {
@@ -50,7 +57,7 @@ export default function WhoSaidItPage() {
       } else {
         const ni = qi + 1
         setQi(ni)
-        setOptions(makeOptions(quiz[ni]))
+        setOptions(makeOptions(quiz[ni], speakers))
         setAnswered(null)
       }
     }, 1400)
@@ -58,10 +65,10 @@ export default function WhoSaidItPage() {
 
   const speak = (text: string) => speakWithFallback(text, (s) => setSpeaking(s))
 
-  const cats = useMemo(() => ['all', ...new Set(QUOTES.map((qq) => qq.category))], [])
+  const cats = useMemo(() => ['all', ...new Set(quotes.map((qq) => qq.category))], [quotes])
   const learnList = useMemo(
-    () => (cat === 'all' ? QUOTES : QUOTES.filter((qq) => qq.category === cat)),
-    [cat],
+    () => (cat === 'all' ? quotes : quotes.filter((qq) => qq.category === cat)),
+    [cat, quotes],
   )
 
   return (

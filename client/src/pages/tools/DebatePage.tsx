@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { DEBATE_TOPICS, type DebateTopic } from '../../data/debates'
+import { loadDebateTopics } from '../../services/contentDb'
 import { api } from '../../services/api'
 import { toIAST } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
@@ -13,11 +14,16 @@ interface Turn {
 
 export default function DebatePage() {
   const { t } = useLanguage()
+  const [topics, setTopics] = useState<DebateTopic[]>(DEBATE_TOPICS)
   const [topic, setTopic] = useState<DebateTopic | null>(null)
   const [side, setSide] = useState<'for' | 'against' | null>(null)
   const [turns, setTurns] = useState<Turn[]>([])
   const [typing, setTyping] = useState(false)
   const [custom, setCustom] = useState('')
+
+  useEffect(() => {
+    loadDebateTopics().then(setTopics)
+  }, [])
 
   const pickTopic = (tp: DebateTopic) => {
     setTopic(tp)
@@ -75,7 +81,7 @@ export default function DebatePage() {
           <div>
             <p style={{ fontWeight: 600, margin: '0 0 12px' }}>{t('Choose a topic')}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
-              {DEBATE_TOPICS.map((tp) => (
+              {topics.map((tp) => (
                 <button key={tp.id} className="card" style={{ margin: 0, textAlign: 'left' }} onClick={() => pickTopic(tp)}>
                   <strong>{tp.emoji} {tp.title}</strong>
                   <span style={{ display: 'block', fontSize: 13, opacity: 0.7, marginTop: 4 }}>{tp.question}</span>

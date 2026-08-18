@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { METERS, VERSE_THEMES, countSyllables, type VerseLine, type Meter, type VerseTheme } from '../../data/creativeStudio'
+import { loadMeters, loadThemes } from '../../services/contentDb'
 import { api } from '../../services/api'
 import { toIAST } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
@@ -38,13 +39,23 @@ function buildLines(theme: VerseTheme, meter: Meter, rngSeed: number): VerseLine
 
 export default function CreativeStudioPage() {
   const { t } = useLanguage()
+  const [themes, setThemes] = useState<VerseTheme[]>(VERSE_THEMES)
+  const [meters, setMeters] = useState<Meter[]>(METERS)
   const [themeId, setThemeId] = useState('nature')
   const [meterIdx, setMeterIdx] = useState(0)
   const [lines, setLines] = useState<VerseLine[]>([])
   const [busy, setBusy] = useState(false)
 
-  const theme = useMemo(() => VERSE_THEMES.find((x) => x.id === themeId) ?? VERSE_THEMES[0], [themeId])
-  const meter = METERS[meterIdx]
+  useEffect(() => {
+    loadThemes().then((th) => {
+      setThemes(th)
+      setThemeId((id) => (th.some((x) => x.id === id) ? id : th[0].id))
+    })
+    loadMeters().then(setMeters)
+  }, [])
+
+  const theme = useMemo(() => themes.find((x) => x.id === themeId) ?? themes[0], [themes, themeId])
+  const meter = meters[meterIdx]
 
   const compose = async () => {
     setBusy(true)
@@ -81,7 +92,7 @@ export default function CreativeStudioPage() {
 
       <div className="card" style={{ maxWidth: 760, margin: '0 auto', padding: 24 }}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12, alignItems: 'center' }}>
-          {VERSE_THEMES.map((th) => (
+          {themes.map((th) => (
             <button key={th.id} className={`btn btn-sm ${th.id === themeId ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setThemeId(th.id)}>
               {th.emoji} {th.title.split('—')[0].trim()}
             </button>
@@ -89,7 +100,7 @@ export default function CreativeStudioPage() {
         </div>
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16, alignItems: 'center' }}>
-          {METERS.map((m, i) => (
+          {meters.map((m, i) => (
             <button key={m.name} className={`btn btn-sm ${i === meterIdx ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMeterIdx(i)}>
               {m.name} ({m.syllables})
             </button>

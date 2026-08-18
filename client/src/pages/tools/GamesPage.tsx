@@ -1,5 +1,6 @@
-import { useState, type CSSProperties } from 'react'
-import { WORD_PAIRS, DEV_NUMBERS, toDevanagariNumber, SANDHI_PAIRS, type WordPair } from '../../data/games'
+import { useEffect, useState, type CSSProperties } from 'react'
+import { WORD_PAIRS, DEV_NUMBERS, toDevanagariNumber, SANDHI_PAIRS, type WordPair, type DevNumber, type SandhiPair } from '../../data/games'
+import { loadWordPairs, loadDevNumbers, loadSandhiPairs } from '../../services/contentDb'
 import { tryJoinSandhi } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
@@ -12,8 +13,8 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5)
 }
 
-function startWordRound(): WordPair[] {
-  return shuffle(WORD_PAIRS).slice(0, ROUND_SIZE)
+function startWordRound(pairs: WordPair[]): WordPair[] {
+  return shuffle(pairs).slice(0, ROUND_SIZE)
 }
 
 interface NumQ {
@@ -22,10 +23,10 @@ interface NumQ {
   options: number[]
 }
 
-function startNumberQuiz(): NumQ[] {
-  const pool = shuffle(DEV_NUMBERS)
+function startNumberQuiz(numbers: DevNumber[]): NumQ[] {
+  const pool = shuffle(numbers)
   return pool.slice(0, NUM_Q).map((dn, i) => {
-    const others = shuffle(DEV_NUMBERS.filter((x) => x.n !== dn.n)).slice(0, 3).map((x) => x.n)
+    const others = shuffle(numbers.filter((x) => x.n !== dn.n)).slice(0, 3).map((x) => x.n)
     return { n: dn.n, promptIsWord: i % 2 === 0, options: shuffle([dn.n, ...others]) }
   })
 }
@@ -37,9 +38,9 @@ interface SandhiQ {
   options: string[]
 }
 
-function startSandhiQuiz(): SandhiQ[] {
-  const pool = shuffle(SANDHI_PAIRS).slice(0, SANDHI_Q)
-  const allResults = SANDHI_PAIRS.map((p) => {
+function startSandhiQuiz(pairs: SandhiPair[]): SandhiQ[] {
+  const pool = shuffle(pairs).slice(0, SANDHI_Q)
+  const allResults = pairs.map((p) => {
     const r = tryJoinSandhi(p.a, p.b)
     return r.ok ? r.result : `${p.a} ${p.b}`
   })
@@ -54,19 +55,37 @@ function startSandhiQuiz(): SandhiQ[] {
 export default function GamesPage() {
   const { t } = useLanguage()
   const [game, setGame] = useState<'match' | 'numbers' | 'sandhi'>('match')
+  const [wordPairs, setWordPairs] = useState<WordPair[]>(WORD_PAIRS)
+  const [devNumbers, setDevNumbers] = useState<DevNumber[]>(DEV_NUMBERS)
+  const [sandhiPairs, setSandhiPairs] = useState<SandhiPair[]>(SANDHI_PAIRS)
 
-  const [pairs, setPairs] = useState<WordPair[]>(startWordRound)
+  useEffect(() => {
+    loadWordPairs().then((wp) => {
+      setWordPairs(wp)
+      setPairs(startWordRound(wp))
+    })
+    loadDevNumbers().then((dn) => {
+      setDevNumbers(dn)
+      setQuiz(startNumberQuiz(dn))
+    })
+    loadSandhiPairs().then((sp) => {
+      setSandhiPairs(sp)
+      setSq(startSandhiQuiz(sp))
+    })
+  }, [])
+
+  const [pairs, setPairs] = useState<WordPair[]>(() => startWordRound(WORD_PAIRS))
   const [picked, setPicked] = useState<string | null>(null)
   const [matched, setMatched] = useState<Set<string>>(new Set())
   const [errors, setErrors] = useState(0)
 
-  const [quiz, setQuiz] = useState<NumQ[]>(startNumberQuiz)
+  const [quiz, setQuiz] = useState<NumQ[]>(() => startNumberQuiz(DEV_NUMBERS))
   const [qi, setQi] = useState(0)
   const [pickedNum, setPickedNum] = useState<number | null>(null)
   const [score, setScore] = useState(0)
   const [done, setDone] = useState(false)
 
-  const [sq, setSq] = useState<SandhiQ[]>(startSandhiQuiz)
+  const [sq, setSq] = useState<SandhiQ[]>(() => startSandhiQuiz(SANDHI_PAIRS))
   const [si, setSi] = useState(0)
   const [pickedS, setPickedS] = useState<string | null>(null)
   const [sScore, setSScore] = useState(0)
@@ -79,16 +98,16 @@ export default function GamesPage() {
   const speak = (text: string) => speakWithFallback(text)
 
   const resetAll = () => {
-    setPairs(startWordRound())
+    setPairs(startWordRound(wordPairs))
     setPicked(null)
     setMatched(new Set())
     setErrors(0)
-    setQuiz(startNumberQuiz())
+    setQuiz(startNumberQuiz(devNumbers))
     setQi(0)
     setPickedNum(null)
     setScore(0)
     setDone(false)
-    setSq(startSandhiQuiz())
+    setSq(startSandhiQuiz(sandhiPairs))
     setSi(0)
     setPickedS(null)
     setSScore(0)
@@ -193,7 +212,7 @@ export default function GamesPage() {
               <div style={{ textAlign: 'center', padding: 30 }}>
                 <p style={{ fontSize: 26, margin: '0 0 8px' }}>{t('🎉 Round complete!')}</p>
                 <p>{errors === 0 ? t('Perfect — zero mistakes!') : t('Finished with') + ' ' + errors + ' ' + t('mistakes.')}</p>
-                <button className="btn btn-primary" onClick={() => setPairs(startWordRound())}>{t('Next round')}</button>
+                <button className="btn btn-primary" onClick={() => setPairs(startWordRound(wordPairs))}>{t('Next round')}</button>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 10 }}>
@@ -213,7 +232,7 @@ export default function GamesPage() {
               <div style={{ textAlign: 'center' }}>
                 <p style={{ margin: '0 0 6px', fontSize: 13, opacity: 0.7 }}>{t('Question')} {qi + 1} / {quiz.length} · {t('Score')} {score}</p>
                 <p style={{ fontSize: 56, margin: '10px 0 4px', color: 'var(--vt-accent)' }}>
-                  {q.promptIsWord ? DEV_NUMBERS.find((dn) => dn.n === q.n)?.word : toDevanagariNumber(q.n)}
+                  {q.promptIsWord ? devNumbers.find((dn) => dn.n === q.n)?.word : toDevanagariNumber(q.n)}
                 </p>
                 <p style={{ fontSize: 14, opacity: 0.6, marginBottom: 18 }}>
                   {q.promptIsWord ? t('What number is this?') : t('Pick the Sanskrit word')}
@@ -230,8 +249,8 @@ export default function GamesPage() {
                     }
                     return (
                       <button key={opt} className="card" style={style} onClick={() => tapNumber(opt)} disabled={pickedNum !== null}>
-                        {q.promptIsWord ? <strong style={{ fontSize: 30 }}>{toDevanagariNumber(opt)}</strong> : <strong>{DEV_NUMBERS.find((dn) => dn.n === opt)?.word}</strong>}
-                        <span style={{ display: 'block', fontSize: 12, opacity: 0.6 }}>{DEV_NUMBERS.find((dn) => dn.n === opt)?.iast}</span>
+                        {q.promptIsWord ? <strong style={{ fontSize: 30 }}>{toDevanagariNumber(opt)}</strong> : <strong>{devNumbers.find((dn) => dn.n === opt)?.word}</strong>}
+                        <span style={{ display: 'block', fontSize: 12, opacity: 0.6 }}>{devNumbers.find((dn) => dn.n === opt)?.iast}</span>
                       </button>
                     )
                   })}
@@ -242,7 +261,7 @@ export default function GamesPage() {
               <div style={{ textAlign: 'center', padding: 30 }}>
                 <p style={{ fontSize: 26, margin: '0 0 8px' }}>{t('🎯 Quiz done!')}</p>
                 <p>{score} / {quiz.length}</p>
-                <button className="btn btn-primary" onClick={() => { setQuiz(startNumberQuiz()); setQi(0); setPickedNum(null); setScore(0); setDone(false) }}>{t('Play again')}</button>
+                <button className="btn btn-primary" onClick={() => { setQuiz(startNumberQuiz(devNumbers)); setQi(0); setPickedNum(null); setScore(0); setDone(false) }}>{t('Play again')}</button>
               </div>
             )}
           </div>
@@ -282,7 +301,7 @@ export default function GamesPage() {
               <div style={{ textAlign: 'center', padding: 30 }}>
                 <p style={{ fontSize: 26, margin: '0 0 8px' }}>{t('🔊 Chase complete!')}</p>
                 <p>{sScore} / {sq.length}</p>
-                <button className="btn btn-primary" onClick={() => { setSq(startSandhiQuiz()); setSi(0); setPickedS(null); setSScore(0); setSDone(false) }}>{t('Play again')}</button>
+                <button className="btn btn-primary" onClick={() => { setSq(startSandhiQuiz(sandhiPairs)); setSi(0); setPickedS(null); setSScore(0); setSDone(false) }}>{t('Play again')}</button>
               </div>
             )}
           </div>

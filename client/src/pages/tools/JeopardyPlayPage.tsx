@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { jeopardyCategories, doubleJeopardyCategories, finalJeopardy, type JeopardyClue, type JeopardyCategory, type FinalJeopardyClue } from '../../data/jeopardy'
 import { loadCustomQuizzes, type CustomQuiz } from '../../services/customQuizzes'
+import { syncJeopardyFromDb, persistJeopardyToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 import JeopardyHeader from '../../components/jeopardy/JeopardyHeader'
 import '../tools/jeopardy.css'
@@ -88,9 +89,28 @@ export default function JeopardyPlayPage() {
   }, [quizId])
 
   useEffect(() => {
+    syncJeopardyFromDb().then((saved) => {
+      if (!saved) return
+      const s = saved as SavedState
+      const ns = {
+        round1: { ...emptyRound(), ...s.round1 },
+        round2: { ...emptyRound(), ...s.round2 },
+        final: { ...emptyFinal(), ...s.final },
+        best: s.best ?? 0,
+      }
+      setRound1(ns.round1)
+      setRound2(ns.round2)
+      setFinal(ns.final)
+      setBest(ns.best)
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(ns)) } catch { /* ignore */ }
+    })
+  }, [])
+
+  useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ round1, round2, final, best }))
     } catch { /* ignore */ }
+    persistJeopardyToDb({ round1, round2, final, best })
   }, [round1, round2, final, best])
 
   const scoreOf = (played: PlayedClue[]) => played.reduce((s, p) => s + p.points, 0)

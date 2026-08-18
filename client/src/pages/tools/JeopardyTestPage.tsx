@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { anytimeTestQuestions, TEST_PASS_THRESHOLD, TEST_TIME_SECONDS } from '../../data/jeopardyTest'
+import { syncTestBestFromDb, persistTestBestToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 import JeopardyHeader from '../../components/jeopardy/JeopardyHeader'
 import '../tools/jeopardy.css'
@@ -22,6 +23,19 @@ export default function JeopardyTestPage() {
     setAnswers({})
     setTimeLeft(TEST_TIME_SECONDS)
   }
+
+  useEffect(() => {
+    syncTestBestFromDb().then((b) => {
+      if (b === null) return
+      setBest((cur) => {
+        if (b > cur) {
+          try { localStorage.setItem('sanskrit-jeopardy-test-best', String(b)) } catch { /* ignore */ }
+          return b
+        }
+        return cur
+      })
+    })
+  }, [])
 
   useEffect(() => {
     if (phase !== 'quiz') return
@@ -68,6 +82,7 @@ export default function JeopardyTestPage() {
     if (phase === 'done' && results.correct > best) {
       setBest(results.correct)
       try { localStorage.setItem('sanskrit-jeopardy-test-best', String(results.correct)) } catch { /* ignore */ }
+      persistTestBestToDb(results.correct)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase])

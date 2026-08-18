@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { flashcards, flashcardDecks } from '../../data/flashcards'
 import type { SM2Card, SRSState } from '../../services/srs'
 import { loadSRS, saveSRS, initCards, getDueCards, getNewCards, getStats, gradeCard } from '../../services/srs'
+import { syncSRSFromDb, persistSRSToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function FlashcardPage() {
@@ -19,10 +20,18 @@ export default function FlashcardPage() {
     if (initialized !== state.cards) {
       const newState = { ...state, cards: initialized }
       saveSRS(newState)
+      persistSRSToDb(newState)
       setSrsState(newState)
     } else {
       setSrsState(state)
     }
+    syncSRSFromDb().then((dbState) => {
+      if (dbState) {
+        const merged = { ...dbState, cards: initCards(flashcards, dbState.cards) }
+        setSrsState(merged)
+        saveSRS(merged)
+      }
+    })
   }, [])
 
   const stats = getStats(srsState.cards)
@@ -44,6 +53,7 @@ export default function FlashcardPage() {
     const newState = { ...srsState, cards: updated }
     setSrsState(newState)
     saveSRS(newState)
+    persistSRSToDb(newState)
 
     const due = getDueCards(updated, deck)
     const newc = getNewCards(updated, deck)

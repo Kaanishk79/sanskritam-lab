@@ -864,3 +864,146 @@ select * from (values
   ('Contributor', 'Add your first annotation', '🏛️', 'community', 'annotations_made', 1, true)
 ) as seed(name, description, icon, category, condition_type, condition_threshold, is_auto)
 where not exists (select 1 from public.badge_rules);
+
+-- ===========================================================================
+-- TOOL CONTENT TABLES (seeded by migration tool_content_tables)
+-- ===========================================================================
+
+create table if not exists public.sentence_builder_sentences (
+  id text primary key, level text, sa text, iast text, en text, words jsonb
+);
+alter table public.sentence_builder_sentences enable row level security;
+drop policy if exists "sbs_read" on public.sentence_builder_sentences;
+create policy "sbs_read" on public.sentence_builder_sentences for select using (true);
+
+create table if not exists public.real_world_concepts (
+  id bigserial primary key, word text, iast text, meaning text, today text, example text, example_en text, emoji text
+);
+alter table public.real_world_concepts enable row level security;
+drop policy if exists "rwc_read" on public.real_world_concepts;
+create policy "rwc_read" on public.real_world_concepts for select using (true);
+
+create table if not exists public.culture_festivals (
+  id text primary key, name text, emoji text, month int, day int, approx text, tithi text, meaning text, how text, phrase text, phrase_en text
+);
+alter table public.culture_festivals enable row level security;
+drop policy if exists "cf_read" on public.culture_festivals;
+create policy "cf_read" on public.culture_festivals for select using (true);
+
+create table if not exists public.culture_ritus (
+  id bigserial primary key, name text, months text, season text, emoji text, verse text
+);
+alter table public.culture_ritus enable row level security;
+drop policy if exists "cr_read" on public.culture_ritus;
+create policy "cr_read" on public.culture_ritus for select using (true);
+
+create table if not exists public.quotes (
+  id text primary key, sa text, iast text, en text, speaker text, source text, category text
+);
+alter table public.quotes enable row level security;
+drop policy if exists "quotes_read" on public.quotes;
+create policy "quotes_read" on public.quotes for select using (true);
+
+create table if not exists public.concept_explorer_concepts (
+  id text primary key, sa text, en text, cat text, def text, detail text, example text, example_en text, related jsonb, emoji text
+);
+alter table public.concept_explorer_concepts enable row level security;
+drop policy if exists "cec_read" on public.concept_explorer_concepts;
+create policy "cec_read" on public.concept_explorer_concepts for select using (true);
+
+create table if not exists public.game_word_pairs (
+  id bigserial primary key, sa text, iast text, en text
+);
+alter table public.game_word_pairs enable row level security;
+drop policy if exists "gwp_read" on public.game_word_pairs;
+create policy "gwp_read" on public.game_word_pairs for select using (true);
+
+create table if not exists public.game_numbers (
+  id bigserial primary key, n int, dev text, word text, iast text
+);
+alter table public.game_numbers enable row level security;
+drop policy if exists "gn_read" on public.game_numbers;
+create policy "gn_read" on public.game_numbers for select using (true);
+
+create table if not exists public.game_sandhi_pairs (
+  id bigserial primary key, a text, b text
+);
+alter table public.game_sandhi_pairs enable row level security;
+drop policy if exists "gsp_read" on public.game_sandhi_pairs;
+create policy "gsp_read" on public.game_sandhi_pairs for select using (true);
+
+create table if not exists public.debate_topics (
+  id text primary key, title text, emoji text, question text, for_side jsonb, against_side jsonb
+);
+alter table public.debate_topics enable row level security;
+drop policy if exists "dt_read" on public.debate_topics;
+create policy "dt_read" on public.debate_topics for select using (true);
+
+create table if not exists public.creative_meters (
+  id bigserial primary key, name text, syllables int, lines int, description text
+);
+alter table public.creative_meters enable row level security;
+drop policy if exists "cm_read" on public.creative_meters;
+create policy "cm_read" on public.creative_meters for select using (true);
+
+create table if not exists public.creative_themes (
+  id text primary key, emoji text, title text, words jsonb, templates jsonb
+);
+alter table public.creative_themes enable row level security;
+drop policy if exists "ct_read" on public.creative_themes;
+create policy "ct_read" on public.creative_themes for select using (true);
+
+-- ===========================================================================
+-- TOOL USER DATA TABLES (owner-scoped; synced by services/userDb.ts)
+-- ===========================================================================
+
+create table if not exists public.srs_state (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users (id) on delete cascade,
+  state jsonb,
+  updated_at timestamptz default now()
+);
+alter table public.srs_state enable row level security;
+drop policy if exists "srs_state_own_all" on public.srs_state;
+create policy "srs_state_own_all" on public.srs_state
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create unique index if not exists uq_srs_state_user on public.srs_state (user_id);
+
+create table if not exists public.custom_quizzes (
+  id text primary key,
+  user_id uuid references auth.users (id) on delete cascade,
+  quiz jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+alter table public.custom_quizzes enable row level security;
+drop policy if exists "custom_quizzes_own_all" on public.custom_quizzes;
+create policy "custom_quizzes_own_all" on public.custom_quizzes
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create index if not exists idx_custom_quizzes_user on public.custom_quizzes (user_id);
+
+create table if not exists public.jeopardy_boards (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users (id) on delete cascade,
+  kind text default 'play',
+  state jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+alter table public.jeopardy_boards enable row level security;
+drop policy if exists "jeopardy_boards_own_all" on public.jeopardy_boards;
+create policy "jeopardy_boards_own_all" on public.jeopardy_boards
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create unique index if not exists uq_jeopardy_user_kind on public.jeopardy_boards (user_id, kind);
+
+create table if not exists public.lab_stats (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references auth.users (id) on delete cascade,
+  stats jsonb,
+  updated_at timestamptz default now()
+);
+alter table public.lab_stats enable row level security;
+drop policy if exists "lab_stats_own_all" on public.lab_stats;
+create policy "lab_stats_own_all" on public.lab_stats
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create unique index if not exists uq_lab_stats_user on public.lab_stats (user_id);

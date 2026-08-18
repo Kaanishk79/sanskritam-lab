@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { SENTENCES, type Sentence } from '../../data/sentenceBuilder'
+import { loadSentences } from '../../services/contentDb'
 import { toDevanagari } from '../../services/sanskrit'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -20,6 +21,7 @@ const LEVELS: { id: Sentence['level']; label: string }[] = [
 
 export default function SentenceBuilderPage() {
   const { t } = useLanguage()
+  const [sentences, setSentences] = useState<Sentence[]>(SENTENCES)
   const [level, setLevel] = useState<Sentence['level'] | 'all'>('all')
   const [idx, setIdx] = useState(0)
   const [picked, setPicked] = useState<string[]>([])
@@ -29,9 +31,13 @@ export default function SentenceBuilderPage() {
   const [iastMode, setIastMode] = useState(false)
   const [deck, setDeck] = useState<string[]>([])
 
+  useEffect(() => {
+    loadSentences().then(setSentences)
+  }, [])
+
   const pool = useMemo(
-    () => SENTENCES.filter((s) => level === 'all' || s.level === level),
-    [level],
+    () => sentences.filter((s) => level === 'all' || s.level === level),
+    [sentences, level],
   )
   const sentence = pool[idx % pool.length]
   const target = sentence.words.map((w) => w.sa).join(' ')
@@ -69,7 +75,7 @@ export default function SentenceBuilderPage() {
     setScore(0)
     setIdx(0)
     setLevel('all')
-    setDeck(shuffle(SENTENCES[0].words.map((w) => w.sa)))
+    setDeck(shuffle((sentences[0]?.words ?? []).map((w) => w.sa)))
     setPicked([])
     setChecking(false)
     setDone(false)

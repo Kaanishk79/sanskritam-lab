@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { JeopardyCategory, JeopardyClue, FinalJeopardyClue } from '../../data/jeopardy'
 import { loadCustomQuizzes, persistCustomQuizzes, makeCustomQuizId, validateQuiz, type CustomQuiz } from '../../services/customQuizzes'
+import { syncCustomQuizzesFromDb, persistCustomQuizzesToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 import JeopardyHeader from '../../components/jeopardy/JeopardyHeader'
 import '../tools/jeopardy.css'
@@ -41,6 +42,15 @@ export default function JeopardyBuilderPage() {
   const [finalAnswer, setFinalAnswer] = useState('')
   const [error, setError] = useState<string | null>(null)
 
+  useEffect(() => {
+    syncCustomQuizzesFromDb().then((dbQuizzes) => {
+      if (dbQuizzes && dbQuizzes.length > 0) {
+        setQuizzes(dbQuizzes)
+        persistCustomQuizzes(dbQuizzes)
+      }
+    })
+  }, [])
+
   const startNew = () => {
     setDraft(emptyDraft())
     setShowFinal(false)
@@ -76,6 +86,7 @@ export default function JeopardyBuilderPage() {
     const exists = quizzes.some((q) => q.id === quiz.id)
     const next = exists ? quizzes.map((q) => (q.id === quiz.id ? quiz : q)) : [...quizzes, quiz]
     persistCustomQuizzes(next)
+    persistCustomQuizzesToDb(next)
     setQuizzes(next)
     setDraft(null)
   }
@@ -83,6 +94,7 @@ export default function JeopardyBuilderPage() {
   const remove = (id: string) => {
     const next = quizzes.filter((q) => q.id !== id)
     persistCustomQuizzes(next)
+    persistCustomQuizzesToDb(next)
     setQuizzes(next)
   }
 
