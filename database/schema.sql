@@ -154,20 +154,6 @@ alter table public.course_lessons enable row level security;
 drop policy if exists "course_lessons_read" on public.course_lessons;
 create policy "course_lessons_read" on public.course_lessons for select using (true);
 
-create table if not exists public.flashcards (
-  id uuid primary key default gen_random_uuid(),
-  course_id uuid, lesson_id uuid,
-  front text, back text, front_iast text, back_iast text,
-  language text, difficulty text,
-  created_by uuid, created_at timestamptz default now()
-);
-alter table public.flashcards enable row level security;
-drop policy if exists "flashcards_read" on public.flashcards;
-create policy "flashcards_read" on public.flashcards for select using (true);
-drop policy if exists "flashcards_owner_all" on public.flashcards;
-create policy "flashcards_owner_all" on public.flashcards
-  for all using (created_by = auth.uid()) with check (created_by = auth.uid());
-
 create table if not exists public.practice_tests (
   id uuid primary key default gen_random_uuid(),
   course_id uuid, title text, questions jsonb,
@@ -1007,3 +993,233 @@ drop policy if exists "lab_stats_own_all" on public.lab_stats;
 create policy "lab_stats_own_all" on public.lab_stats
   for all using (user_id = auth.uid()) with check (user_id = auth.uid());
 create unique index if not exists uq_lab_stats_user on public.lab_stats (user_id);
+
+create table if not exists public.viva_questions (
+  id text primary key,
+  question text not null,
+  key_points jsonb not null,
+  difficulty int not null
+);
+alter table public.viva_questions enable row level security;
+drop policy if exists "viva_questions_read" on public.viva_questions;
+create policy "viva_questions_read" on public.viva_questions for select using (true);
+grant select on public.viva_questions to anon, authenticated;
+
+create table if not exists public.timeline_events (
+  id serial primary key,
+  year text not null,
+  title text not null,
+  description text not null,
+  category text not null
+);
+alter table public.timeline_events enable row level security;
+drop policy if exists "timeline_events_read" on public.timeline_events;
+create policy "timeline_events_read" on public.timeline_events for select using (true);
+grant select on public.timeline_events to anon, authenticated;
+
+create table if not exists public.grammar_rules (
+  id text primary key,
+  rule text not null,
+  meaning text not null,
+  category text not null
+);
+alter table public.grammar_rules enable row level security;
+drop policy if exists "grammar_rules_read" on public.grammar_rules;
+create policy "grammar_rules_read" on public.grammar_rules for select using (true);
+grant select on public.grammar_rules to anon, authenticated;
+
+create table if not exists public.philosophy_networks (
+  id serial primary key,
+  name text not null,
+  focus text not null,
+  texts text not null,
+  color text not null
+);
+alter table public.philosophy_networks enable row level security;
+drop policy if exists "philosophy_networks_read" on public.philosophy_networks;
+create policy "philosophy_networks_read" on public.philosophy_networks for select using (true);
+grant select on public.philosophy_networks to anon, authenticated;
+
+create table if not exists public.viewer_manuscripts (
+  id int primary key,
+  name text not null,
+  script text not null,
+  period text not null,
+  transcription text not null,
+  color text not null
+);
+alter table public.viewer_manuscripts enable row level security;
+drop policy if exists "viewer_manuscripts_read" on public.viewer_manuscripts;
+create policy "viewer_manuscripts_read" on public.viewer_manuscripts for select using (true);
+grant select on public.viewer_manuscripts to anon, authenticated;
+
+create table if not exists public.shlokas (
+  id serial primary key,
+  dev text not null,
+  iast text not null,
+  translation text not null,
+  source text not null
+);
+alter table public.shlokas enable row level security;
+drop policy if exists "shlokas_read" on public.shlokas;
+create policy "shlokas_read" on public.shlokas for select using (true);
+grant select on public.shlokas to anon, authenticated;
+
+create table if not exists public.dhatus (
+  id serial primary key,
+  root text not null,
+  iast text not null,
+  gana text not null,
+  gana_num int not null,
+  meaning text not null,
+  present text not null
+);
+alter table public.dhatus enable row level security;
+drop policy if exists "dhatus_read" on public.dhatus;
+create policy "dhatus_read" on public.dhatus for select using (true);
+grant select on public.dhatus to anon, authenticated;
+
+create table if not exists public.jeopardy_prep_topics (
+  id text primary key,
+  title text not null,
+  title_sanskrit text not null,
+  icon text not null,
+  summary text not null,
+  points jsonb not null
+);
+alter table public.jeopardy_prep_topics enable row level security;
+drop policy if exists "jeopardy_prep_topics_read" on public.jeopardy_prep_topics;
+create policy "jeopardy_prep_topics_read" on public.jeopardy_prep_topics for select using (true);
+grant select on public.jeopardy_prep_topics to anon, authenticated;
+
+create table if not exists public.jeopardy_news (
+  id text primary key,
+  tag text not null,
+  title text not null,
+  excerpt text not null,
+  date text not null,
+  icon text not null
+);
+alter table public.jeopardy_news enable row level security;
+drop policy if exists "jeopardy_news_read" on public.jeopardy_news;
+create policy "jeopardy_news_read" on public.jeopardy_news for select using (true);
+grant select on public.jeopardy_news to anon, authenticated;
+
+create table if not exists public.jeopardy_questions (
+  id text primary key,
+  board text not null,
+  category text not null,
+  category_sanskrit text not null,
+  icon text not null,
+  value int not null default 0,
+  clue text not null,
+  answer text not null,
+  options jsonb,
+  correct int
+);
+alter table public.jeopardy_questions enable row level security;
+drop policy if exists "jeopardy_questions_read" on public.jeopardy_questions;
+create policy "jeopardy_questions_read" on public.jeopardy_questions for select using (true);
+create index if not exists idx_jeopardy_questions_board on public.jeopardy_questions (board);
+grant select on public.jeopardy_questions to anon, authenticated;
+
+create table if not exists public.flashcard_decks (
+  id text primary key,
+  name text not null,
+  icon text not null
+);
+alter table public.flashcard_decks enable row level security;
+drop policy if exists "flashcard_decks_read" on public.flashcard_decks;
+create policy "flashcard_decks_read" on public.flashcard_decks for select using (true);
+grant select on public.flashcard_decks to anon, authenticated;
+
+create table if not exists public.flashcards (
+  id text primary key,
+  front text not null,
+  back text not null,
+  hint text,
+  tags jsonb not null,
+  deck_id text not null references public.flashcard_decks (id) on delete cascade
+);
+alter table public.flashcards enable row level security;
+drop policy if exists "flashcards_read" on public.flashcards;
+create policy "flashcards_read" on public.flashcards for select using (true);
+create index if not exists idx_flashcards_deck on public.flashcards (deck_id);
+grant select on public.flashcards to anon, authenticated;
+
+create table if not exists public.story_themes (
+  id text primary key,
+  emoji text not null,
+  title text not null,
+  words jsonb not null,
+  intro jsonb not null,
+  patterns jsonb not null,
+  outro jsonb not null
+);
+alter table public.story_themes enable row level security;
+drop policy if exists "story_themes_read" on public.story_themes;
+create policy "story_themes_read" on public.story_themes for select using (true);
+grant select on public.story_themes to anon, authenticated;
+
+create table if not exists public.shloka_passages (
+  id text primary key,
+  title text not null,
+  title_sanskrit text not null,
+  level text not null,
+  text text not null,
+  transliteration text not null,
+  translation text not null,
+  words jsonb not null
+);
+alter table public.shloka_passages enable row level security;
+drop policy if exists "shloka_passages_read" on public.shloka_passages;
+create policy "shloka_passages_read" on public.shloka_passages for select using (true);
+grant select on public.shloka_passages to anon, authenticated;
+
+create table if not exists public.ocr_results (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  filename text not null,
+  script text not null default 'Devanagari',
+  text text not null,
+  created_at timestamptz not null default now()
+);
+alter table public.ocr_results enable row level security;
+drop policy if exists "ocr_owner_all" on public.ocr_results;
+create policy "ocr_owner_all" on public.ocr_results
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create index if not exists idx_ocr_results_user on public.ocr_results (user_id, created_at desc);
+grant select, insert, update, delete on public.ocr_results to authenticated;
+
+create table if not exists public.user_stories (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  theme_id text not null,
+  title text not null,
+  word1 text not null,
+  word2 text not null,
+  source text not null default 'template',
+  story jsonb not null,
+  created_at timestamptz not null default now()
+);
+alter table public.user_stories enable row level security;
+drop policy if exists "stories_owner_all" on public.user_stories;
+create policy "stories_owner_all" on public.user_stories
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create index if not exists idx_user_stories_user on public.user_stories (user_id, created_at desc);
+grant select, insert, update, delete on public.user_stories to authenticated;
+
+create table if not exists public.tool_history (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  tool text not null,
+  input text not null,
+  output text not null,
+  created_at timestamptz not null default now()
+);
+alter table public.tool_history enable row level security;
+drop policy if exists "history_owner_all" on public.tool_history;
+create policy "history_owner_all" on public.tool_history
+  for all using (user_id = auth.uid()) with check (user_id = auth.uid());
+create index if not exists idx_tool_history_user on public.tool_history (user_id, created_at desc);
+grant select, insert, update, delete on public.tool_history to authenticated;

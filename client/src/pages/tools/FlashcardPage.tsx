@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react'
 import { flashcards, flashcardDecks } from '../../data/flashcards'
-import type { SM2Card, SRSState } from '../../services/srs'
+import type { Flashcard, SM2Card, SRSState } from '../../services/srs'
 import { loadSRS, saveSRS, initCards, getDueCards, getNewCards, getStats, gradeCard } from '../../services/srs'
+import { loadFlashcards, loadFlashcardDecks } from '../../services/contentDb'
 import { syncSRSFromDb, persistSRSToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function FlashcardPage() {
   const { t } = useLanguage()
   const [srsState, setSrsState] = useState<SRSState>(loadSRS())
+  const [cardPool, setCardPool] = useState<Flashcard[]>(flashcards)
+  const [decks, setDecks] = useState(flashcardDecks)
   const [deck, setDeck] = useState('all')
   const [mode, setMode] = useState<'review' | 'browse' | 'stats'>('stats')
   const [currentCard, setCurrentCard] = useState<SM2Card | null>(null)
@@ -15,23 +18,34 @@ export default function FlashcardPage() {
   const [cardsLeft, setCardsLeft] = useState(0)
 
   useEffect(() => {
-    const state = loadSRS()
-    const initialized = initCards(flashcards, state.cards)
-    if (initialized !== state.cards) {
-      const newState = { ...state, cards: initialized }
-      saveSRS(newState)
-      persistSRSToDb(newState)
-      setSrsState(newState)
-    } else {
-      setSrsState(state)
-    }
-    syncSRSFromDb().then((dbState) => {
-      if (dbState) {
-        const merged = { ...dbState, cards: initCards(flashcards, dbState.cards) }
-        setSrsState(merged)
-        saveSRS(merged)
+    let live = true
+    loadFlashcards().then((fc) => {
+      if (!live) return
+      setCardPool(fc)
+      const state = loadSRS()
+      const initialized = initCards(fc, state.cards)
+      if (initialized !== state.cards) {
+        const newState = { ...state, cards: initialized }
+        saveSRS(newState)
+        persistSRSToDb(newState)
+        setSrsState(newState)
+      } else {
+        setSrsState(state)
       }
+      syncSRSFromDb().then((dbState) => {
+        if (dbState) {
+          const merged = { ...dbState, cards: initCards(fc, dbState.cards) }
+          setSrsState(merged)
+          saveSRS(merged)
+        }
+      })
     })
+    loadFlashcardDecks().then((d) => {
+      if (live) setDecks(d)
+    })
+    return () => {
+      live = false
+    }
   }, [])
 
   const stats = getStats(srsState.cards)
@@ -69,8 +83,8 @@ export default function FlashcardPage() {
     }
   }
 
-  const deckCards = deck === 'all' ? flashcards : flashcards.filter((f) => f.deckId === deck)
-  const currentDeckName = deck === 'all' ? 'All Decks' : flashcardDecks.find((d) => d.id === deck)?.name || 'All'
+  const deckCards = deck === 'all' ? cardPool : cardPool.filter((f) => f.deckId === deck)
+  const currentDeckName = deck === 'all' ? 'All Decks' : decks.find((d) => d.id === deck)?.name || 'All'
 
   return (
     <div>
@@ -93,7 +107,7 @@ export default function FlashcardPage() {
             <span>{t('Deck:')}</span>
             <select value={deck} onChange={(e) => setDeck(e.target.value)}>
               <option value="all">{t('All Decks')}</option>
-              {flashcardDecks.map((d) => <option key={d.id} value={d.id}>{d.icon} {d.name}</option>)}
+              {decks.map((d) => <option key={d.id} value={d.id}>{d.icon} {d.name}</option>)}
             </select>
             <button className="btn btn-primary btn-sm" onClick={startReview}>{t('Start Review')}</button>
           </div>
@@ -126,8 +140,8 @@ export default function FlashcardPage() {
           </div>
 
           <div className="flashcard-decks-grid">
-            {flashcardDecks.map((d) => {
-              const c = flashcards.filter((f) => f.deckId === d.id)
+            {decks.map((d) => {
+              const c = cardPool.filter((f) => f.deckId === d.id)
               const due = getDueCards(srsState.cards, d.id).length
               return (
                 <div key={d.id} className="card deck-card" onClick={() => { setDeck(d.id); startReview() }}>
@@ -190,7 +204,7 @@ export default function FlashcardPage() {
             <span>{t('Deck:')}</span>
             <select value={deck} onChange={(e) => setDeck(e.target.value)}>
               <option value="all">{t('All Decks')}</option>
-              {flashcardDecks.map((d) => <option key={d.id} value={d.id}>{d.icon} {d.name}</option>)}
+              {decks.map((d) => <option key={d.id} value={d.id}>{d.icon} {d.name}</option>)}
             </select>
             <span className="browse-count">{deckCards.length} {t('cards')}</span>
           </div>

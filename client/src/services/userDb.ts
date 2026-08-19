@@ -133,3 +133,141 @@ export async function persistLabStatsToDb(key: string, stats: Record<string, unk
     }
   } catch { /* offline */ }
 }
+
+export interface OcrResult {
+  id: string
+  filename: string
+  script: string
+  text: string
+  createdAt: string
+}
+
+export async function syncOcrFromDb(): Promise<OcrResult[] | null> {
+  const uid = userId()
+  if (!uid) return null
+  try {
+    const { data, error } = await supabase
+      .from('ocr_results')
+      .select('id, filename, script, text, created_at')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: false })
+      .limit(20)
+    if (error || !data || data.length === 0) return null
+    return data.map((r) => ({
+      id: String(r.id),
+      filename: String(r.filename),
+      script: String(r.script),
+      text: String(r.text),
+      createdAt: String(r.created_at),
+    }))
+  } catch {
+    return null
+  }
+}
+
+export async function saveOcrToDb(filename: string, script: string, text: string): Promise<void> {
+  const uid = userId()
+  if (!uid) return
+  try {
+    await supabase.from('ocr_results').insert({ user_id: uid, filename, script, text })
+  } catch { /* offline */ }
+}
+
+export interface SavedStory {
+  id: string
+  themeId: string
+  title: string
+  word1: string
+  word2: string
+  source: string
+  story: { sa: string; en: string }[]
+  createdAt: string
+}
+
+export async function syncStoriesFromDb(): Promise<SavedStory[] | null> {
+  const uid = userId()
+  if (!uid) return null
+  try {
+    const { data, error } = await supabase
+      .from('user_stories')
+      .select('id, theme_id, title, word1, word2, source, story, created_at')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: false })
+      .limit(30)
+    if (error || !data || data.length === 0) return null
+    return data.map((r) => ({
+      id: String(r.id),
+      themeId: String(r.theme_id),
+      title: String(r.title),
+      word1: String(r.word1),
+      word2: String(r.word2),
+      source: String(r.source),
+      story: (r.story as { sa: string; en: string }[]) ?? [],
+      createdAt: String(r.created_at),
+    }))
+  } catch {
+    return null
+  }
+}
+
+export async function saveStoryToDb(
+  themeId: string,
+  title: string,
+  word1: string,
+  word2: string,
+  source: string,
+  story: { sa: string; en: string }[],
+): Promise<void> {
+  const uid = userId()
+  if (!uid) return
+  try {
+    await supabase.from('user_stories').insert({ user_id: uid, theme_id: themeId, title, word1, word2, source, story })
+  } catch { /* offline */ }
+}
+
+export async function deleteStoryFromDb(id: string): Promise<void> {
+  const uid = userId()
+  if (!uid) return
+  try {
+    await supabase.from('user_stories').delete().eq('user_id', uid).eq('id', id)
+  } catch { /* offline */ }
+}
+
+export interface ToolHistoryEntry {
+  id: string
+  tool: string
+  input: string
+  output: string
+  createdAt: string
+}
+
+export async function syncToolHistoryFromDb(): Promise<ToolHistoryEntry[] | null> {
+  const uid = userId()
+  if (!uid) return null
+  try {
+    const { data, error } = await supabase
+      .from('tool_history')
+      .select('id, tool, input, output, created_at')
+      .eq('user_id', uid)
+      .order('created_at', { ascending: false })
+      .limit(30)
+    if (error || !data || data.length === 0) return null
+    return data.map((r) => ({
+      id: String(r.id),
+      tool: String(r.tool),
+      input: String(r.input),
+      output: String(r.output),
+      createdAt: String(r.created_at),
+    }))
+  } catch {
+    return null
+  }
+}
+
+export async function saveToolHistoryToDb(tool: string, input: string, output: string): Promise<void> {
+  const uid = userId()
+  if (!uid) return
+  try {
+    await supabase.from('tool_history').insert({ user_id: uid, tool, input, output })
+  } catch { /* offline */ }
+}

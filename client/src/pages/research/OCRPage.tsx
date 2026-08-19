@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createWorker } from 'tesseract.js'
 import { useLanguage } from '../../context/LanguageContext'
+import { syncOcrFromDb, saveOcrToDb, type OcrResult } from '../../services/userDb'
 
 const MAX_DIMENSION = 2400
 
@@ -80,6 +81,17 @@ export default function OCRPage() {
   const [result, setResult] = useState('')
   const [status, setStatus] = useState<string>('')
   const [busy, setBusy] = useState(false)
+  const [recent, setRecent] = useState<OcrResult[]>([])
+
+  useEffect(() => {
+    let live = true
+    syncOcrFromDb().then((rows) => {
+      if (live && rows) setRecent(rows)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
 
   const handleUpload = async () => {
     if (!file) return
@@ -99,8 +111,10 @@ export default function OCRPage() {
       setStatus(t('Preprocessing image…'))
       const processedUrl = await preprocessImage(file)
       const { data } = await worker.recognize(processedUrl)
-      setResult(data.text?.trim() || '')
-      setStatus(data.text?.trim() ? t('Done') + ' ✅' : t('No text detected — try a clearer image.'))
+      const text = data.text?.trim() || ''
+      setResult(text)
+      setStatus(text ? t('Done') + ' ✅' : t('No text detected — try a clearer image.'))
+      if (text) saveOcrToDb(file.name, script, text)
     } catch (err) {
       setStatus(t('OCR failed:') + ' ' + (err instanceof Error ? err.message : String(err)))
     } finally {
@@ -170,6 +184,27 @@ export default function OCRPage() {
           </div>
         )}
       </div>
+
+      {recent.length > 0 && (
+        <div className="card" style={{ marginTop: 16, maxWidth: 600 }}>
+          <h3 style={{ marginTop: 0, marginBottom: 12 }}>🕘 {t('Recent transcriptions')}</h3>
+          <div className="text-list">
+            {recent.map((r) => (
+              <div key={r.id} className="text-item" style={{ cursor: 'pointer' }} onClick={() => setResult(r.text)}>
+                <div>
+                  <div className="text-title">{r.filename}</div>
+                  <div className="text-meta">
+                    {r.script} · {new Date(r.createdAt).toLocaleDateString()}
+                  </div>
+                  <div style={{ color: '#aaa', fontSize: 13, marginTop: 4 }}>
+                    {r.text.length > 160 ? r.text.slice(0, 160) + '…' : r.text}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

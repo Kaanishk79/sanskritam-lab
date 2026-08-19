@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { jeopardyCategories, doubleJeopardyCategories } from '../../data/jeopardy'
-import { newsArticles } from '../../data/jeopardySite'
+import { newsArticles, type NewsArticle } from '../../data/jeopardySite'
+import { loadJeopardyBoard, loadNewsArticles, type JeopardyBoardData } from '../../services/contentDb'
 import { useLanguage } from '../../context/LanguageContext'
 import JeopardyHeader from '../../components/jeopardy/JeopardyHeader'
 
@@ -18,6 +20,25 @@ const socials = [
 export default function JeopardyHomePage() {
   const { t, lang } = useLanguage()
   const navigate = useNavigate()
+  const [board, setBoard] = useState<JeopardyBoardData | null>(null)
+  const [articles, setArticles] = useState<NewsArticle[] | null>(null)
+
+  useEffect(() => {
+    let live = true
+    loadJeopardyBoard().then((b) => {
+      if (live) setBoard(b)
+    })
+    loadNewsArticles().then((rows) => {
+      if (live) setArticles(rows)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
+
+  const categories = board?.categories ?? jeopardyCategories
+  const doubleCategories = board?.doubleCategories ?? doubleJeopardyCategories
+  const newsItems = articles ?? newsArticles
 
   return (
     <div>
@@ -55,7 +76,7 @@ export default function JeopardyHomePage() {
             <h4>{t('Jeopardy! Round')}</h4>
             <p>{t('6 categories, 5 clues each — values from 200 to 1000')}</p>
             <div className="j-mini-cats">
-              {jeopardyCategories.map((c) => (
+              {categories.map((c) => (
                 <span key={c.id}>{lang === 'hi' ? c.nameSanskrit : c.name}</span>
               ))}
             </div>
@@ -65,7 +86,7 @@ export default function JeopardyHomePage() {
             <h4>{t('Double Jeopardy! Round')}</h4>
             <p>{t('New board, doubled values — from 400 to 2000')}</p>
             <div className="j-mini-cats">
-              {doubleJeopardyCategories.map((c) => (
+              {doubleCategories.map((c) => (
                 <span key={c.id}>{lang === 'hi' ? c.nameSanskrit : c.name}</span>
               ))}
             </div>
@@ -122,7 +143,7 @@ export default function JeopardyHomePage() {
           <Link to="/tools/jeopardy/news" className="j-stream-link">{t('All news →')}</Link>
         </div>
         <div className="j-news-grid">
-          {newsArticles.slice(0, 3).map((a) => (
+          {newsItems.slice(0, 3).map((a) => (
             <div className="j-news-card" key={a.id}>
               <span className="j-news-icon">{a.icon}</span>
               <span className="j-news-tag">{t(a.tag)}</span>

@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { tryJoinSandhi, SANDHI_RULES, type SandhiResult } from '../../services/sanskrit'
 import { useLanguage } from '../../context/LanguageContext'
+import { syncToolHistoryFromDb, saveToolHistoryToDb, type ToolHistoryEntry } from '../../services/userDb'
 
 const PRACTICE: [string, string, string][] = [
   ['देव', 'इन्द्र', 'देवेन्द्र'],
@@ -20,8 +21,25 @@ export default function SandhiToolPage() {
   const [a, setA] = useState('देव')
   const [b, setB] = useState('इन्द्र')
   const [res, setRes] = useState<SandhiResult | null>(null)
+  const [history, setHistory] = useState<ToolHistoryEntry[]>([])
 
-  const join = () => setRes(tryJoinSandhi(a, b))
+  useEffect(() => {
+    let live = true
+    syncToolHistoryFromDb().then((rows) => {
+      if (live && rows) setHistory(rows.filter((h) => h.tool === 'sandhi').slice(0, 10))
+    })
+    return () => {
+      live = false
+    }
+  }, [])
+
+  const applyResult = (inputA: string, inputB: string) => {
+    const r = tryJoinSandhi(inputA, inputB)
+    setRes(r)
+    saveToolHistoryToDb('sandhi', `${inputA} + ${inputB}`, r.result)
+  }
+
+  const join = () => applyResult(a, b)
 
   return (
     <div className="page">
@@ -46,6 +64,22 @@ export default function SandhiToolPage() {
         )}
       </div>
 
+      {history.length > 0 && (
+        <div className="card" style={{ padding: 20, marginTop: 16, maxWidth: 640 }}>
+          <h3 style={{ marginTop: 0, marginBottom: 12 }}>🕘 {t('Recent joins')}</h3>
+          <div className="text-list">
+            {history.map((h) => (
+              <div key={h.id} className="text-item">
+                <div>
+                  <div className="text-title" style={{ fontSize: 15 }}>{h.input}</div>
+                  <div className="text-meta">→ {h.output} · {new Date(h.createdAt).toLocaleDateString()}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="card" style={{ padding: 20, marginTop: 16, maxWidth: 640 }}>
         <h3 style={{ marginTop: 0 }}>📚 {t('The rules')}</h3>
         {SANDHI_RULES.map((r) => (
@@ -62,7 +96,7 @@ export default function SandhiToolPage() {
         {PRACTICE.map(([x, y, expected]) => (
           <div key={x + y} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
             <code style={{ background: 'rgba(255,255,255,.06)', padding: '4px 8px', borderRadius: 4 }}>{x} + {y}</code>
-            <button className="btn btn-sm btn-outline" onClick={() => { setA(x); setB(y); setRes(tryJoinSandhi(x, y)) }}>=?</button>
+            <button className="btn btn-sm btn-outline" onClick={() => { setA(x); setB(y); applyResult(x, y) }}>=?</button>
             <span style={{ color: '#666', fontSize: 13 }}>{expected}</span>
           </div>
         ))}

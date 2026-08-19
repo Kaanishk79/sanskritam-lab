@@ -2,19 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { startListening, stopListening, isSpeechSupported, onSpeechResult, speakWithFallback } from '../../services/speech'
 import { useKeyboard } from '../../context/KeyboardContext'
 import { useLanguage } from '../../context/LanguageContext'
-
-const vivaQuestions = [
-  { id: 'v1', question: 'Explain the concept of द्रव्य (substance) in Nyāya philosophy.', keyPoints: ['substratum of qualities', '9 dravyas', 'eternal'], difficulty: 4 },
-  { id: 'v2', question: 'What is the difference between गुण (quality) and क्रिया (action) in Vaiśeṣika?', keyPoints: ['guṇa = quality residing in substance', 'kriyā = action/motion', 'both inhere in dravya'], difficulty: 4 },
-  { id: 'v3', question: 'Describe the वृद्धि sandhi rule with examples.', keyPoints: ['a/ā + e = ai', 'a/ā + o = au', 'example: sadā + eva = sadaiva'], difficulty: 3 },
-  { id: 'v4', question: 'Explain the three genders (लिङ्ग) in Sanskrit grammar.', keyPoints: ['pulliṅga = masculine', 'strīliṅga = feminine', 'napuṃsakaliṅga = neuter', 'gender is grammatical not natural'], difficulty: 2 },
-  { id: 'v5', question: 'What is the significance of the उपनिषद्s in Vedānta?', keyPoints: ['end of Vedas', 'ātman = brahman', 'tattvamasi', '12 principal upaniṣads'], difficulty: 4 },
-  { id: 'v6', question: 'Define योगः according to Patañjali.', keyPoints: ['yogaś citta-vṛtti-nirodhaḥ', 'cessation of mental fluctuations', '8 limbs'], difficulty: 3 },
-  { id: 'v7', question: 'What are the 5 types of compounds in Sanskrit? Give examples.', keyPoints: ['tatpuruṣa', 'karmadhāraya', 'dvandva', 'bahuvrīhi', 'avyayībhāva'], difficulty: 3 },
-  { id: 'v8', question: 'Explain the Nyāya 5-membered syllogism.', keyPoints: ['pratijñā', 'hetu', 'udāharaṇa', 'upanaya', 'nigamana'], difficulty: 4 },
-  { id: 'v9', question: 'What is निष्कामकर्म in the Bhagavad Gītā?', keyPoints: ['action without desire for fruits', 'Gītā 2.47', 'mā phaleṣu kadācana'], difficulty: 3 },
-  { id: 'v10', question: 'Describe the 8 limbs of Patañjali\'s Yoga.', keyPoints: ['yama', 'niyama', 'āsana', 'prāṇāyāma', 'pratyāhāra', 'dhāraṇā', 'dhyāna', 'samādhi'], difficulty: 3 },
-]
+import { VIVA_QUESTIONS, type VivaQuestion } from '../../data/viva'
+import { loadVivaQuestions } from '../../services/contentDb'
 
 interface EvaluationResult {
   score: number
@@ -24,7 +13,7 @@ interface EvaluationResult {
   missedPoints: string[]
 }
 
-function evaluateResponse(transcript: string, question: typeof vivaQuestions[0], t: (key: string) => string): EvaluationResult {
+function evaluateResponse(transcript: string, question: VivaQuestion, t: (key: string) => string): EvaluationResult {
   const lower = transcript.toLowerCase()
   const matched = question.keyPoints.filter((kp) => lower.includes(kp.toLowerCase()))
   const missed = question.keyPoints.filter((kp) => !lower.includes(kp.toLowerCase()))
@@ -52,9 +41,20 @@ export default function VivaSimulatorPage() {
   const [interimText, setInterimText] = useState('')
   const [speechSupported] = useState(isSpeechSupported)
   const [history, setHistory] = useState<{ q: string; score: number }[]>([])
+  const [questions, setQuestions] = useState<VivaQuestion[]>(VIVA_QUESTIONS)
   const textRef = useRef<HTMLTextAreaElement>(null)
   const { toggleKeyboard } = useKeyboard()
   const { t } = useLanguage()
+
+  useEffect(() => {
+    let live = true
+    loadVivaQuestions().then((qs) => {
+      if (live) setQuestions(qs)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
 
   useEffect(() => {
     const unsub = onSpeechResult((result) => {
@@ -80,23 +80,23 @@ export default function VivaSimulatorPage() {
   const submitResponse = useCallback(() => {
     const content = textResponse
     if (!content.trim()) return
-    const result = evaluateResponse(content, vivaQuestions[currentQ], t)
+    const result = evaluateResponse(content, questions[currentQ], t)
     setEvaluation(result)
-    setHistory((prev) => [...prev, { q: vivaQuestions[currentQ].question, score: result.score }])
-  }, [textResponse, currentQ])
+    setHistory((prev) => [...prev, { q: questions[currentQ].question, score: result.score }])
+  }, [textResponse, currentQ, questions])
 
   const nextQuestion = useCallback(() => {
-    if (currentQ < vivaQuestions.length - 1) {
+    if (currentQ < questions.length - 1) {
       setCurrentQ((c) => c + 1)
       setTextResponse('')
       setEvaluation(null)
       if (textRef.current) textRef.current.value = ''
     }
-  }, [currentQ])
+  }, [currentQ, questions])
 
   const speakQuestion = useCallback(() => {
-    speakWithFallback(vivaQuestions[currentQ].question)
-  }, [currentQ])
+    speakWithFallback(questions[currentQ].question)
+  }, [currentQ, questions])
 
   const totalScore = history.length > 0 ? Math.round(history.reduce((s, h) => s + h.score, 0) / history.length) : 0
 
@@ -132,9 +132,9 @@ export default function VivaSimulatorPage() {
       <div className="page-header">
         <h2>🎙️ {t('Viva Simulator')}</h2>
         <div className="viva-progress">
-          <span>{t('Question')} {currentQ + 1} {t('of')} {vivaQuestions.length}</span>
+          <span>{t('Question')} {currentQ + 1} {t('of')} {questions.length}</span>
           <div className="viva-progress-bar">
-            <div style={{ width: `${((currentQ + 1) / vivaQuestions.length) * 100}%` }} />
+            <div style={{ width: `${((currentQ + 1) / questions.length) * 100}%` }} />
           </div>
         </div>
       </div>
@@ -146,8 +146,8 @@ export default function VivaSimulatorPage() {
       )}
 
       <div className="viva-question-card">
-        <div className="viva-question">{vivaQuestions[currentQ].question}</div>
-        <div className="viva-difficulty">{t('Difficulty:')} {'★'.repeat(vivaQuestions[currentQ].difficulty)}</div>
+        <div className="viva-question">{questions[currentQ].question}</div>
+        <div className="viva-difficulty">{t('Difficulty:')} {'★'.repeat(questions[currentQ].difficulty)}</div>
         <button className="btn btn-sm btn-outline" onClick={speakQuestion}>🔊 {t('Hear Question')}</button>
       </div>
 
@@ -185,7 +185,7 @@ export default function VivaSimulatorPage() {
           <button className="btn btn-primary" onClick={submitResponse} disabled={!textResponse.trim()}>
             {t('Submit Response')}
           </button>
-          {currentQ < vivaQuestions.length - 1 && (
+          {currentQ < questions.length - 1 && (
             <button className="btn btn-secondary" onClick={nextQuestion}>{t('Skip →')}</button>
           )}
         </div>
@@ -209,7 +209,7 @@ export default function VivaSimulatorPage() {
           </div>
         )}
 
-        {currentQ === vivaQuestions.length - 1 && evaluation && (
+        {currentQ === questions.length - 1 && evaluation && (
           <div className="viva-session-end">
             <h3>{t('Session Complete!')}</h3>
             <p>{t('Final average:')} {totalScore}% {t('across')} {history.length} {t('questions')}</p>

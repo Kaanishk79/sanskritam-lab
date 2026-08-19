@@ -7,6 +7,19 @@ import { CONCEPTS as EXPL_CONCEPTS, type Concept as ExplConcept } from '../data/
 import { WORD_PAIRS, DEV_NUMBERS, SANDHI_PAIRS, type WordPair, type DevNumber, type SandhiPair } from '../data/games'
 import { DEBATE_TOPICS, type DebateTopic, type DebateStance } from '../data/debates'
 import { METERS, VERSE_THEMES, type Meter, type VerseTheme } from '../data/creativeStudio'
+import { VIVA_QUESTIONS, type VivaQuestion } from '../data/viva'
+import { TIMELINE_EVENTS, type TimelineEvent } from '../data/timeline'
+import { GRAMMAR_RULES, PHILOSOPHY_NETWORKS, type GrammarRule, type PhilosophyNetwork } from '../data/grammarMaps'
+import { MANUSCRIPTS, type Manuscript } from '../data/viewer'
+import { SHLOKAS, type Shloka } from '../data/shlokas'
+import { DHATUS, type Dhatu } from '../data/dhatus'
+import { prepTopics, newsArticles, type PrepTopic, type NewsArticle } from '../data/jeopardySite'
+import { jeopardyCategories, doubleJeopardyCategories, finalJeopardy, type JeopardyClue, type JeopardyCategory } from '../data/jeopardy'
+import { anytimeTestQuestions, type TestQuestion } from '../data/jeopardyTest'
+import { flashcardDecks, flashcards } from '../data/flashcards'
+import type { Flashcard } from './srs'
+import { STORY_THEMES, type StoryTheme } from '../data/storyGenerator'
+import { readingPassages, type ReadingPassage } from '../data/languageLab'
 
 type Row = Record<string, unknown>
 
@@ -164,4 +177,234 @@ export async function loadThemes(): Promise<VerseTheme[]> {
     words: (r.words as VerseTheme['words']) ?? [],
     templates: (r.templates as VerseTheme['templates']) ?? [],
   }))
+}
+
+export async function loadVivaQuestions(): Promise<VivaQuestion[]> {
+  const rows = await loadRows('viva_questions')
+  if (!rows.length) return VIVA_QUESTIONS
+  return rows.map((r) => ({
+    id: String(r.id),
+    question: String(r.question),
+    keyPoints: (r.key_points as string[]) ?? [],
+    difficulty: Number(r.difficulty ?? 3),
+  }))
+}
+
+export async function loadTimelineEvents(): Promise<TimelineEvent[]> {
+  const rows = await loadRows('timeline_events')
+  if (!rows.length) return TIMELINE_EVENTS
+  return rows.map((r) => ({
+    year: String(r.year),
+    title: String(r.title),
+    description: String(r.description),
+    category: r.category as TimelineEvent['category'],
+  }))
+}
+
+export async function loadGrammarRules(): Promise<GrammarRule[]> {
+  const rows = await loadRows('grammar_rules')
+  if (!rows.length) return GRAMMAR_RULES
+  return rows.map((r) => ({
+    id: String(r.id),
+    rule: String(r.rule),
+    meaning: String(r.meaning),
+    category: String(r.category),
+  }))
+}
+
+export async function loadPhilosophyNetworks(): Promise<PhilosophyNetwork[]> {
+  const rows = await loadRows('philosophy_networks')
+  if (!rows.length) return PHILOSOPHY_NETWORKS
+  return rows.map((r) => ({
+    name: String(r.name),
+    focus: String(r.focus),
+    texts: String(r.texts),
+    color: String(r.color),
+  }))
+}
+
+export async function loadManuscripts(): Promise<Manuscript[]> {
+  const rows = await loadRows('viewer_manuscripts')
+  if (!rows.length) return MANUSCRIPTS
+  return rows.map((r) => ({
+    id: Number(r.id),
+    name: String(r.name),
+    script: String(r.script),
+    period: String(r.period),
+    transcription: String(r.transcription),
+    color: String(r.color),
+  }))
+}
+
+export async function loadShlokas(): Promise<Shloka[]> {
+  const rows = await loadRows('shlokas')
+  if (!rows.length) return SHLOKAS
+  return rows.map((r) => ({
+    dev: String(r.dev),
+    iast: String(r.iast),
+    translation: String(r.translation),
+    source: String(r.source),
+  }))
+}
+
+export async function loadDhatus(): Promise<Dhatu[]> {
+  const rows = await loadRows('dhatus')
+  if (!rows.length) return DHATUS
+  return rows.map((r) => ({
+    root: String(r.root),
+    iast: String(r.iast),
+    gana: String(r.gana),
+    ganaNum: Number(r.gana_num),
+    meaning: String(r.meaning),
+    present: String(r.present),
+  }))
+}
+
+export async function loadPrepTopics(): Promise<PrepTopic[]> {
+  const rows = await loadRows('jeopardy_prep_topics')
+  if (!rows.length) return prepTopics
+  return rows.map((r) => ({
+    id: String(r.id),
+    title: String(r.title),
+    titleSanskrit: String(r.title_sanskrit),
+    icon: String(r.icon),
+    summary: String(r.summary),
+    points: (r.points as string[]) ?? [],
+  }))
+}
+
+export async function loadNewsArticles(): Promise<NewsArticle[]> {
+  const rows = await loadRows('jeopardy_news')
+  if (!rows.length) return newsArticles
+  return rows.map((r) => ({
+    id: String(r.id),
+    tag: String(r.tag),
+    title: String(r.title),
+    excerpt: String(r.excerpt),
+    date: String(r.date),
+    icon: String(r.icon),
+  }))
+}
+
+export async function loadFlashcardDecks(): Promise<{ id: string; name: string; icon: string }[]> {
+  const rows = await loadRows('flashcard_decks')
+  if (!rows.length) return flashcardDecks
+  return rows.map((r) => ({ id: String(r.id), name: String(r.name), icon: String(r.icon) }))
+}
+
+export async function loadFlashcards(): Promise<Flashcard[]> {
+  const rows = await loadRows('flashcards')
+  if (!rows.length) return flashcards
+  return rows.map((r) => ({
+    id: String(r.id),
+    front: String(r.front),
+    back: String(r.back),
+    hint: r.hint ? String(r.hint) : undefined,
+    tags: (r.tags as string[]) ?? [],
+    deckId: String(r.deck_id),
+  }))
+}
+
+export async function loadStoryThemes(): Promise<StoryTheme[]> {
+  const rows = await loadRows('story_themes')
+  if (!rows.length) return STORY_THEMES
+  return rows.map((r) => ({
+    id: String(r.id),
+    emoji: String(r.emoji),
+    title: String(r.title),
+    words: (r.words as StoryTheme['words']) ?? [],
+    intro: (r.intro as string[]) ?? [],
+    patterns: (r.patterns as StoryTheme['patterns']) ?? [],
+    outro: (r.outro as string[]) ?? [],
+  }))
+}
+
+export async function loadShlokaPassages(): Promise<ReadingPassage[]> {
+  const rows = await loadRows('shloka_passages')
+  if (!rows.length) return readingPassages
+  return rows.map((r) => ({
+    id: String(r.id),
+    title: String(r.title),
+    titleSanskrit: String(r.title_sanskrit),
+    level: String(r.level),
+    text: String(r.text),
+    transliteration: String(r.transliteration),
+    translation: String(r.translation),
+    words: (r.words as ReadingPassage['words']) ?? [],
+  }))
+}
+
+export interface JeopardyBoardData {
+  categories: JeopardyCategory[]
+  doubleCategories: JeopardyCategory[]
+  finalClue: JeopardyClue & { category: string; categorySanskrit: string }
+  testQuestions: TestQuestion[]
+}
+
+export async function loadJeopardyBoard(): Promise<JeopardyBoardData> {
+  const rows = await loadRows('jeopardy_questions')
+  if (!rows.length) {
+    return {
+      categories: jeopardyCategories,
+      doubleCategories: doubleJeopardyCategories,
+      finalClue: {
+        id: 'final-1',
+        value: 0,
+        clue: finalJeopardy.clue,
+        answer: finalJeopardy.answer,
+        category: finalJeopardy.category,
+        categorySanskrit: finalJeopardy.categorySanskrit,
+      },
+      testQuestions: anytimeTestQuestions,
+    }
+  }
+  const byBoard = (board: string) => rows.filter((r) => r.board === board)
+  const toCategory = (boardRows: Row[]): JeopardyCategory[] => {
+    const names = [...new Set(boardRows.map((r) => String(r.category)))]
+    return names.map((name) => {
+      const first = boardRows.find((r) => String(r.category) === name)!
+      return {
+        id: String(first.id),
+        name,
+        nameSanskrit: String(first.category_sanskrit ?? ''),
+        icon: String(first.icon ?? ''),
+        clues: boardRows
+          .filter((r) => String(r.category) === name)
+          .map((r) => ({
+            id: String(r.id),
+            value: Number(r.value ?? 0),
+            clue: String(r.clue),
+            answer: String(r.answer),
+          })),
+      }
+    })
+  }
+  const categories = toCategory(byBoard('r1'))
+  const doubleCategories = toCategory(byBoard('r2'))
+  const finalRow = byBoard('final')[0]
+  const finalClue: JeopardyBoardData['finalClue'] = finalRow
+    ? {
+        id: String(finalRow.id),
+        value: 0,
+        clue: String(finalRow.clue),
+        answer: String(finalRow.answer),
+        category: String(finalRow.category),
+        categorySanskrit: String(finalRow.category_sanskrit ?? ''),
+      }
+    : {
+        id: 'final-1',
+        value: 0,
+        clue: finalJeopardy.clue,
+        answer: finalJeopardy.answer,
+        category: finalJeopardy.category,
+        categorySanskrit: finalJeopardy.categorySanskrit,
+      }
+  const testQuestions: TestQuestion[] = byBoard('test').map((r) => ({
+    id: String(r.id),
+    category: String(r.category),
+    prompt: String(r.clue),
+    options: (r.options as string[]) ?? [],
+    correct: Number(r.correct ?? 0),
+  }))
+  return { categories, doubleCategories, finalClue, testQuestions }
 }

@@ -1,7 +1,60 @@
+import { useEffect, useState } from 'react'
 import { useLanguage } from '../../context/LanguageContext'
+import { supabase } from '../../services/supabase'
+import { getAuthState } from '../../services/auth'
 
 export default function AnalyticsPage() {
   const { t } = useLanguage()
+  const [real, setReal] = useState<{
+    streak: number
+    xp: number
+    attempts: number
+    avgScore: number
+    stories: number
+    labAttempts: number
+    labAvg: number
+  } | null>(null)
+
+  useEffect(() => {
+    let live = true
+    const user = getAuthState().user
+    if (!user) return
+    Promise.all([
+      supabase.from('user_progress').select('streak, xp').eq('user_id', user.id).maybeSingle(),
+      supabase.from('lab_stats').select('stats').eq('user_id', user.id).maybeSingle(),
+      supabase.from('assessment_attempts').select('score, max_score').eq('user_id', user.id),
+      supabase.from('user_stories').select('id', { count: 'exact', head: true }).eq('user_id', user.id),
+    ])
+      .then(([progressRes, labRes, attemptsRes, storiesRes]) => {
+        if (!live) return
+        const progress = progressRes.data as { streak?: number; xp?: number } | null
+        const labMap = (labRes.data as { stats?: Record<string, { score?: number; attempts?: number }> } | null)?.stats
+        const rows = (attemptsRes.data as { score: number; max_score: number }[] | null) ?? []
+        const attempts = rows.length
+        const pct = rows.reduce((s, r) => s + (r.max_score > 0 ? (r.score / r.max_score) * 100 : 0), 0)
+        const avgScore = attempts > 0 ? Math.round(pct / attempts) : 0
+        let labAttempts = 0
+        let labSum = 0
+        for (const v of Object.values(labMap ?? {})) {
+          labAttempts += v.attempts ?? 0
+          labSum += (v.score ?? 0) * (v.attempts ?? 0)
+        }
+        const labAvg = labAttempts > 0 ? Math.round(labSum / labAttempts) : 0
+        setReal({
+          streak: progress?.streak ?? 0,
+          xp: progress?.xp ?? 0,
+          attempts,
+          avgScore,
+          stories: storiesRes.count ?? 0,
+          labAttempts,
+          labAvg,
+        })
+      })
+      .catch(() => undefined)
+    return () => {
+      live = false
+    }
+  }, [])
 
   return (
     <div>
@@ -9,6 +62,39 @@ export default function AnalyticsPage() {
         <h2>📊 {t('Analytics Engine')}</h2>
         <p>{t('Track student performance, highlight weak areas, and get customized study paths')}</p>
       </div>
+
+      {real && (
+        <div className="card" style={{ marginBottom: 24, padding: 20 }}>
+          <h3 style={{ marginTop: 0, marginBottom: 16 }}>📈 {t('Real data')}</h3>
+          <div className="analytics-grid" style={{ marginBottom: 0 }}>
+            <div className="stat-card">
+              <div className="stat-value">{real.streak}</div>
+              <div className="stat-label">{t('Day Streak')}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{real.xp}</div>
+              <div className="stat-label">{t('XP')}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{real.attempts}</div>
+              <div className="stat-label">{t('Attempts')}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{real.avgScore}%</div>
+              <div className="stat-label">{t('Avg Score')}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{real.stories}</div>
+              <div className="stat-label">{t('Stories')}</div>
+            </div>
+          </div>
+          {real.labAttempts > 0 && (
+            <p style={{ color: '#888', fontSize: 13, marginTop: 12 }}>
+              {t('Lab practice')}: {real.labAttempts} {t('attempts')} · {t('avg')} {real.labAvg}%
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="analytics-grid">
         <div className="stat-card">

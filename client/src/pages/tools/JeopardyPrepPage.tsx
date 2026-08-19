@@ -1,12 +1,24 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { prepTopics } from '../../data/jeopardySite'
+import { loadPrepTopics } from '../../services/contentDb'
 import { useLanguage } from '../../context/LanguageContext'
 import JeopardyHeader from '../../components/jeopardy/JeopardyHeader'
 import '../tools/jeopardy.css'
 
 export default function JeopardyPrepPage() {
   const { t, lang } = useLanguage()
+  const [topics, setTopics] = useState(prepTopics)
   const [open, setOpen] = useState<string | null>(prepTopics[0].id)
+
+  useEffect(() => {
+    let live = true
+    loadPrepTopics().then((rows) => {
+      if (live) setTopics(rows)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
 
   return (
     <div>
@@ -17,7 +29,7 @@ export default function JeopardyPrepPage() {
       </div>
 
       <div className="j-prep-grid">
-        {prepTopics.map((topic) => {
+        {topics.map((topic) => {
           const isOpen = open === topic.id
           return (
             <div className={`j-prep-card${isOpen ? ' open' : ''}`} key={topic.id}>

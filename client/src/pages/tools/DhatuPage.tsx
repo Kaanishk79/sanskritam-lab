@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { DHATUS } from '../../services/sanskrit'
+import { useEffect, useState } from 'react'
+import { DHATUS, type Dhatu } from '../../data/dhatus'
+import { loadDhatus } from '../../services/contentDb'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -7,10 +8,21 @@ const GANAS = ['All', 'भ्वादि', 'अदादि', 'जुहोत�
 
 export default function DhatuPage() {
   const { t } = useLanguage()
+  const [dhatus, setDhatus] = useState<Dhatu[]>(DHATUS)
   const [q, setQ] = useState('')
   const [gana, setGana] = useState('All')
 
-  const rows = DHATUS.filter((d) => {
+  useEffect(() => {
+    let live = true
+    loadDhatus().then((rows) => {
+      if (live) setDhatus(rows)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
+
+  const rows = dhatus.filter((d) => {
     const matchQ = !q.trim() || d.root.includes(q.trim()) || d.iast.includes(q.trim().toLowerCase()) || d.meaning.toLowerCase().includes(q.trim().toLowerCase())
     const matchG = gana === 'All' || d.gana === gana
     return matchQ && matchG

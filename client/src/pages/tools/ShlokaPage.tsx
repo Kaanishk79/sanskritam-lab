@@ -1,14 +1,30 @@
 import { useState, useEffect } from 'react'
-import { readingPassages } from '../../data/languageLab'
-import { VERSES_OF_DAY } from '../../services/sanskrit'
+import { readingPassages, type ReadingPassage } from '../../data/languageLab'
+import { SHLOKAS, type Shloka } from '../../data/shlokas'
+import { loadShlokaPassages, loadShlokas } from '../../services/contentDb'
 import ExplorePanel from '../../components/ExplorePanel'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function ShlokaPage() {
   const { t } = useLanguage()
+  const [passages, setPassages] = useState<ReadingPassage[]>(readingPassages)
+  const [verses, setVerses] = useState<Shloka[]>(SHLOKAS)
   const [openPassage, setOpenPassage] = useState<string | null>(null)
   const [exploreWord, setExploreWord] = useState<string | null>(null)
+
+  useEffect(() => {
+    let live = true
+    loadShlokaPassages().then((rows) => {
+      if (live) setPassages(rows)
+    })
+    loadShlokas().then((rows) => {
+      if (live) setVerses(rows)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
 
   useEffect(() => {
     const handler = (e: Event) => setExploreWord((e as CustomEvent<string>).detail)
@@ -18,6 +34,8 @@ export default function ShlokaPage() {
 
   const clickWord = (w: string) => setExploreWord(w)
 
+  const dayVerse = verses[Math.floor(Date.now() / 86400000) % verses.length]
+
   return (
     <div className="page">
       <div className="page-header">
@@ -26,7 +44,7 @@ export default function ShlokaPage() {
       </div>
 
       <h3>📜 {t('Classical passages')}</h3>
-      {readingPassages.map((p) => (
+      {passages.map((p) => (
         <div key={p.id} className="card" style={{ padding: 20, marginBottom: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
             <strong>{p.titleSanskrit} <span style={{ color: '#888', fontWeight: 400 }}>· {p.title}</span></strong>
@@ -58,22 +76,19 @@ export default function ShlokaPage() {
         </div>
       ))}
 
-      <h3>🪔 {t('Daily verses')}</h3>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 10 }}>
-        {VERSES_OF_DAY.map((v, i) => (
-          <div key={i} className="card" style={{ padding: 16 }}>
-            <div style={{ fontSize: 18, lineHeight: 1.8 }}>
-              {v.dev.split(' ').map((w, j) => (
-                <span key={j}>
-                  <button className="explore-word" onClick={() => clickWord(w)}>{w}</button>{' '}
-                </span>
-              ))}
-            </div>
-            <div style={{ color: '#999', fontSize: 12, fontStyle: 'italic', marginTop: 4 }}>{v.iast}</div>
-            <div style={{ color: '#ccc', fontSize: 13, marginTop: 4 }}>{v.translation}</div>
-            <div style={{ color: '#666', fontSize: 11, marginTop: 2 }}>{v.source}</div>
-          </div>
-        ))}
+      <h3>🪔 {t('Verse of the day')}</h3>
+      <div className="card" style={{ padding: 16, maxWidth: 640, border: '2px solid rgba(255,152,0,0.4)', background: 'rgba(255,152,0,0.06)' }}>
+        <div style={{ fontSize: 18, lineHeight: 1.8 }}>
+          {dayVerse.dev.split(' ').map((w, j) => (
+            <span key={j}>
+              <button className="explore-word" onClick={() => clickWord(w)}>{w}</button>{' '}
+            </span>
+          ))}
+        </div>
+        <div style={{ color: '#999', fontSize: 12, fontStyle: 'italic', marginTop: 4 }}>{dayVerse.iast}</div>
+        <div style={{ color: '#ccc', fontSize: 13, marginTop: 4 }}>{dayVerse.translation}</div>
+        <div style={{ color: '#666', fontSize: 11, marginTop: 2 }}>{dayVerse.source}</div>
+        <button className="btn btn-sm btn-outline" style={{ marginTop: 10 }} onClick={() => speakWithFallback(dayVerse.dev)}>🔊 {t('Hear it')}</button>
       </div>
 
       {exploreWord && <ExplorePanel word={exploreWord} onClose={() => setExploreWord(null)} />}

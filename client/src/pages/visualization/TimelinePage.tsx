@@ -1,18 +1,21 @@
+import { useEffect, useState } from 'react'
 import { useLanguage } from '../../context/LanguageContext'
-
-const events = [
-  { year: '1500-1200 BCE', title: 'Ṛgveda Composition', description: 'Earliest extant Sanskrit texts, hymns to deities', category: 'text' as const },
-  { year: '~1000 BCE', title: 'Brāhmaṇas & Āraṇyakas', description: 'Ritual manuals and forest treatises', category: 'text' as const },
-  { year: '~700 BCE', title: 'Early Upaniṣads', description: 'Philosophical speculations on Brahman and Ātman', category: 'philosophy' as const },
-  { year: '~500 BCE', title: 'Pāṇini — Aṣṭādhyāyī', description: 'Systematization of Sanskrit grammar into 8 chapters', category: 'grammar' as const },
-  { year: '~300 BCE', title: 'Nyāya & Vaiśeṣika Sūtras', description: 'Foundational texts of logic and atomism', category: 'philosophy' as const },
-  { year: '~200 BCE', title: 'Yoga Sūtra & Bhagavad Gītā', description: 'Classical yoga system and the Gītā synthesis', category: 'philosophy' as const },
-  { year: '~4th CE', title: 'Kālidāsa — Abhijñānaśākuntalam', description: 'Classical Sanskrit drama at its zenith', category: 'text' as const },
-  { year: '~7th CE', title: 'Bhartṛhari — Vākyapadīya', description: 'Philosophy of language and sentence meaning', category: 'grammar' as const },
-]
+import { TIMELINE_EVENTS, type TimelineEvent } from '../../data/timeline'
+import { loadTimelineEvents } from '../../services/contentDb'
 
 export default function TimelinePage() {
   const { t } = useLanguage()
+  const [events, setEvents] = useState<TimelineEvent[]>(TIMELINE_EVENTS)
+
+  useEffect(() => {
+    let live = true
+    loadTimelineEvents().then((rows) => {
+      if (live) setEvents(rows)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
 
   return (
     <div>

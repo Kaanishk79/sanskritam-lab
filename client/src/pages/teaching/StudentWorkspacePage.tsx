@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLanguage } from '../../context/LanguageContext'
 import { useRole } from '../../context/RoleContext'
+import { supabase } from '../../services/supabase'
+import { getAuthState } from '../../services/auth'
 
 export default function StudentWorkspacePage() {
   const [activeTool, setActiveTool] = useState('text')
@@ -19,6 +21,40 @@ export default function StudentWorkspacePage() {
   const classmates = sampleStudent
     ? allStudents.filter((st) => st.section_id === sampleStudent.section_id && st.id !== sampleStudent.id)
     : []
+  const [liveStats, setLiveStats] = useState<{ streak: number; xp: number; attempts: number; avgScore: number; labAttempts: number } | null>(null)
+
+  useEffect(() => {
+    let live = true
+    const user = getAuthState().user
+    if (!user) return
+    Promise.all([
+      supabase.from('user_progress').select('streak, xp').eq('user_id', user.id).maybeSingle(),
+      supabase.from('lab_stats').select('stats').eq('user_id', user.id).maybeSingle(),
+      supabase.from('assessment_attempts').select('score, max_score').eq('user_id', user.id),
+    ])
+      .then(([progressRes, labRes, attemptsRes]) => {
+        if (!live) return
+        const progress = progressRes.data as { streak?: number; xp?: number } | null
+        const labMap = (labRes.data as { stats?: Record<string, { attempts?: number }> } | null)?.stats
+        const rows = (attemptsRes.data as { score: number; max_score: number }[] | null) ?? []
+        const attempts = rows.length
+        const pct = rows.reduce((s, r) => s + (r.max_score > 0 ? (r.score / r.max_score) * 100 : 0), 0)
+        const avgScore = attempts > 0 ? Math.round(pct / attempts) : 0
+        let labAttempts = 0
+        for (const v of Object.values(labMap ?? {})) labAttempts += v.attempts ?? 0
+        setLiveStats({
+          streak: progress?.streak ?? 0,
+          xp: progress?.xp ?? 0,
+          attempts,
+          avgScore,
+          labAttempts,
+        })
+      })
+      .catch(() => undefined)
+    return () => {
+      live = false
+    }
+  }, [])
 
   if (inStudentView && school && sampleStudent) {
     return (
@@ -155,6 +191,35 @@ export default function StudentWorkspacePage() {
           <div className="stat-label">{t('Day Streak')}</div>
         </div>
       </div>
+
+      {liveStats && (
+        <div className="card" style={{ marginTop: 16 }}>
+          <h3 style={{ marginTop: 0, marginBottom: 16 }}>📊 {t('Live data')}</h3>
+          <div className="analytics-grid" style={{ marginBottom: 0 }}>
+            <div className="stat-card">
+              <div className="stat-value">{liveStats.streak}</div>
+              <div className="stat-label">{t('Day Streak')}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{liveStats.xp}</div>
+              <div className="stat-label">{t('XP')}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{liveStats.attempts}</div>
+              <div className="stat-label">{t('Attempts')}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{liveStats.avgScore}%</div>
+              <div className="stat-label">{t('Avg Score')}</div>
+            </div>
+          </div>
+          {liveStats.labAttempts > 0 && (
+            <p style={{ color: '#888', fontSize: 13, marginTop: 12 }}>
+              {t('Lab practice')}: {liveStats.labAttempts} {t('attempts')}
+            </p>
+          )}
+        </div>
+      )}
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
         {[

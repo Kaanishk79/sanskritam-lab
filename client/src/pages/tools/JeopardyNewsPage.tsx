@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import { newsArticles } from '../../data/jeopardySite'
+import { useEffect, useState } from 'react'
+import { newsArticles, type NewsArticle } from '../../data/jeopardySite'
+import { loadNewsArticles } from '../../services/contentDb'
 import { useLanguage } from '../../context/LanguageContext'
 import JeopardyHeader from '../../components/jeopardy/JeopardyHeader'
 import '../tools/jeopardy.css'
@@ -8,9 +9,21 @@ const tags = ['All', 'News & Events', 'Behind the Scenes', 'Contestants']
 
 export default function JeopardyNewsPage() {
   const { t } = useLanguage()
+  const [articles, setArticles] = useState<NewsArticle[] | null>(null)
   const [tag, setTag] = useState('All')
 
-  const filtered = tag === 'All' ? newsArticles : newsArticles.filter((a) => a.tag === tag)
+  useEffect(() => {
+    let live = true
+    loadNewsArticles().then((rows) => {
+      if (live) setArticles(rows)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
+
+  const newsItems = articles ?? newsArticles
+  const filtered = tag === 'All' ? newsItems : newsItems.filter((a) => a.tag === tag)
 
   return (
     <div>

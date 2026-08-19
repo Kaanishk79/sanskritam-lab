@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLanguage } from '../../context/LanguageContext'
+import { supabase } from '../../services/supabase'
+import { getAuthState } from '../../services/auth'
 
 interface Question {
   prompt: string
@@ -34,6 +36,8 @@ export default function AssessmentPage() {
   const [selected, setSelected] = useState<number | null>(null)
   const [score, setScore] = useState(0)
   const [finished, setFinished] = useState(false)
+  const [answers, setAnswers] = useState<{ selected: number; correct: boolean }[]>([])
+  const [attempts, setAttempts] = useState<{ id: string; lesson_id: string; score: number; max_score: number; created_at: string }[]>([])
   const { t } = useLanguage()
 
   const q = sampleQuestions[currentQ]
@@ -41,6 +45,7 @@ export default function AssessmentPage() {
   const handleAnswer = (idx: number) => {
     if (selected !== null) return
     setSelected(idx)
+    setAnswers((prev) => [...prev, { selected: idx, correct: idx === q.correctIdx }])
     if (idx === q.correctIdx) setScore((s) => s + 1)
   }
 
@@ -52,6 +57,64 @@ export default function AssessmentPage() {
       setFinished(true)
     }
   }
+
+  useEffect(() => {
+    const user = getAuthState().user
+    if (!user) return
+    let live = true
+    supabase
+      .from('assessment_attempts')
+      .select('id, lesson_id, score, max_score, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10)
+      .then(({ data, error }) => {
+        if (live && !error && data && data.length > 0) setAttempts(data)
+      }, () => undefined)
+    return () => {
+      live = false
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!finished) return
+    const user = getAuthState().user
+    if (!user) return
+    supabase
+      .from('assessment_attempts')
+      .insert({ user_id: user.id, lesson_id: 'sample-grammar-quiz', score, max_score: sampleQuestions.length, answers, time_spent_sec: 0 })
+      .then(() => {
+        const u = getAuthState().user
+        if (!u) return
+        return supabase
+          .from('assessment_attempts')
+          .select('id, lesson_id, score, max_score, created_at')
+          .eq('user_id', u.id)
+          .order('created_at', { ascending: false })
+          .limit(10)
+          .then(({ data, error }) => {
+            if (!error && data && data.length > 0) setAttempts(data)
+          }, () => undefined)
+      }, () => undefined)
+  }, [finished, score, answers])
+
+  const pastAttempts = attempts.length > 0 && (
+    <div className="card" style={{ marginTop: 16 }}>
+      <h3 style={{ marginTop: 0, marginBottom: 12 }}>🕘 {t('Past attempts')}</h3>
+      <div className="text-list">
+        {attempts.map((a) => (
+          <div key={a.id} className="text-item">
+            <div>
+              <div className="text-title">{a.lesson_id}</div>
+              <div className="text-meta">
+                {a.score}/{a.max_score} · {new Date(a.created_at).toLocaleDateString()}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 
   if (finished) {
     return (
@@ -72,11 +135,12 @@ export default function AssessmentPage() {
           <button
             className="btn btn-primary"
             style={{ marginTop: 20 }}
-            onClick={() => { setCurrentQ(0); setSelected(null); setScore(0); setFinished(false) }}
+            onClick={() => { setCurrentQ(0); setSelected(null); setScore(0); setFinished(false); setAnswers([]) }}
           >
             {t('Retry')}
           </button>
         </div>
+        {pastAttempts}
       </div>
     )
   }
@@ -130,6 +194,7 @@ export default function AssessmentPage() {
           </button>
         )}
       </div>
+      {pastAttempts}
     </div>
   )
 }

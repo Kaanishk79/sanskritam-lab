@@ -1,6 +1,9 @@
+import { useEffect, useState } from 'react'
 import { useLanguage } from '../../context/LanguageContext'
 import { useRole } from '../../context/RoleContext'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../../services/supabase'
+import { getAuthState } from '../../services/auth'
 
 export default function TeacherDashboardPage() {
   const { t } = useLanguage()
@@ -13,6 +16,51 @@ export default function TeacherDashboardPage() {
     ? school.classes.flatMap((c) => (c.sections || []).flatMap((sec) => sec.students || [])).filter((st) => st.is_active)
     : []
   const classes = school ? school.classes.filter((c) => c.is_active) : []
+  const [liveStats, setLiveStats] = useState<{ learners: number; avgStreak: number; attempts: number } | null>(null)
+
+  useEffect(() => {
+    let live = true
+    const user = getAuthState().user
+    if (!user) return
+    Promise.all([
+      supabase.from('user_progress').select('streak'),
+      supabase.from('assessment_attempts').select('id'),
+    ])
+      .then(([progressRes, attemptsRes]) => {
+        if (!live) return
+        const rows = (progressRes.data as { streak?: number }[] | null) ?? []
+        const attempts = (attemptsRes.data as unknown[] | null)?.length ?? 0
+        setLiveStats({
+          learners: rows.length,
+          avgStreak: rows.length > 0 ? Math.round(rows.reduce((s, r) => s + (r.streak ?? 0), 0) / rows.length) : 0,
+          attempts,
+        })
+      })
+      .catch(() => undefined)
+    return () => {
+      live = false
+    }
+  }, [])
+
+  const liveCard = liveStats && (
+    <div className="card" style={{ marginTop: 16 }}>
+      <h3 style={{ marginTop: 0, marginBottom: 16 }}>📊 {t('Live data')}</h3>
+      <div className="analytics-grid" style={{ marginBottom: 0 }}>
+        <div className="stat-card">
+          <div className="stat-value">{liveStats.learners}</div>
+          <div className="stat-label">{t('Total Learners')}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value">{liveStats.avgStreak}</div>
+          <div className="stat-label">{t('Avg. Streak')}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-value">{liveStats.attempts}</div>
+          <div className="stat-label">{t('Attempts Submitted')}</div>
+        </div>
+      </div>
+    </div>
+  )
 
   if (live && school && user?.accountType !== 'student') {
     return (
@@ -40,6 +88,8 @@ export default function TeacherDashboardPage() {
             <div className="stat-label">{t('Sections')}</div>
           </div>
         </div>
+
+        {liveCard}
 
         <div className="grid-2">
           <div className="card">
@@ -139,6 +189,8 @@ export default function TeacherDashboardPage() {
           <div className="stat-label">{t('Active Classes')}</div>
         </div>
       </div>
+
+      {liveCard}
 
       <div className="grid-2">
         <div className="card">
