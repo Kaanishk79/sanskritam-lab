@@ -1,6 +1,8 @@
+import { useState, useCallback } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
 import SchoolOnly from './components/SchoolOnly'
+import Curtain from './components/Curtain'
 import { KeyboardProvider } from './context/KeyboardContext'
 import './App.css'
 import Dashboard from './pages/dashboard/index'
@@ -57,9 +59,13 @@ import JeopardyNewsPage from './pages/tools/JeopardyNewsPage'
 import JeopardyBuilderPage from './pages/tools/JeopardyBuilderPage'
 
 export default function App() {
+  const [curtainDone, setCurtainDone] = useState(false)
+  const handleCurtainDone = useCallback(() => setCurtainDone(true), [])
+
   return (
     <BrowserRouter>
       <KeyboardProvider>
+      {!curtainDone && <Curtain onDone={handleCurtainDone} />}
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />

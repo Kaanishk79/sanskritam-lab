@@ -50,4 +50,8 @@ export const layoutHi: Record<string, string> = {
   'Viva Practice': 'वाइवा अभ्यास',
   '© 2026 SanskritLab. Open source.': '© २०२६ संस्कृतलैब। ओपन सोर्स।',
   'Made with ❤️ for Sanskrit': 'संस्कृत के लिए ❤️ के साथ बनाया गया',
+
+  'Leave Guest': 'अतिथि छोड़ें',
+  'Sign Out': 'साइन आउट',
+  'View as': 'देखें जैसे',
 }

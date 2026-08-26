@@ -65,4 +65,7 @@ export const dashboardHi: Record<string, string> = {
   'Parent & Homeschool Teacher': 'अभिभावक एवं गृह-विद्यालय शिक्षक',
   'The AI viva simulator helped me prepare for my oral exams with accurate pronunciation feedback.': 'एआई वाइवा सिम्युलेटर ने सटीक उच्चारण प्रतिक्रिया के साथ मेरी मौखिक परीक्षाओं की तैयारी में मदद की।',
   'MA Sanskrit Student': 'एमए संस्कृत छात्र',
+
+  'Create Free Account': 'मुफ़्त खाता बनाएं',
+  'You are in Guest mode — progress is kept on this device only.': 'आप अतिथि मोड में हैं — प्रगति केवल इस डिवाइस पर सहेजी जाती है।',
 }
