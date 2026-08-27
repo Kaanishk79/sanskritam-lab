@@ -4,6 +4,7 @@ import { supabase } from '../../services/supabase'
 import { toIAST, toDevanagari } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
+import { bi } from '../../services/bilingual'
 
 interface DictEntry {
   id: string
@@ -11,6 +12,7 @@ interface DictEntry {
   root: string | null
   pos: string | null
   meanings: string[] | null
+  meanings_hi: string[] | null
   derivations: string[] | null
 }
 
@@ -18,8 +20,13 @@ const POS_ICON: Record<string, string> = {
   noun: '🏷️', verb: '⚡', adjective: '🎨', adverb: '➡️', pronoun: '👤', particle: '🔗', indeclinable: '🔗',
 }
 
+const POS_HI: Record<string, string> = {
+  noun: 'संज्ञा', verb: 'क्रिया', adjective: 'विशेषण', adverb: 'क्रियाविशेषण',
+  pronoun: 'सर्वनाम', particle: 'अव्यय', indeclinable: 'अव्यय',
+}
+
 export default function DictionaryPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const navigate = useNavigate()
   const [q, setQ] = useState('')
   const [entries, setEntries] = useState<DictEntry[]>([])
@@ -30,7 +37,7 @@ export default function DictionaryPage() {
     setLoading(true)
     setError('')
     try {
-      const sel = 'id, word, root, pos, meanings, derivations'
+      const sel = 'id, word, root, pos, meanings, meanings_hi, derivations'
       const trimmed = query.trim()
       if (!trimmed) {
         const { data } = await supabase.from('dictionary').select(sel).order('word').limit(60)
@@ -39,7 +46,7 @@ export default function DictionaryPage() {
         const { data, error: err } = await supabase
           .from('dictionary')
           .select(sel)
-          .or(`word.ilike.%${trimmed}%, meanings.cs.{${trimmed}}`)
+          .or(`word.ilike.%${trimmed}%, meanings.cs.{${trimmed}}, meanings_hi.cs.{${trimmed}}`)
           .limit(40)
         if (err) throw new Error(err.message)
         setEntries((data as DictEntry[]) || [])
@@ -83,10 +90,10 @@ export default function DictionaryPage() {
                 <button className="btn btn-sm btn-primary" onClick={() => navigate(`/explore/${encodeURIComponent(e.word)}`)}>{t('Explore')}</button>
               </div>
             </div>
-            <div style={{ color: '#999', fontSize: 13 }}>{toIAST(e.word)} {e.pos ? `· ${POS_ICON[e.pos] || ''} ${e.pos}` : ''}</div>
+            <div style={{ color: '#999', fontSize: 13 }}>{toIAST(e.word)} {e.pos ? `· ${POS_ICON[e.pos] || ''} ${bi(lang, e.pos, POS_HI[e.pos] || e.pos)}` : ''}</div>
             <ul style={{ margin: 0, paddingLeft: 18, color: '#ccc' }}>
-              {(e.meanings || []).map((m, i) => <li key={i}>{m}</li>)}
-              {(e.meanings || []).length === 0 && <li style={{ color: '#888' }}>—</li>}
+              {(lang === 'hi' && e.meanings_hi && e.meanings_hi.length ? e.meanings_hi : e.meanings || []).map((m, i) => <li key={i}>{m}</li>)}
+              {(lang === 'hi' ? (e.meanings_hi?.length || 0) : e.meanings?.length || 0) === 0 && <li style={{ color: '#888' }}>—</li>}
             </ul>
             {e.root && (
               <div style={{ fontSize: 13, color: '#aaa' }}>

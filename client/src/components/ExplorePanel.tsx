@@ -9,6 +9,7 @@ interface DictionaryRow {
   root: string | null
   pos: string | null
   meanings: string[] | null
+  meanings_hi: string[] | null
   derivations: string[] | null
 }
 
@@ -22,6 +23,7 @@ interface TextRef {
 interface RelatedWord {
   word: string
   meanings: string[]
+  meanings_hi: string[]
 }
 
 interface Concept {
@@ -35,7 +37,7 @@ export function exploreWord(word: string) {
 }
 
 export default function ExplorePanel({ word, onClose }: { word: string; onClose?: () => void }) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [entry, setEntry] = useState<DictionaryRow | null>(null)
   const [related, setRelated] = useState<RelatedWord[]>([])
   const [refs, setRefs] = useState<TextRef[]>([])
@@ -55,7 +57,7 @@ export default function ExplorePanel({ word, onClose }: { word: string; onClose?
     const doSearch = async () => {
       const [dict, sameRoot, textsR, corpusR] = await Promise.all([
         supabase.from('dictionary').select('*').ilike('word', w).limit(1),
-        supabase.from('dictionary').select('word, meanings').ilike('root', `%${w.slice(0, 1)}%`).limit(6),
+        supabase.from('dictionary').select('word, meanings, meanings_hi').ilike('root', `%${w.slice(0, 1)}%`).limit(6),
         supabase.from('texts').select('id, title, content').ilike('content', `%${w}%`).limit(5),
         supabase.from('corpus_texts').select('id, title, content').ilike('content', `%${w}%`).limit(5),
       ])
@@ -64,19 +66,19 @@ export default function ExplorePanel({ word, onClose }: { word: string; onClose?
       setEntry(row || null)
       const relatedWords: RelatedWord[] = []
       if (row?.root && sameRoot.data) {
-        for (const r of sameRoot.data as { word: string; meanings: string[] }[]) {
-          if (r.word !== w) relatedWords.push({ word: r.word, meanings: r.meanings || [] })
+        for (const r of sameRoot.data as { word: string; meanings: string[]; meanings_hi: string[] }[]) {
+          if (r.word !== w) relatedWords.push({ word: r.word, meanings: r.meanings || [], meanings_hi: r.meanings_hi || [] })
         }
       }
       if (row?.derivations && row.derivations.length > 0) {
         const derivR = await supabase
           .from('dictionary')
-          .select('word, meanings')
+          .select('word, meanings, meanings_hi')
           .in('word', row.derivations)
           .limit(6)
         if (alive && derivR.data) {
-          for (const d of derivR.data as { word: string; meanings: string[] }[]) {
-            if (!relatedWords.some((r) => r.word === d.word)) relatedWords.push({ word: d.word, meanings: d.meanings || [] })
+          for (const d of derivR.data as { word: string; meanings: string[]; meanings_hi: string[] }[]) {
+            if (!relatedWords.some((r) => r.word === d.word)) relatedWords.push({ word: d.word, meanings: d.meanings || [], meanings_hi: d.meanings_hi || [] })
           }
         }
       }
@@ -142,8 +144,8 @@ export default function ExplorePanel({ word, onClose }: { word: string; onClose?
             <h4>📖 {t('Meaning')}</h4>
             {entry ? (
               <ul style={{ margin: 0, paddingLeft: 20 }}>
-                {(entry.meanings || []).map((m, i) => <li key={i}>{m}</li>)}
-                {(entry.meanings || []).length === 0 && <li style={{ color: '#888' }}>—</li>}
+                {(lang === 'hi' && entry.meanings_hi && entry.meanings_hi.length ? entry.meanings_hi : entry.meanings || []).map((m, i) => <li key={i}>{m}</li>)}
+                {(lang === 'hi' ? (entry.meanings_hi?.length || 0) : entry.meanings?.length || 0) === 0 && <li style={{ color: '#888' }}>—</li>}
               </ul>
             ) : (
               <p style={{ color: '#888', margin: 0 }}>{t('Not in dictionary yet — try the related-words and text references below.')}</p>
@@ -165,7 +167,7 @@ export default function ExplorePanel({ word, onClose }: { word: string; onClose?
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {related.map((r) => (
                   <button key={r.word} className="btn btn-sm btn-outline" onClick={() => exploreWord(r.word)}>
-                    {r.word} <span style={{ color: '#999' }}>({r.meanings[0] || ''})</span>
+                    {r.word} <span style={{ color: '#999' }}>({lang === 'hi' && r.meanings_hi?.length ? r.meanings_hi[0] : (r.meanings[0] || '')})</span>
                   </button>
                 ))}
               </div>
