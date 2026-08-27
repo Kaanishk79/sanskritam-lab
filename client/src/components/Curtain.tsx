@@ -35,7 +35,7 @@ export default function Curtain({ onDone }: { onDone: () => void }) {
     if (phase === 'waiting') setPhase('opening')
   }
 
-  const split = progress * 55
+  const split = progress * 105
   const contentOpacity = Math.max(0, 1 - progress * 2.5)
   const contentScale = 1 + progress * 0.3
   const glowIntensity = Math.min(progress * 3, 1)
