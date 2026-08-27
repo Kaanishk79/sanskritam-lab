@@ -15,7 +15,7 @@ const LanguageContext = createContext<LanguageContextValue | null>(null)
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
     const saved = localStorage.getItem('sanskritlab-lang')
-    return saved === 'hi' ? 'hi' : 'en'
+    return saved === 'en' ? 'en' : 'hi'
   })
 
   useEffect(() => {
