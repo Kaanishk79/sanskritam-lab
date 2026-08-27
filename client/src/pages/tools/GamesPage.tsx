@@ -53,7 +53,7 @@ function startSandhiQuiz(pairs: SandhiPair[]): SandhiQ[] {
 }
 
 export default function GamesPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [game, setGame] = useState<'match' | 'numbers' | 'sandhi'>('match')
   const [wordPairs, setWordPairs] = useState<WordPair[]>(WORD_PAIRS)
   const [devNumbers, setDevNumbers] = useState<DevNumber[]>(DEV_NUMBERS)
@@ -126,13 +126,13 @@ export default function GamesPage() {
       return
     }
     const pairA = pairs.find((p) => p.sa === picked)
-    const pairB = pairs.find((p) => p.en === key)
+    const pairB = pairs.find((p) => (lang === 'hi' ? p.hi : p.en) === key)
     const pairC = pairs.find((p) => p.sa === key)
-    const pairD = pairs.find((p) => p.en === picked)
+    const pairD = pairs.find((p) => (lang === 'hi' ? p.hi : p.en) === picked)
     const isMatch =
-      (pairA && pairA.en === key) ||
+      (pairA && (lang === 'hi' ? pairA.hi : pairA.en) === key) ||
       (pairB && pairB.sa === picked) ||
-      (pairC && pairC.en === picked) ||
+      (pairC && (lang === 'hi' ? pairC.hi : pairC.en) === picked) ||
       (pairD && pairD.sa === key)
     if (isMatch) {
       setMatched((m) => new Set([...m, picked, key]))
@@ -216,7 +216,7 @@ export default function GamesPage() {
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 10 }}>
-                {shuffle([...pairs.map((p) => p.sa), ...pairs.map((p) => p.en)]).map((key) => (
+                {shuffle([...pairs.map((p) => p.sa), ...pairs.map((p) => (lang === 'hi' ? (p.hi ?? p.en) : p.en))]).map((key) => (
                   <button key={key} className="card" style={cardStyle(key)} onClick={() => tapMatch(key)} disabled={matched.has(key)}>
                     {key}
                   </button>

@@ -2,29 +2,30 @@ export interface WordPair {
   sa: string
   iast: string
   en: string
+  hi?: string
 }
 
 export const WORD_PAIRS: WordPair[] = [
-  { sa: 'जलम्', iast: 'jalam', en: 'water' },
-  { sa: 'अग्निः', iast: 'agniḥ', en: 'fire' },
-  { sa: 'सूर्यः', iast: 'sūryaḥ', en: 'sun' },
-  { sa: 'चन्द्रः', iast: 'candraḥ', en: 'moon' },
-  { sa: 'वृक्षः', iast: 'vṛkṣaḥ', en: 'tree' },
-  { sa: 'पुष्पम्', iast: 'puṣpam', en: 'flower' },
-  { sa: 'गजः', iast: 'gajaḥ', en: 'elephant' },
-  { sa: 'सिंहः', iast: 'siṃhaḥ', en: 'lion' },
-  { sa: 'ग्रन्थः', iast: 'granthaḥ', en: 'book' },
-  { sa: 'विद्यालयः', iast: 'vidyālayaḥ', en: 'school' },
-  { sa: 'मित्रम्', iast: 'mitram', en: 'friend' },
-  { sa: 'गृहम्', iast: 'gṛham', en: 'house' },
-  { sa: 'आकाशम्', iast: 'ākāśam', en: 'sky' },
-  { sa: 'समुद्रः', iast: 'samudraḥ', en: 'ocean' },
-  { sa: 'पर्वतः', iast: 'parvataḥ', en: 'mountain' },
-  { sa: 'नदी', iast: 'nadī', en: 'river' },
-  { sa: 'अन्नम्', iast: 'annam', en: 'food' },
-  { sa: 'दुग्धम्', iast: 'dugdham', en: 'milk' },
-  { sa: 'अश्वः', iast: 'aśvaḥ', en: 'horse' },
-  { sa: 'पक्षी', iast: 'pakṣī', en: 'bird' },
+  { sa: 'जलम्', iast: 'jalam', en: 'water', hi: 'पानी' },
+  { sa: 'अग्निः', iast: 'agniḥ', en: 'fire', hi: 'आग' },
+  { sa: 'सूर्यः', iast: 'sūryaḥ', en: 'sun', hi: 'सूरज' },
+  { sa: 'चन्द्रः', iast: 'candraḥ', en: 'moon', hi: 'चाँद' },
+  { sa: 'वृक्षः', iast: 'vṛkṣaḥ', en: 'tree', hi: 'पेड़' },
+  { sa: 'पुष्पम्', iast: 'puṣpam', en: 'flower', hi: 'फूल' },
+  { sa: 'गजः', iast: 'gajaḥ', en: 'elephant', hi: 'हाथी' },
+  { sa: 'सिंहः', iast: 'siṃhaḥ', en: 'lion', hi: 'शेर' },
+  { sa: 'ग्रन्थः', iast: 'granthaḥ', en: 'book', hi: 'पुस्तक' },
+  { sa: 'विद्यालयः', iast: 'vidyālayaḥ', en: 'school', hi: 'विद्यालय' },
+  { sa: 'मित्रम्', iast: 'mitram', en: 'friend', hi: 'मित्र' },
+  { sa: 'गृहम्', iast: 'gṛham', en: 'house', hi: 'घर' },
+  { sa: 'आकाशम्', iast: 'ākāśam', en: 'sky', hi: 'आकाश' },
+  { sa: 'समुद्रः', iast: 'samudraḥ', en: 'ocean', hi: 'समुद्र' },
+  { sa: 'पर्वतः', iast: 'parvataḥ', en: 'mountain', hi: 'पहाड़' },
+  { sa: 'नदी', iast: 'nadī', en: 'river', hi: 'नदी' },
+  { sa: 'अन्नम्', iast: 'annam', en: 'food', hi: 'खाना' },
+  { sa: 'दुग्धम्', iast: 'dugdham', en: 'milk', hi: 'दूध' },
+  { sa: 'अश्वः', iast: 'aśvaḥ', en: 'horse', hi: 'घोड़ा' },
+  { sa: 'पक्षी', iast: 'pakṣī', en: 'bird', hi: 'पक्षी' },
 ]
 
 export interface DevNumber {

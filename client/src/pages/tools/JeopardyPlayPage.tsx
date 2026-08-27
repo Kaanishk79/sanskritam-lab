@@ -181,7 +181,7 @@ export default function JeopardyPlayPage() {
           <div className="j-col" key={cat.id}>
             <div className="j-cat">
               <span className="j-cat-icon">{cat.icon}</span>
-              <span>{lang === 'hi' ? cat.nameSanskrit : cat.name}</span>
+              <span>{lang === 'hi' && cat.nameHi ? cat.nameHi : cat.name}</span>
             </div>
             {cat.clues.map((clue) => {
               const done = playedIds.has(clue.id)
@@ -277,14 +277,14 @@ export default function JeopardyPlayPage() {
           </div>
           {final.wager > 0 && (
             <div className="j-final-clue">
-              <h3>{currentFinal.clue}</h3>
+              <h3>{lang === 'hi' && currentFinal.clueHi ? currentFinal.clueHi : currentFinal.clue}</h3>
               {!final.revealed ? (
                 <button className="btn btn-primary" onClick={() => setFinal((f) => ({ ...f, revealed: true }))}>
                   {t('Reveal Answer')}
                 </button>
               ) : (
                 <>
-                  <p className="j-modal-answer">{currentFinal.answer}</p>
+                  <p className="j-modal-answer">{lang === 'hi' && currentFinal.answerHi ? currentFinal.answerHi : currentFinal.answer}</p>
                   <div className="j-modal-actions">
                     <button className="btn btn-primary" onClick={() => markFinal('correct')}>{t('Correct (+{0})').replace('{0}', String(final.wager))}</button>
                     <button className="btn btn-secondary" onClick={() => markFinal('miss')}>{t('Miss (−{0})').replace('{0}', String(final.wager))}</button>
@@ -314,8 +314,8 @@ export default function JeopardyPlayPage() {
         <div className="j-modal-backdrop" onClick={closeClue}>
           <div className="j-modal" onClick={(e) => e.stopPropagation()}>
             <div className="j-modal-value">{active.value}</div>
-            <h3>{active.clue}</h3>
-            <div className="j-modal-answer">{clueRevealed ? active.answer : '🤔'}</div>
+              <h3>{lang === 'hi' && active.clueHi ? active.clueHi : active.clue}</h3>
+              <div className="j-modal-answer">{clueRevealed ? (lang === 'hi' && active.answerHi ? active.answerHi : active.answer) : '🤔'}</div>
             <div className="j-modal-actions">
               {!clueRevealed ? (
                 <button className="btn btn-primary" onClick={() => setClueRevealed(true)}>{t('Reveal Answer')}</button>

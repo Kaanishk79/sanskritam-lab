@@ -44,7 +44,7 @@ export default function VivaSimulatorPage() {
   const [questions, setQuestions] = useState<VivaQuestion[]>(VIVA_QUESTIONS)
   const textRef = useRef<HTMLTextAreaElement>(null)
   const { toggleKeyboard } = useKeyboard()
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
 
   useEffect(() => {
     let live = true
@@ -146,7 +146,7 @@ export default function VivaSimulatorPage() {
       )}
 
       <div className="viva-question-card">
-        <div className="viva-question">{questions[currentQ].question}</div>
+        <div className="viva-question">{lang === 'hi' && questions[currentQ].questionHi ? questions[currentQ].questionHi : questions[currentQ].question}</div>
         <div className="viva-difficulty">{t('Difficulty:')} {'★'.repeat(questions[currentQ].difficulty)}</div>
         <button className="btn btn-sm btn-outline" onClick={speakQuestion}>🔊 {t('Hear Question')}</button>
       </div>

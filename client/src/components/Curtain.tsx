@@ -3,6 +3,10 @@ import { useLanguage } from '../context/LanguageContext'
 
 const DURATION = 12000
 
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
+
 export default function Curtain({ onDone }: { onDone: () => void }) {
   const { t } = useLanguage()
   const [phase, setPhase] = useState<'waiting' | 'opening' | 'done'>('waiting')
@@ -14,9 +18,9 @@ export default function Curtain({ onDone }: { onDone: () => void }) {
     let raf: number
     const tick = (now: number) => {
       const elapsed = now - start
-      const p = Math.min(elapsed / DURATION, 1)
-      setProgress(p)
-      if (p < 1) {
+      const raw = Math.min(elapsed / DURATION, 1)
+      setProgress(easeInOutCubic(raw))
+      if (raw < 1) {
         raf = requestAnimationFrame(tick)
       } else {
         setPhase('done')
@@ -81,22 +85,6 @@ export default function Curtain({ onDone }: { onDone: () => void }) {
             <span style={styles.buttonText}>{t('प्रवेश करें')}</span>
             <span style={styles.buttonSub}>Enter SanskritLab</span>
           </button>
-        )}
-
-        {phase === 'opening' && (
-          <div style={styles.timer}>
-            <svg width="60" height="60" viewBox="0 0 60 60">
-              <circle cx="30" cy="30" r="26" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="3" />
-              <circle
-                cx="30" cy="30" r="26" fill="none" stroke="rgba(255,106,0,0.9)" strokeWidth="3"
-                strokeDasharray={163.36}
-                strokeDashoffset={163.36 * (1 - progress)}
-                strokeLinecap="round"
-                transform="rotate(-90 30 30)"
-              />
-            </svg>
-            <span style={styles.timerText}>{Math.ceil((1 - progress) * 12)}s</span>
-          </div>
         )}
       </div>
 
@@ -190,12 +178,5 @@ const styles: Record<string, React.CSSProperties> = {
   buttonSub: {
     fontSize: '12px', color: 'rgba(255,255,255,0.7)',
     letterSpacing: '2px', textTransform: 'uppercase',
-  },
-  timer: {
-    position: 'relative', width: '60px', height: '60px',
-    display: 'flex', alignItems: 'center', justifyContent: 'center',
-  },
-  timerText: {
-    position: 'absolute', fontSize: '16px', fontWeight: 700, color: '#ff6a00',
   },
 }

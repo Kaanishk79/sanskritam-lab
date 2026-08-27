@@ -7,7 +7,7 @@ import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function ShlokaPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [passages, setPassages] = useState<ReadingPassage[]>(readingPassages)
   const [verses, setVerses] = useState<Shloka[]>(SHLOKAS)
   const [openPassage, setOpenPassage] = useState<string | null>(null)
@@ -86,7 +86,7 @@ export default function ShlokaPage() {
           ))}
         </div>
         <div style={{ color: '#999', fontSize: 12, fontStyle: 'italic', marginTop: 4 }}>{dayVerse.iast}</div>
-        <div style={{ color: '#ccc', fontSize: 13, marginTop: 4 }}>{dayVerse.translation}</div>
+        <div style={{ color: '#ccc', fontSize: 13, marginTop: 4 }}>{lang === 'hi' && dayVerse.translationHi ? dayVerse.translationHi : dayVerse.translation}</div>
         <div style={{ color: '#666', fontSize: 11, marginTop: 2 }}>{dayVerse.source}</div>
         <button className="btn btn-sm btn-outline" style={{ marginTop: 10 }} onClick={() => speakWithFallback(dayVerse.dev)}>🔊 {t('Hear it')}</button>
       </div>

@@ -6,7 +6,7 @@ import { supabase } from '../../services/supabase'
 import { useRole } from '../../context/RoleContext'
 
 export default function DailyPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const { user } = useRole()
   const [wod, setWod] = useState<{ word: string; meanings: string[]; iast: string } | null>(null)
   const phrase = phraseOfDay()
@@ -107,8 +107,8 @@ export default function DailyPage() {
               <span>{t('Score')}: {score}</span>
             </div>
             <div className="progress-track"><div className="progress-fill" style={{ width: `${((idx + (answered !== null ? 1 : 0)) / questions.length) * 100}%` }} /></div>
-            <p style={{ fontSize: 17, fontWeight: 600 }}>{questions[idx].prompt}</p>
-            {questions[idx].options.map((opt, i) => {
+            <p style={{ fontSize: 17, fontWeight: 600 }}>{lang === 'hi' ? questions[idx].promptHi : questions[idx].prompt}</p>
+            {(lang === 'hi' ? questions[idx].optionsHi : questions[idx].options).map((opt, i) => {
               let cls = 'btn btn-outline challenge-opt'
               if (answered !== null) {
                 if (i === questions[idx].correct) cls += ' opt-correct'
@@ -123,7 +123,7 @@ export default function DailyPage() {
             })}
             {answered !== null && (
               <div style={{ marginTop: 12 }}>
-                <p style={{ color: '#aaa', fontSize: 13 }}>💡 {questions[idx].explanation}</p>
+                <p style={{ color: '#aaa', fontSize: 13 }}>💡 {lang === 'hi' ? questions[idx].explanationHi : questions[idx].explanation}</p>
                 <button className="btn btn-primary" onClick={next}>{idx + 1 >= questions.length ? t('See results') : t('Next question')}</button>
               </div>
             )}

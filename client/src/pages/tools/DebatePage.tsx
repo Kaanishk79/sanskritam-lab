@@ -13,7 +13,7 @@ interface Turn {
 }
 
 export default function DebatePage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [topics, setTopics] = useState<DebateTopic[]>(DEBATE_TOPICS)
   const [topic, setTopic] = useState<DebateTopic | null>(null)
   const [side, setSide] = useState<'for' | 'against' | null>(null)
@@ -83,8 +83,8 @@ export default function DebatePage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
               {topics.map((tp) => (
                 <button key={tp.id} className="card" style={{ margin: 0, textAlign: 'left' }} onClick={() => pickTopic(tp)}>
-                  <strong>{tp.emoji} {tp.title}</strong>
-                  <span style={{ display: 'block', fontSize: 13, opacity: 0.7, marginTop: 4 }}>{tp.question}</span>
+                  <strong>{tp.emoji} {lang === 'hi' && tp.titleHi ? tp.titleHi : tp.title}</strong>
+                  <span style={{ display: 'block', fontSize: 13, opacity: 0.7, marginTop: 4 }}>{lang === 'hi' && tp.questionHi ? tp.questionHi : tp.question}</span>
                 </button>
               ))}
             </div>
@@ -93,8 +93,8 @@ export default function DebatePage() {
 
         {topic && !side && (
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 18, margin: '0 0 4px' }}>{topic.emoji} {topic.question}</p>
-            <p style={{ fontSize: 13, opacity: 0.6, margin: '0 0 16px' }}>{topic.title}</p>
+            <p style={{ fontSize: 18, margin: '0 0 4px' }}>{topic.emoji} {lang === 'hi' && topic.questionHi ? topic.questionHi : topic.question}</p>
+            <p style={{ fontSize: 13, opacity: 0.6, margin: '0 0 16px' }}>{lang === 'hi' && topic.titleHi ? topic.titleHi : topic.title}</p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button className="btn btn-primary" onClick={() => pickSide('for')}>{t('I argue FOR')}</button>
               <button className="btn btn-secondary" onClick={() => pickSide('against')}>{t('I argue AGAINST')}</button>
@@ -117,7 +117,7 @@ export default function DebatePage() {
                 <button key={i} className="card" style={{ margin: 0, textAlign: 'left' }} onClick={() => playTurn(pt.sa)}>
                   <strong>{pt.sa}</strong>
                   <span style={{ display: 'block', fontSize: 12, opacity: 0.65, fontStyle: 'italic' }}>{toIAST(pt.sa)}</span>
-                  <span style={{ display: 'block', fontSize: 13, opacity: 0.8, marginTop: 4 }}>{pt.en}</span>
+                  <span style={{ display: 'block', fontSize: 13, opacity: 0.8, marginTop: 4 }}>{lang === 'hi' && pt.hi ? pt.hi : pt.en}</span>
                 </button>
               ))}
             </div>

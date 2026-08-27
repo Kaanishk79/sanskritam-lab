@@ -2,7 +2,9 @@ export interface Flashcard {
   id: string
   front: string
   back: string
+  backHi?: string
   hint?: string
+  hintHi?: string
   tags: string[]
   deckId: string
 }

@@ -408,27 +408,30 @@ export function verseOfDay(): typeof VERSES_OF_DAY[number] {
 
 export interface ChallengeQuestion {
   prompt: string
+  promptHi: string
   options: string[]
+  optionsHi: string[]
   correct: number
   explanation: string
+  explanationHi: string
 }
 
 export const DAILY_CHALLENGE_QUESTIONS: ChallengeQuestion[] = [
-  { prompt: 'रामः का अर्थ है?', options: ['God', 'Rāma (the hero)', 'Sun', 'Forest'], correct: 1, explanation: 'रामः = Rāma, hero of the Rāmāyaṇa.' },
-  { prompt: 'सीता का अर्थ है?', options: ['Furrow', 'River', 'Daughter', 'Moon'], correct: 0, explanation: 'सीता = furrow; Sītā, consort of Rāma.' },
-  { prompt: '"I am a student" in Sanskrit?', options: ['अहं गच्छामि', 'अहं छात्रः', 'त्वं कुत्र', 'भवति नाम'], correct: 1, explanation: 'अहं छात्रः = I am a student.' },
-  { prompt: 'विद्या ददाति विनयम् — विद्या means?', options: ['Money', 'Knowledge', 'Food', 'Time'], correct: 1, explanation: 'विद्या = knowledge; "Knowledge gives humility."' },
-  { prompt: 'देव + इन्द्रः = ?', options: ['देवेन्द्रः', 'देवीन्द्रः', 'दवेन्द्रः', 'देवैन्द्रः'], correct: 0, explanation: 'Guṇa sandhi: अ + इ → ए = देवेन्द्रः.' },
-  { prompt: 'सत्यमेव जयते means?', options: ['Truth alone triumphs', 'Peace everywhere', 'Work is worship', 'Om shanti'], correct: 0, explanation: 'सत्यम् + एव = सत्यमेव; "Truth alone triumphs."' },
-  { prompt: '"to go" — which dhātu?', options: ['कृ', 'गम्', 'भू', 'पठ्'], correct: 1, explanation: 'गम् (gam) = to go → गच्छति.' },
-  { prompt: 'धन्यवादः means?', options: ['Goodbye', 'Thank you', 'Welcome', 'Sorry'], correct: 1, explanation: 'धन्यवादः = thank you.' },
-  { prompt: 'Who wrote the Rāmāyaṇa?', options: ['Vyāsa', 'Vālmīki', 'Kālidāsa', 'Bharata'], correct: 1, explanation: 'Vālmīki composed the Rāmāyaṇa, the ādi-kāvya.' },
-  { prompt: 'नमस्ते is used to?', options: ['Say goodbye only', 'Greet with respect', 'Ask a question', 'Express anger'], correct: 1, explanation: 'नमस्ते = a respectful greeting ("I bow to you").' },
-  { prompt: 'The Gītā is part of which epic?', options: ['Rāmāyaṇa', 'Mahābhārata', 'Purāṇas', 'Vedas'], correct: 1, explanation: 'The Bhagavad Gītā is in the Bhīṣma Parva of the Mahābhārata.' },
-  { prompt: 'What is दीर्घ sandhi?', options: ['Same vowels double', 'Vowel disappears', 'Consonant changes', 'No change'], correct: 0, explanation: 'Dīrgha: अ + अ → आ (same vowel lengthens).' },
-  { prompt: '"Where are you going?" in Sanskrit?', options: ['त्वं कुत्र गच्छसि', 'अहं इह तिष्ठामि', 'तव नाम किम्', 'इदं पुस्तकम्'], correct: 0, explanation: 'त्वं कुत्र गच्छसि = Where are you going?' },
-  { prompt: 'गुरु means?', options: ['Student', 'Teacher', 'Parent', 'Friend'], correct: 1, explanation: 'गुरु = teacher (lit. heavy with knowledge).' },
-  { prompt: 'स्वागतम् means?', options: ['Farewell', 'Welcome', 'Thanks', 'Blessing'], correct: 1, explanation: 'स्वागतम् = welcome.' },
+  { prompt: 'रामः का अर्थ है?', promptHi: 'रामः का अर्थ क्या है?', options: ['God', 'Rāma (the hero)', 'Sun', 'Forest'], optionsHi: ['देवता', 'राम (वीर)', 'सूर्य', 'वन'], correct: 1, explanation: 'रामः = Rāma, hero of the Rāmāyaṇa.', explanationHi: 'रामः = राम, रामायण के नायक।' },
+  { prompt: 'सीता का अर्थ है?', promptHi: 'सीता का अर्थ क्या है?', options: ['Furrow', 'River', 'Daughter', 'Moon'], optionsHi: ['हल की नाली', 'नदी', 'पुत्री', 'चन्द्रमा'], correct: 0, explanation: 'सीता = furrow; Sītā, consort of Rāma.', explanationHi: 'सीता = हल की नाली; सीता, राम की पत्नी।' },
+  { prompt: '"I am a student" in Sanskrit?', promptHi: 'संस्कृत में "मैं छात्र हूँ" कैसे कहते हैं?', options: ['अहं गच्छामि', 'अहं छात्रः', 'त्वं कुत्र', 'भवति नाम'], optionsHi: ['अहं गच्छामि', 'अहं छात्रः', 'त्वं कुत्र', 'भवति नाम'], correct: 1, explanation: 'अहं छात्रः = I am a student.', explanationHi: 'अहं छात्रः = मैं छात्र हूँ।' },
+  { prompt: 'विद्या ददाति विनयम् — विद्या means?', promptHi: 'विद्या ददाति विनयम् — विद्या का अर्थ?', options: ['Money', 'Knowledge', 'Food', 'Time'], optionsHi: ['धन', 'ज्ञान', 'भोजन', 'समय'], correct: 1, explanation: 'विद्या = knowledge; "Knowledge gives humility."', explanationHi: 'विद्या = ज्ञान; "ज्ञान विनय देता है।"' },
+  { prompt: 'देव + इन्द्रः = ?', promptHi: 'देव + इन्द्रः = ?', options: ['देवेन्द्रः', 'देवीन्द्रः', 'दवेन्द्रः', 'देवैन्द्रः'], optionsHi: ['देवेन्द्रः', 'देवीन्द्रः', 'दवेन्द्रः', 'देवैन्द्रः'], correct: 0, explanation: 'Guṇa sandhi: अ + इ → ए = देवेन्द्रः.', explanationHi: 'गुण संधि: अ + इ → ए = देवेन्द्रः।' },
+  { prompt: 'सत्यमेव जयते means?', promptHi: 'सत्यमेव जयते का अर्थ?', options: ['Truth alone triumphs', 'Peace everywhere', 'Work is worship', 'Om shanti'], optionsHi: ['सत्य की सदा विजय हो', 'सर्वत्र शांति', 'कर्म ही पूजा है', 'ॐ शान्ति'], correct: 0, explanation: 'सत्यम् + एव = सत्यमेव; "Truth alone triumphs."', explanationHi: 'सत्यम् + एव = सत्यमेव; "सत्य की सदा विजय हो।"' },
+  { prompt: '"to go" — which dhātu?', promptHi: '"जाना" — कौन सी धातु?', options: ['कृ', 'गम्', 'भू', 'पठ्'], optionsHi: ['कृ', 'गम्', 'भू', 'पठ्'], correct: 1, explanation: 'गम् (gam) = to go → गच्छति.', explanationHi: 'गम् (gam) = जाना → गच्छति।' },
+  { prompt: 'धन्यवादः means?', promptHi: 'धन्यवादः का अर्थ?', options: ['Goodbye', 'Thank you', 'Welcome', 'Sorry'], optionsHi: ['अलविदा', 'धन्यवाद', 'स्वागत', 'क्षमा'], correct: 1, explanation: 'धन्यवादः = thank you.', explanationHi: 'धन्यवादः = धन्यवाद।' },
+  { prompt: 'Who wrote the Rāmāyaṇa?', promptHi: 'रामायण किसने लिखी?', options: ['Vyāsa', 'Vālmīki', 'Kālidāsa', 'Bharata'], optionsHi: ['व्यास', 'वाल्मीकि', 'कालिदास', 'भरत'], correct: 1, explanation: 'Vālmīki composed the Rāmāyaṇa, the ādi-kāvya.', explanationHi: 'वाल्मीकि ने रामायण की रचना की, जो आदि-काव्य है।' },
+  { prompt: 'नमस्ते is used to?', promptHi: 'नमस्ते का प्रयोग किसलिए होता है?', options: ['Say goodbye only', 'Greet with respect', 'Ask a question', 'Express anger'], optionsHi: ['केवल विदाई', 'सम्मान से अभिवादन', 'प्रश्न पूछना', 'क्रोज़ व्यक्त करना'], correct: 1, explanation: 'नमस्ते = a respectful greeting ("I bow to you").', explanationHi: 'नमस्ते = सम्मानपूर्वक अभिवादन ("मैं आपको नमन करता हूँ")।' },
+  { prompt: 'The Gītā is part of which epic?', promptHi: 'गीता किस महाकाव्य का भाग है?', options: ['Rāmāyaṇa', 'Mahābhārata', 'Purāṇas', 'Vedas'], optionsHi: ['रामायण', 'महाभारत', 'पुराण', 'वेद'], correct: 1, explanation: 'The Bhagavad Gītā is in the Bhīṣma Parva of the Mahābhārata.', explanationHi: 'भगवद्गीता महाभारत के भीष्म पर्व में है।' },
+  { prompt: 'What is दीर्घ sandhi?', promptHi: 'दीर्घ संधि क्या है?', options: ['Same vowels double', 'Vowel disappears', 'Consonant changes', 'No change'], optionsHi: ['एक ही स्वर दोहराता है', 'स्वर लुप्त हो जाता है', 'व्यंजन बदलता है', 'कोई परिवर्तन नहीं'], correct: 0, explanation: 'Dīrgha: अ + अ → आ (same vowel lengthens).', explanationHi: 'दीर्घ: अ + अ → आ (एक ही स्वर लंबा होता है)।' },
+  { prompt: '"Where are you going?" in Sanskrit?', promptHi: 'संस्कृत में "तुम कहाँ जा रहे हो?" कैसे कहते हैं?', options: ['त्वं कुत्र गच्छसि', 'अहं इह तिष्ठामि', 'तव नाम किम्', 'इदं पुस्तकम्'], optionsHi: ['त्वं कुत्र गच्छसि', 'अहं इह तिष्ठामि', 'तव नाम किम्', 'इदं पुस्तकम्'], correct: 0, explanation: 'त्वं कुत्र गच्छसि = Where are you going?', explanationHi: 'त्वं कुत्र गच्छसि = तुम कहाँ जा रहे हो?' },
+  { prompt: 'गुरु means?', promptHi: 'गुरु का अर्थ?', options: ['Student', 'Teacher', 'Parent', 'Friend'], optionsHi: ['छात्र', 'शिक्षक', 'अभिभावक', 'मित्र'], correct: 1, explanation: 'गुरु = teacher (lit. heavy with knowledge).', explanationHi: 'गुरु = शिक्षक (शब्दशः ज्ञान से भारी)।' },
+  { prompt: 'स्वागतम् means?', promptHi: 'स्वागतम् का अर्थ?', options: ['Farewell', 'Welcome', 'Thanks', 'Blessing'], optionsHi: ['विदाई', 'स्वागत', 'धन्यवाद', 'आशीर्वाद'], correct: 1, explanation: 'स्वागतम् = welcome.', explanationHi: 'स्वागतम् = स्वागत है।' },
 ]
 
 // ─── SEARCH ───

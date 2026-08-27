@@ -2,6 +2,7 @@
   id: string
   emoji: string
   title: string
+  titleHi?: string
   words: { sa: string; en: string }[]
   intro: string[]
   patterns: { sa: string; en: string }[]
@@ -10,7 +11,7 @@
 
 export const STORY_THEMES: StoryTheme[] = [
   {
-    id: 'forest', emoji: '🌲', title: 'Forest Adventure',
+    id: 'forest', emoji: '🌲', title: 'Forest Adventure', titleHi: 'वन की यात्रा',
     words: [
       { sa: 'वनम्', en: 'forest' }, { sa: 'व्याघ्रः', en: 'tiger' }, { sa: 'गजः', en: 'elephant' },
       { sa: 'नदी', en: 'river' }, { sa: 'वृक्षः', en: 'tree' }, { sa: 'पक्षिणः', en: 'birds' },
@@ -27,7 +28,7 @@ export const STORY_THEMES: StoryTheme[] = [
     outro: ['एवम् ते सुखेन समम् अवसन्।', 'इति कथा समाप्ता।'],
   },
   {
-    id: 'village', emoji: '🏡', title: 'Village Life',
+    id: 'village', emoji: '🏡', title: 'Village Life', titleHi: 'ग्रामीण जीवन',
     words: [
       { sa: 'ग्रामः', en: 'village' }, { sa: 'कृषकः', en: 'farmer' }, { sa: 'धेनुः', en: 'cow' },
       { sa: 'क्षेत्रम्', en: 'field' }, { sa: 'बालकः', en: 'boy' }, { sa: 'गृहम्', en: 'house' },
@@ -44,7 +45,7 @@ export const STORY_THEMES: StoryTheme[] = [
     outro: ['इति अस्माकं {w1} जीवनम्।', 'सुखम् एव सर्वत्र।'],
   },
   {
-    id: 'sky', emoji: '☁️', title: 'Sky & Nature',
+    id: 'sky', emoji: '☁️', title: 'Sky & Nature', titleHi: 'आकाश और प्रकृति',
     words: [
       { sa: 'सूर्यः', en: 'sun' }, { sa: 'चन्द्रः', en: 'moon' }, { sa: 'नक्षत्रम्', en: 'star' },
       { sa: 'मेघः', en: 'cloud' }, { sa: 'वायुः', en: 'wind' }, { sa: 'वर्षा', en: 'rain' },
@@ -61,7 +62,7 @@ export const STORY_THEMES: StoryTheme[] = [
     outro: ['एवं प्रकृतिः सुन्दरी।', 'सर्वम् चक्रवत् भ्रमति।'],
   },
   {
-    id: 'temple', emoji: '🛕', title: 'Temple & Devotion',
+    id: 'temple', emoji: '🛕', title: 'Temple & Devotion', titleHi: 'मंदिर और भक्ति',
     words: [
       { sa: 'देवालयः', en: 'temple' }, { sa: 'पुजारी', en: 'priest' }, { sa: 'घण्टा', en: 'bell' },
       { sa: 'दीपः', en: 'lamp' }, { sa: 'भक्तः', en: 'devotee' }, { sa: 'पूजा', en: 'worship' },
@@ -78,7 +79,7 @@ export const STORY_THEMES: StoryTheme[] = [
     outro: ['इति भक्तानां दिनचर्या।', 'श्रद्धा एव बलम्।'],
   },
   {
-    id: 'ocean', emoji: '🌊', title: 'Ocean Voyage',
+    id: 'ocean', emoji: '🌊', title: 'Ocean Voyage', titleHi: 'समुद्र यात्रा',
     words: [
       { sa: 'समुद्रः', en: 'ocean' }, { sa: 'नाविकः', en: 'sailor' }, { sa: 'नौका', en: 'boat' },
       { sa: 'मीनः', en: 'fish' }, { sa: 'तरङ्गः', en: 'wave' }, { sa: 'द्वीपः', en: 'island' },

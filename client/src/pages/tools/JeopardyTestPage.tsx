@@ -8,7 +8,7 @@ import '../tools/jeopardy.css'
 type TestPhase = 'intro' | 'quiz' | 'done'
 
 export default function JeopardyTestPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [phase, setPhase] = useState<TestPhase>('intro')
   const [idx, setIdx] = useState(0)
   const [answers, setAnswers] = useState<Record<string, number>>({})
@@ -125,7 +125,7 @@ export default function JeopardyTestPage() {
           </div>
           <div className="j-test-card">
             <span className="j-test-cat">{question.category}</span>
-            <h3>{question.prompt}</h3>
+            <h3>{lang === 'hi' && question.promptHi ? question.promptHi : question.prompt}</h3>
             <div className="j-test-options">
               {question.options.map((opt, i) => {
                 const chosen = answers[question.id] === i
@@ -136,7 +136,7 @@ export default function JeopardyTestPage() {
                     onClick={() => choose(i)}
                   >
                     <span className="j-opt-letter">{['क', 'ख', 'ग', 'घ'][i]}</span>
-                    {opt}
+                    {lang === 'hi' && question.optionsHi ? question.optionsHi[i] : opt}
                   </button>
                 )
               })}

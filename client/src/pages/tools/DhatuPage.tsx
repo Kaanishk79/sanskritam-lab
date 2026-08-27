@@ -7,7 +7,7 @@ import { useLanguage } from '../../context/LanguageContext'
 const GANAS = ['All', 'भ्वादि', 'अदादि', 'जुहोत्यादि', 'दिवादि', 'स्वादि', 'तनादि', 'क्रयादि']
 
 export default function DhatuPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [dhatus, setDhatus] = useState<Dhatu[]>(DHATUS)
   const [q, setQ] = useState('')
   const [gana, setGana] = useState('All')
@@ -23,7 +23,7 @@ export default function DhatuPage() {
   }, [])
 
   const rows = dhatus.filter((d) => {
-    const matchQ = !q.trim() || d.root.includes(q.trim()) || d.iast.includes(q.trim().toLowerCase()) || d.meaning.toLowerCase().includes(q.trim().toLowerCase())
+    const matchQ = !q.trim() || d.root.includes(q.trim()) || d.iast.includes(q.trim().toLowerCase()) || d.meaning.toLowerCase().includes(q.trim().toLowerCase()) || (d.meaningHi && d.meaningHi.includes(q.trim()))
     const matchG = gana === 'All' || d.gana === gana
     return matchQ && matchG
   })
@@ -56,7 +56,7 @@ export default function DhatuPage() {
               <button className="btn btn-sm btn-outline" onClick={() => speakWithFallback(d.present)}>🔊 {d.present}</button>
             </div>
             <div style={{ color: '#999', fontSize: 13 }}>{d.iast} · {t('gaṇa')} {d.ganaNum} ({d.gana})</div>
-            <div style={{ color: '#ccc', marginTop: 4 }}>{d.meaning}</div>
+            <div style={{ color: '#ccc', marginTop: 4 }}>{lang === 'hi' && d.meaningHi ? d.meaningHi : d.meaning}</div>
             <div style={{ color: '#888', fontSize: 13, marginTop: 4 }}>अद्यतन: {d.present}</div>
           </div>
         ))}

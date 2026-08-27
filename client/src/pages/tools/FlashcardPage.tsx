@@ -7,7 +7,7 @@ import { syncSRSFromDb, persistSRSToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function FlashcardPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [srsState, setSrsState] = useState<SRSState>(loadSRS())
   const [cardPool, setCardPool] = useState<Flashcard[]>(flashcards)
   const [decks, setDecks] = useState(flashcardDecks)
@@ -166,8 +166,8 @@ export default function FlashcardPage() {
                 {!showBack && <div className="flashcard-tap">{t('Tap to reveal')}</div>}
               </div>
               <div className="flashcard-back">
-                <div className="flashcard-text">{currentCard.card.back}</div>
-                {currentCard.card.hint && <div className="flashcard-hint">💡 {currentCard.card.hint}</div>}
+                <div className="flashcard-text">{lang === 'hi' && currentCard.card.backHi ? currentCard.card.backHi : currentCard.card.back}</div>
+                {(lang === 'hi' ? (currentCard.card.hintHi || currentCard.card.hint) : currentCard.card.hint) && <div className="flashcard-hint">💡 {lang === 'hi' && currentCard.card.hintHi ? currentCard.card.hintHi : currentCard.card.hint}</div>}
                 <div className="flashcard-tags">
                   {currentCard.card.tags.map((t) => <span key={t} className="tag">{t}</span>)}
                 </div>
@@ -217,7 +217,7 @@ export default function FlashcardPage() {
               return (
                 <div key={fc.id} className={`browse-card ${isNew ? 'new' : ''} ${due ? 'due' : ''}`}>
                   <div className="browse-front">{fc.front}</div>
-                  <div className="browse-back">{fc.back}</div>
+                  <div className="browse-back">{lang === 'hi' && fc.backHi ? fc.backHi : fc.back}</div>
                   <div className="browse-meta">
                     {fc.tags.map((t) => <span key={t} className="tag">{t}</span>)}
                     {isNew && <span className="badge badge-new">{t('New')}</span>}

@@ -299,7 +299,9 @@ export async function loadFlashcards(): Promise<Flashcard[]> {
     id: String(r.id),
     front: String(r.front),
     back: String(r.back),
+    backHi: String((r as any).backHi ?? ''),
     hint: r.hint ? String(r.hint) : undefined,
+    hintHi: (r as any).hintHi ? String((r as any).hintHi) : undefined,
     tags: (r.tags as string[]) ?? [],
     deckId: String(r.deck_id),
   }))
@@ -312,6 +314,7 @@ export async function loadStoryThemes(): Promise<StoryTheme[]> {
     id: String(r.id),
     emoji: String(r.emoji),
     title: String(r.title),
+    titleHi: String(r.titleHi ?? ''),
     words: (r.words as StoryTheme['words']) ?? [],
     intro: (r.intro as string[]) ?? [],
     patterns: (r.patterns as StoryTheme['patterns']) ?? [],
@@ -337,7 +340,7 @@ export async function loadShlokaPassages(): Promise<ReadingPassage[]> {
 export interface JeopardyBoardData {
   categories: JeopardyCategory[]
   doubleCategories: JeopardyCategory[]
-  finalClue: JeopardyClue & { category: string; categorySanskrit: string }
+  finalClue: JeopardyClue & { category: string; categoryHi?: string; categorySanskrit: string }
   testQuestions: TestQuestion[]
 }
 
@@ -351,8 +354,11 @@ export async function loadJeopardyBoard(): Promise<JeopardyBoardData> {
         id: 'final-1',
         value: 0,
         clue: finalJeopardy.clue,
+        clueHi: finalJeopardy.clueHi,
         answer: finalJeopardy.answer,
+        answerHi: finalJeopardy.answerHi,
         category: finalJeopardy.category,
+        categoryHi: finalJeopardy.categoryHi,
         categorySanskrit: finalJeopardy.categorySanskrit,
       },
       testQuestions: anytimeTestQuestions,
@@ -366,6 +372,7 @@ export async function loadJeopardyBoard(): Promise<JeopardyBoardData> {
       return {
         id: String(first.id),
         name,
+        nameHi: String(first.categoryHi ?? first.nameHi ?? ''),
         nameSanskrit: String(first.category_sanskrit ?? ''),
         icon: String(first.icon ?? ''),
         clues: boardRows
@@ -374,7 +381,9 @@ export async function loadJeopardyBoard(): Promise<JeopardyBoardData> {
             id: String(r.id),
             value: Number(r.value ?? 0),
             clue: String(r.clue),
+            clueHi: String(r.clueHi ?? ''),
             answer: String(r.answer),
+            answerHi: String(r.answerHi ?? ''),
           })),
       }
     })
@@ -387,23 +396,31 @@ export async function loadJeopardyBoard(): Promise<JeopardyBoardData> {
         id: String(finalRow.id),
         value: 0,
         clue: String(finalRow.clue),
+        clueHi: String((finalRow as any).clueHi ?? ''),
         answer: String(finalRow.answer),
+        answerHi: String((finalRow as any).answerHi ?? ''),
         category: String(finalRow.category),
+        categoryHi: String((finalRow as any).categoryHi ?? ''),
         categorySanskrit: String(finalRow.category_sanskrit ?? ''),
       }
     : {
         id: 'final-1',
         value: 0,
         clue: finalJeopardy.clue,
+        clueHi: finalJeopardy.clueHi,
         answer: finalJeopardy.answer,
+        answerHi: finalJeopardy.answerHi,
         category: finalJeopardy.category,
+        categoryHi: finalJeopardy.categoryHi,
         categorySanskrit: finalJeopardy.categorySanskrit,
       }
   const testQuestions: TestQuestion[] = byBoard('test').map((r) => ({
     id: String(r.id),
     category: String(r.category),
     prompt: String(r.clue),
+    promptHi: String((r as any).promptHi ?? ''),
     options: (r.options as string[]) ?? [],
+    optionsHi: ((r as any).optionsHi as string[]) ?? [],
     correct: Number(r.correct ?? 0),
   }))
   return { categories, doubleCategories, finalClue, testQuestions }
