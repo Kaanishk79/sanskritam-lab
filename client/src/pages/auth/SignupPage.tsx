@@ -71,7 +71,7 @@ export default function SignupPage() {
     e.preventDefault()
     setError(null)
     if (accountType === 'institution' && !schoolName.trim()) {
-      setError('School name is required for institution accounts')
+      setError(t('School name is required for institution accounts'))
       return
     }
     setLoading(true)
@@ -150,11 +150,11 @@ export default function SignupPage() {
                     type="button"
                     key={a.value}
                     onClick={() => setAccountType(a.value)}
-                    title={a.desc}
+                    title={t(a.desc)}
                     className={`btn btn-sm ${accountType === a.value ? 'btn-primary' : 'btn-secondary'}`}
                     style={{ padding: '6px 12px' }}
                   >
-                    {a.icon} {a.label}
+                    {a.icon} {t(a.label)}
                   </button>
                 ))}
               </div>
@@ -178,10 +178,10 @@ export default function SignupPage() {
                   <label>{t('School Type')}</label>
                   <select value={schoolType} onChange={(e) => setSchoolType(e.target.value)}>
                     <option value="">{t('Select...')}</option>
-                    <option>Primary School</option>
-                    <option>Middle School</option>
-                    <option>Secondary School</option>
-                    <option>Senior Secondary School</option>
+                    <option>{t('Primary School')}</option>
+                    <option>{t('Middle School')}</option>
+                    <option>{t('Secondary School')}</option>
+                    <option>{t('Senior Secondary School')}</option>
                   </select>
                 </div>
                 <p style={{ fontSize: 12, color: '#888', margin: 0 }}>

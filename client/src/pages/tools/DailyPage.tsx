@@ -97,7 +97,7 @@ export default function DailyPage() {
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 44 }}>{score >= 4 ? '🏆' : score >= 3 ? '🎉' : '💪'}</div>
             <h3>{t('You scored')} {score}/{questions.length}</h3>
-            <p style={{ color: '#888' }}>{score >= 4 ? t('Outstanding! Come back tomorrow for the next challenge.') : score >= 3 ? t('Good job — one more try and it\'s perfect.') : t('Practice makes perfect. Try again!')}</p>
+            <p style={{ color: '#888' }}>{score >= 4 ? t('Outstanding! Come back tomorrow for the next challenge.') : score >= 3 ? t("Good job — one more try and it's perfect.") : t('Practice makes perfect. Try again!')}</p>
             <button className="btn btn-primary" onClick={() => { setDone(false); setIdx(0); setScore(0); setAnswered(null); const qs = [...DAILY_CHALLENGE_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 5); setQuestions(qs) }}>{t('Play again')}</button>
           </div>
         ) : (

@@ -3,6 +3,7 @@ import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import * as pdfjsLib from 'pdfjs-dist'
 import workerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+import { useLanguage } from '../context/LanguageContext'
 
 interface PageData {
   label: string
@@ -375,10 +376,11 @@ const inputStyle: React.CSSProperties = {
 }
 
 function Slider({ label, value, min, max, step = 0.1, onChange }: { label: string; value: number; min: number; max: number; step?: number; onChange: (v: number) => void }) {
+  const { t } = useLanguage()
   return (
     <label style={{ display: 'block', marginBottom: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#9ca3af', marginBottom: 3 }}>
-        <span>{label}</span>
+        <span>{t(label)}</span>
         <span>{value.toFixed(step < 1 ? 1 : 0)}</span>
       </div>
       <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(parseFloat(e.target.value))} style={{ width: '100%', accentColor: '#c9a84c' }} />
@@ -387,6 +389,7 @@ function Slider({ label, value, min, max, step = 0.1, onChange }: { label: strin
 }
 
 function Toggle({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
+  const { t } = useLanguage()
   return (
     <button
       onClick={() => onChange(!value)}
@@ -405,7 +408,7 @@ function Toggle({ label, value, onChange }: { label: string; value: boolean; onC
         marginBottom: 8,
       }}
     >
-      <span>{label}</span>
+      <span>{t(label)}</span>
       <span style={{ width: 12, height: 12, borderRadius: 999, background: value ? '#c9a84c' : '#4b5563' }} />
     </button>
   )
@@ -414,6 +417,7 @@ function Toggle({ label, value, onChange }: { label: string; value: boolean; onC
 // ---------------------------------------------------------------- component
 
 export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { t } = useLanguage()
   const [phase, setPhase] = useState<'input' | 'loading' | 'ready'>('input')
   const [pages, setPages] = useState<PageData[]>([])
   const [sourceName, setSourceName] = useState('')
@@ -481,12 +485,12 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
     setTimeout(() => {
       try {
         const ps = makeTextPages(pasteText)
-        if (!ps.length) throw new Error('No text to render')
+        if (!ps.length) throw new Error(t('No text to render'))
         setPages(ps)
         setSourceName(`text · ${ps.length} pages`)
         setPhase('ready')
       } catch (e) {
-        setError(e instanceof Error ? e.message : 'Failed to render text')
+        setError(e instanceof Error ? e.message : t('Failed to render text'))
         setPhase('input')
       }
     }, 30)
@@ -498,12 +502,12 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
     setSelected(null)
     try {
       const ps = await makePdfPages(buf)
-      if (!ps.length) throw new Error('PDF has no pages')
+      if (!ps.length) throw new Error(t('PDF has no pages'))
       setPages(ps)
       setSourceName(`${name} · ${ps.length} pages`)
       setPhase('ready')
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to parse PDF')
+      setError(e instanceof Error ? e.message : t('Failed to parse PDF'))
       setPhase('input')
     }
   }
@@ -511,7 +515,7 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
   const onFile = async (file: File | undefined | null) => {
     if (!file) return
     if (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf')) {
-      setError('Please choose a PDF file')
+      setError(t('Please choose a PDF file'))
       return
     }
     const buf = await file.arrayBuffer()
@@ -526,11 +530,11 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
     setSelected(null)
     try {
       const res = await fetch(u)
-      if (!res.ok) throw new Error(`HTTP ${res.status} while fetching PDF`)
+      if (!res.ok) throw new Error(t('HTTP {status} while fetching PDF').replace('{status}', String(res.status)))
       const buf = await res.arrayBuffer()
       await loadPdfBuffer(buf, u.split('/').pop() || u)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to fetch PDF')
+      setError(e instanceof Error ? e.message : t('Failed to fetch PDF'))
       setPhase('input')
     }
   }
@@ -555,7 +559,7 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
       <div style={barStyle}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}>
           <span style={{ fontSize: 18 }}>🧊</span>
-          <strong>3D PDF Viewer</strong>
+          <strong>{t('3D PDF Viewer')}</strong>
           {sourceName && (
             <span style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 999, padding: '2px 10px', fontSize: 12 }}>{sourceName}</span>
           )}
@@ -564,14 +568,14 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
           {phase === 'ready' && (
             <>
               <button style={btnStyle(panelOpen)} onClick={() => setPanelOpen((v) => !v)}>
-                ⚙️ Customize
+                {t('⚙️ Customize')}
               </button>
               <button style={btnStyle(false)} onClick={() => setSettings(DEFAULT_SETTINGS)}>
-                ↺ Reset
+                {t('↺ Reset')}
               </button>
             </>
           )}
-          <button style={{ ...btnStyle(false), padding: '7px 10px' }} onClick={close} aria-label="Close">
+          <button style={{ ...btnStyle(false), padding: '7px 10px' }} onClick={close} aria-label={t('Close')}>
             ✕
           </button>
         </div>
@@ -611,29 +615,29 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
                 }}
               >
                 <div style={{ fontSize: 34, marginBottom: 8 }}>📄</div>
-                <div style={{ fontWeight: 600 }}>Drop a PDF here or click to browse</div>
-                <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>The whole document is rendered as 3D pages</div>
+                <div style={{ fontWeight: 600 }}>{t('Drop a PDF here or click to browse')}</div>
+                <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 4 }}>{t('The whole document is rendered as 3D pages')}</div>
                 <input ref={fileRef} type="file" accept="application/pdf,.pdf" style={{ display: 'none' }} onChange={(e) => onFile(e.target.files?.[0])} />
               </div>
 
               <div style={{ display: 'flex', gap: 8 }}>
-                <input style={inputStyle} value={url} onChange={(e) => setUrl(e.target.value)} placeholder="…or paste a PDF URL (https://…)" />
+                <input style={inputStyle} value={url} onChange={(e) => setUrl(e.target.value)} placeholder={t('…or paste a PDF URL (https://…)')} />
                 <button style={btnStyle(false)} onClick={loadUrl}>
-                  Load URL
+                  {t('Load URL')}
                 </button>
               </div>
 
               <div style={{ border: '1px solid rgba(255,255,255,0.16)', borderRadius: 14, padding: 14 }}>
-                <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6 }}>…or paste document text — it becomes 3D pages too</div>
+                <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 6 }}>{t('…or paste document text — it becomes 3D pages too')}</div>
                 <textarea
                   style={{ ...inputStyle, resize: 'none', minHeight: 84 }}
                   value={pasteText}
                   onChange={(e) => setPasteText(e.target.value)}
-                  placeholder={'Paste any article / lesson / book text here…\n\nParagraphs separated by blank lines become separate 3D pages.'}
+                  placeholder={t('Paste any article / lesson / book text here…\n\nParagraphs separated by blank lines become separate 3D pages.')}
                 />
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
                   <button style={btnStyle(true)} disabled={!pasteText.trim()} onClick={loadText}>
-                    Render as 3D
+                    {t('Render as 3D')}
                   </button>
                 </div>
               </div>
@@ -645,21 +649,21 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
           {phase === 'loading' && (
             <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, color: '#c3c7cf' }}>
               <div style={{ width: 30, height: 30, borderRadius: 999, border: '3px solid #c9a84c', borderTopColor: 'transparent', animation: 'spin 0.9s linear infinite' }} />
-              <div style={{ fontSize: 13 }}>Rendering document pages into 3D…</div>
+              <div style={{ fontSize: 13 }}>{t('Rendering document pages into 3D…')}</div>
             </div>
           )}
         </div>
 
         {phase === 'ready' && panelOpen && (
           <div style={{ width: 270, borderLeft: '1px solid rgba(255,255,255,0.1)', background: '#101522', padding: 16, overflowY: 'auto' }}>
-            <div style={{ fontWeight: 700, marginBottom: 12, color: '#fff' }}>⚙️ Customize</div>
+            <div style={{ fontWeight: 700, marginBottom: 12, color: '#fff' }}>{t('⚙️ Customize')}</div>
             {selected !== null && (
               <div style={{ background: 'rgba(201,168,76,0.16)', borderRadius: 8, padding: '7px 10px', fontSize: 12, color: '#e8c86a', marginBottom: 10 }}>
-                Page {selected + 1} of {pages.length} selected — click it again to deselect.
+                {t('Page {n} of {m} selected — click it again to deselect.').replace('{n}', String(selected + 1)).replace('{m}', String(pages.length))}
               </div>
             )}
 
-            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: '#6b7280', fontWeight: 700, margin: '12px 0 8px' }}>Layout</div>
+            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: '#6b7280', fontWeight: 700, margin: '12px 0 8px' }}>{t('Layout')}</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
               {LAYOUTS.map((l) => (
                 <button
@@ -673,7 +677,7 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
                     fontSize: 12,
                   }}
                 >
-                  {l.label}
+                  {t(l.label)}
                 </button>
               ))}
             </div>
@@ -685,15 +689,15 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
               <Slider label="Thickness" value={settings.thickness} min={0} max={6} step={1} onChange={(v) => set({ thickness: v })} />
             </div>
 
-            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: '#6b7280', fontWeight: 700, margin: '14px 0 8px' }}>Style</div>
+            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: '#6b7280', fontWeight: 700, margin: '14px 0 8px' }}>{t('Style')}</div>
             <Toggle label="Wireframe mode" value={settings.wireframe} onChange={(v) => set({ wireframe: v })} />
             <Toggle label="Page number labels" value={settings.showLabels} onChange={(v) => set({ showLabels: v })} />
             <Toggle label="Auto-rotate scene" value={settings.autoRotate} onChange={(v) => set({ autoRotate: v })} />
             <Toggle label="Show floor grid" value={settings.showGrid} onChange={(v) => set({ showGrid: v })} />
             {settings.autoRotate && <Slider label="Rotation speed" value={settings.speed} min={0.01} max={0.5} step={0.01} onChange={(v) => set({ speed: v })} />}
 
-            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: '#6b7280', fontWeight: 700, margin: '14px 0 8px' }}>Colors</div>
-            <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 4 }}>Background</div>
+            <div style={{ fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, color: '#6b7280', fontWeight: 700, margin: '14px 0 8px' }}>{t('Colors')}</div>
+            <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 4 }}>{t('Background')}</div>
             <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
               {BG_SWATCHES.map((c) => (
                 <button
@@ -704,7 +708,7 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
                 />
               ))}
             </div>
-            <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 4 }}>Spine / wireframe accent</div>
+            <div style={{ fontSize: 12, color: '#9ca3af', marginBottom: 4 }}>{t('Spine / wireframe accent')}</div>
             <div style={{ display: 'flex', gap: 6 }}>
               {TINT_SWATCHES.map((c) => (
                 <button
@@ -717,7 +721,7 @@ export default function Pdf3DViewer({ open, onClose }: { open: boolean; onClose:
             </div>
 
             <button style={{ ...btnStyle(false), width: '100%', marginTop: 18 }} onClick={() => fileRef.current?.click()}>
-              Load another PDF
+              {t('Load another PDF')}
             </button>
           </div>
         )}

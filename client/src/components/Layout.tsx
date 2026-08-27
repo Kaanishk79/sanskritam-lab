@@ -203,7 +203,7 @@ export default function Layout() {
                     onClick={() => setRole(o.value)}
                     title={t('View as') + ': ' + t(o.label)}
                   >
-                    {o.icon} {o.label}
+                    {o.icon} {t(o.label)}
                   </button>
                 ))}
               </div>
@@ -217,7 +217,7 @@ export default function Layout() {
               </div>
             ) : guest ? (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginLeft: 8 }}>
-                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: '#fff', background: 'rgba(255,140,0,0.15)', padding: '4px 10px', borderRadius: 8 }}>🆓 Guest</span>
+                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: '#fff', background: 'rgba(255,140,0,0.15)', padding: '4px 10px', borderRadius: 8 }}>🆓 {t('Guest')}</span>
                 <button className="btn btn-sm btn-outline" onClick={handleSignOut}>{t('Leave Guest')}</button>
               </div>
             ) : (

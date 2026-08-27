@@ -27,8 +27,17 @@ const mockResponses: Record<string, string> = {
   'compounds': 'The 5 types of compounds (समासाः):\n\n1. **तत्पुरुष (Tatpuruṣa)** — Determinative: first modifies second\n   राजपुरुषः = राजन् + पुरुषः (king\'s man)\n\n2. **कर्मधारय (Karmadhāraya)** — Descriptive: adjective + noun\n   महाराजः = महान् + राजा (great king)\n\n3. **द्वन्द्व (Dvandva)** — Copulative: coordinate pair\n   रामकृष्णौ = Rāma and Kṛṣṇa\n\n4. **बहुव्रीहि (Bahuvrīhi)** — Exocentric: refers to external entity\n   चक्रपाणिः = one with discus in hand = Viṣṇu\n\n5. **अव्ययीभाव (Avyayībhāva)** — Adverbial: indeclinable first member\n   यथाशक्ति = according to ability',
 }
 
+const mockResponsesHi: Record<string, string> = {
+  'guna': 'गुण संधि तब होती है जब अ/आ का इ/ई के साथ → ए, अ/आ + उ/ऊ → ओ, और अ/आ + ऋ → अर्।\n\nउदाहरण: देव + इन्द्रः = देवेन्द्रः।\n\nवृद्धि संधि अधिक बलवान स्वर देती है: अ/आ + ए → ऐ, और अ/आ + ओ → औ।\n\nउदाहरण: सदा + एव = सदैव।\n\nमुख्य अंतर स्वर-गुण में है — गुण से ए/ओ/अर् बनते हैं जबकि वृद्धि से ऐ/औ।',
+  'cases': 'संस्कृत में 3 वचनों (एकवचन, द्विवचन, बहुवचन) के साथ 8 विभक्तियाँ हैं:\n\n1. प्रथमा (कर्ता) — रामः\n2. द्वितीया (कर्म) — रामम्\n3. तृतीया (करण) — रामेण\n4. चतुर्थी (सम्प्रदान) — रामाय\n5. पञ्चमी (अपादान) — रामात्\n6. षष्ठी (सम्बन्ध) — रामस्य\n7. सप्तमी (अधिकरण) — रामे\n8. सम्बोधन (हे!) — हे राम',
+  'nyaya': 'न्याय सूत्र 1.1.1 के अनुसार न्याय दर्शन के 16 पदार्थ:\n\n1. प्रमाण — ज्ञान के साधन\n2. प्रमेय — ज्ञान के विषय\n3. संशय — संदेह\n4. प्रयोजन — उद्देश्य\n5. दृष्टान्त — उदाहरण\n6. सिद्धान्त — स्थापित मत\n7. अवयव — अनुमान के अंग\n8. तर्क — काल्पनिक तर्क\n9. निर्णय — निश्चय\n10. वाद — चर्चा\n11. जल्प — जोरदार वाद\n12. वितण्डा — छलपूर्ण वाद\n13. हेत्वाभास — कुतर्क\n14. छल — शब्दों का हेरफेर\n15. जाति — प्रत्युत्तर\n16. निग्रहस्थान — पराजय का स्थान',
+  'kalidasa': 'कालिदास ने (लगभग 4-5 शताब्दी ई.) 7 प्रमुख रचनाएँ लिखीं:\n\n**3 नाटक:**\n1. अभिज्ञानशाकुन्तलम्\n2. विक्रमोर्वशीयम्\n3. मालविकाग्निमित्रम्\n\n**2 महाकाव्य:**\n1. रघुवंशम्\n2. कुमारसम्भवम्\n\n**2 खण्डकाव्य:**\n1. मेघदूतम्\n2. ऋतुसंहारः\n\nउनकी शैली प्रसाद (सरल सुन्दरता) और माधुर्य से परिचित है।',
+  'tattvamasi': 'तत्त्वमसि का अर्थ है "वह तू है"।\n\nयह छान्दोग्य उपनिषद् 6.8 का महावाक्य है, जहाँ उद्दालक आरुणि अपने पुत्र श्वेतकेतु को सिखाते हैं।\n\n**विभाजन:**\n- तत् = वह (ब्रह्म, परम सत्य)\n- त्वम् = तू (आत्मा)\n- असि = है\n\nयह आत्मा और ब्रह्म की एकता सिखाता है — अद्वैत वेदांत का मूल।',
+  'compounds': '5 प्रकार के समास:\n\n1. **तत्पुरुष** — पहला पद दूसरे को विशेष करता है\n   राजपुरुषः = राजन् + पुरुषः\n\n2. **कर्मधारय** — विशेषण + विशेष्य\n   महाराजः = महान् + राजा\n\n3. **द्वन्द्व** — समान अधिकार वाले पदों का समास\n   रामकृष्णौ = राम और कृष्ण\n\n4. **बहुव्रीहि** — अन्य पदार्थ प्रधान\n   चक्रपाणिः = हाथ में चक्र धारण करने वाला = विष्णु\n\n5. **अव्ययीभाव** — पहला पद अव्यय\n   यथाशक्ति = शक्ति के अनुसार',
+}
+
 export default function AITutorPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
 
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: t('नमस्ते! I am your Sanskrit tutor. Ask me anything about Sanskrit language, grammar, philosophy, or texts.'), timestamp: Date.now() },
@@ -47,10 +56,13 @@ export default function AITutorPage() {
 
   const getMockResponse = (input: string): string => {
     const lower = input.toLowerCase()
-    for (const [key, response] of Object.entries(mockResponses)) {
-      if (lower.includes(key)) return t(response)
+    const map = lang === 'hi' ? mockResponsesHi : mockResponses
+    for (const key of Object.keys(map)) {
+      if (lower.includes(key)) return map[key]
     }
-    return t(`That's a great question about Sanskrit! Let me explain.
+    return lang === 'hi'
+      ? 'संस्कृत के बारे में यह बहुत अच्छा प्रश्न है! मैं समझाता हूँ।\n\nसंस्कृत परंपरा में इस विषय को व्यवस्थित रूप से समझा जाता है। मुख्य सिद्धांत:\n\n1. पहले मूल अवधारणाएँ और शब्दावली समझें।\n2. फिर नियम और उदाहरणों के साथ उनके प्रयोग का अध्ययन करें।\n3. अंत में उन अवधारणाओं का प्रयोग करने वाले वास्तविक ग्रंथों को पढ़ें।\n\nअधिक विस्तृत जानकारी हेतु हमारे पाठ्यक्रम का संबंधित पाठ देखें। किसी विशेष पहलू पर गहराई से बताने के लिए भी पूछ सकते हैं।\n\nक्या आप चाहेंगे कि मैं इसे और विस्तार से समझाऊँ?'
+      : `That's a great question about Sanskrit! Let me explain.
 
 In the Sanskrit tradition, this topic is approached systematically. The key principles to understand are:
 
@@ -60,7 +72,7 @@ In the Sanskrit tradition, this topic is approached systematically. The key prin
 
 I'd recommend checking the relevant lesson in our curriculum for a more detailed treatment. You can also ask me to elaborate on any specific aspect.
 
-Would you like me to break this down further?`)
+Would you like me to break this down further?`
   }
 
   const sendMessage = async (content: string) => {

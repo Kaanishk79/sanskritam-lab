@@ -448,7 +448,7 @@ export default function LanguageLabPage() {
           </div>
 
           <div className="lab-roster">
-            <h4>{t('Students (')}{roster.length}{t(')')}</h4>
+            <h4>{t('Students')} ({roster.length})</h4>
             {rosterBusy && <p>{t('Loading…')}</p>}
             {roster.length === 0 && !rosterBusy && <p className="lab-report-note">{t('No students yet — add your first student above.')}</p>}
             <table className="lab-roster-table">

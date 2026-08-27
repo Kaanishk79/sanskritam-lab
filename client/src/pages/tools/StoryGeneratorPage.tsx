@@ -8,13 +8,13 @@ import { saveStoryToDb, syncStoriesFromDb, deleteStoryFromDb, type SavedStory } 
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function StoryGeneratorPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [themes, setThemes] = useState<StoryTheme[]>(STORY_THEMES)
   const [saved, setSaved] = useState<SavedStory[]>([])
   const [themeId, setThemeId] = useState(STORY_THEMES[0].id)
   const [w1, setW1] = useState(STORY_THEMES[0].words[0].sa)
   const [w2, setW2] = useState(STORY_THEMES[0].words[1].sa)
-  const [story, setStory] = useState<{ sa: string; en: string }[] | null>(null)
+  const [story, setStory] = useState<{ sa: string; en: string; hi: string }[] | null>(null)
   const [aiNote, setAiNote] = useState('')
   const [busy, setBusy] = useState(false)
   const [speaking, setSpeaking] = useState(false)
@@ -135,10 +135,10 @@ export default function StoryGeneratorPage() {
           <p style={{ margin: '0 0 10px', fontWeight: 600 }}>{t('Choose two words for your story')}</p>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
             <select className="btn btn-sm btn-secondary" style={{ height: 36 }} value={w1} onChange={(e) => setW1(e.target.value)}>
-              {theme.words.map((w) => <option key={w.sa} value={w.sa}>{w.sa} — {w.en}</option>)}
+              {theme.words.map((w) => <option key={w.sa} value={w.sa}>{w.sa} — {lang === 'hi' ? w.hi : w.en}</option>)}
             </select>
             <select className="btn btn-sm btn-secondary" style={{ height: 36 }} value={w2} onChange={(e) => setW2(e.target.value)}>
-              {theme.words.map((w) => <option key={w.sa} value={w.sa}>{w.sa} — {w.en}</option>)}
+              {theme.words.map((w) => <option key={w.sa} value={w.sa}>{w.sa} — {lang === 'hi' ? w.hi : w.en}</option>)}
             </select>
             <button className="btn btn-sm btn-secondary" onClick={() => { pickWord(1); pickWord(2) }}>🎲 {t('Random')}</button>
             <span style={{ flex: 1 }} />
@@ -162,7 +162,7 @@ export default function StoryGeneratorPage() {
                 const m = wordMeaning(w)
                 return (
                   <span key={w} className="badge" style={{ background: 'rgba(46,125,50,0.1)', color: '#2e7d32', padding: '6px 10px' }}>
-                    {w} = {m?.en}
+                    {w} = {lang === 'hi' ? m?.hi : m?.en}
                   </span>
                 )
               })}
@@ -171,7 +171,7 @@ export default function StoryGeneratorPage() {
               {story.map((s, i) => (
                 <div key={i} className="card" style={{ padding: '12px 16px', margin: 0 }}>
                   <p style={{ margin: 0, fontSize: 20 }}>{s.sa}</p>
-                  <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)', fontSize: 14 }}>{s.en}</p>
+                  <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)', fontSize: 14 }}>{lang === 'hi' ? s.hi : s.en}</p>
                   <p style={{ margin: '2px 0 0', color: 'var(--vt-muted)', fontSize: 13, fontStyle: 'italic' }}>{toIAST(s.sa)}</p>
                 </div>
               ))}

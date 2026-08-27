@@ -57,7 +57,7 @@ export default function SearchPage() {
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Type: राम, vidyā, गीता, grammar…"
+          placeholder={t('Type: राम, vidyā, गीता, grammar…')}
           style={{ fontSize: 17, padding: '12px 14px' }}
           autoFocus
         />
