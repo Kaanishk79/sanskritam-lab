@@ -79,19 +79,28 @@ export async function loadFestivals(): Promise<Festival[]> {
       phrase: String(r.phrase ?? ''),
       phraseEn: String(r.phrase_en ?? ''),
     }))
+    .map((f) => {
+      const loc = FESTIVALS.find((x) => x.id === f.id)
+      return loc ? { ...f, nameHi: loc.nameHi, approxHi: loc.approxHi, tithiHi: loc.tithiHi, meaningHi: loc.meaningHi, howHi: loc.howHi, phraseEnHi: loc.phraseEnHi } : f
+    })
     .sort((a, b) => (a.month === b.month ? a.day - b.day : a.month - b.month))
 }
 
 export async function loadRitus(): Promise<Ritu[]> {
   const rows = await loadRows('culture_ritus')
   if (!rows.length) return RITUS
-  return rows.map((r) => ({
-    name: String(r.name),
-    months: String(r.months ?? ''),
-    season: String(r.season ?? ''),
-    emoji: String(r.emoji ?? ''),
-    verse: String(r.verse ?? ''),
-  }))
+  return rows.map((r) => {
+    const loc = RITUS.find((x) => x.name === String(r.name))
+    return {
+      name: String(r.name),
+      months: String(r.months ?? ''),
+      season: String(r.season ?? ''),
+      emoji: String(r.emoji ?? ''),
+      verse: String(r.verse ?? ''),
+      monthsHi: loc?.monthsHi,
+      seasonHi: loc?.seasonHi,
+    }
+  })
 }
 
 export async function loadQuotes(): Promise<Quote[]> {
