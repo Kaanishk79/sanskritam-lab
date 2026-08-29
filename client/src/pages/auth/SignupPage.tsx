@@ -3,9 +3,11 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { signUp, getAuthState, onAuthChange, updateAccountMeta, resendConfirmation } from '../../services/auth'
 import { supabase } from '../../services/supabase'
 import { schoolsApi } from '../../services/schools'
+import type { School } from '../../services/schools'
 import { useLanguage } from '../../context/LanguageContext'
 
 export const PENDING_SCHOOL_KEY = 'sanskritlab-pending-school'
+export const PENDING_TEACHER_KEY = 'sanskritlab-pending-teacher'
 
 function ResendConfirmation({ email }: { email: string }) {
   const { t } = useLanguage()
@@ -58,6 +60,11 @@ export default function SignupPage() {
   const [schoolCity, setSchoolCity] = useState('')
   const [schoolState, setSchoolState] = useState('')
   const [schoolType, setSchoolType] = useState('')
+  const [teacherUsername, setTeacherUsername] = useState('')
+  const [schoolQuery, setSchoolQuery] = useState('')
+  const [schoolResults, setSchoolResults] = useState<School[]>([])
+  const [schoolSearching, setSchoolSearching] = useState(false)
+  const [selectedSchool, setSelectedSchool] = useState<School | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [needsConfirmation, setNeedsConfirmation] = useState(false)
@@ -66,6 +73,26 @@ export default function SignupPage() {
     const unsub = onAuthChange((s) => { if (s.user) navigate('/') })
     return unsub
   }, [navigate])
+
+  useEffect(() => {
+    setSelectedSchool(null)
+    setSchoolResults([])
+  }, [accountType])
+
+  useEffect(() => {
+    if (accountType !== 'teacher') return
+    const q = schoolQuery.trim()
+    if (q.length < 2) { setSchoolResults([]); return }
+    let live = true
+    setSchoolSearching(true)
+    const timer = setTimeout(() => {
+      schoolsApi.list({ q })
+        .then((r) => { if (live) setSchoolResults(r.data.slice(0, 6)) })
+        .catch(() => undefined)
+        .finally(() => { if (live) setSchoolSearching(false) })
+    }, 400)
+    return () => { live = false; clearTimeout(timer) }
+  }, [schoolQuery, accountType])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -76,7 +103,8 @@ export default function SignupPage() {
     }
     setLoading(true)
     try {
-      await signUp(email, password, name, { accountType })
+      const username = teacherUsername.trim().toLowerCase() || undefined
+      await signUp(email, password, name, { accountType, schoolId: selectedSchool?.id, username })
       const session = supabase.auth.getSession() as unknown as { data?: { session?: unknown } } | null
       const hasSession = !!session?.data?.session
       if (accountType === 'institution') {
@@ -98,6 +126,28 @@ export default function SignupPage() {
           }
         } else {
           localStorage.setItem(PENDING_SCHOOL_KEY, JSON.stringify(schoolBody))
+          setNeedsConfirmation(true)
+        }
+      }
+      if (accountType === 'teacher' && selectedSchool) {
+        const link = {
+          school_id: selectedSchool.id,
+          school_name: selectedSchool.name,
+          username,
+        }
+        if (hasSession) {
+          try {
+            await schoolsApi.teacherRegister(selectedSchool.id, { name, auth_username: username })
+          } catch {
+            /* roster row best-effort */
+          }
+          try {
+            await updateAccountMeta({ school_id: selectedSchool.id, ...(username ? { username } : {}) })
+          } catch {
+            /* metadata link best-effort */
+          }
+        } else {
+          localStorage.setItem(PENDING_TEACHER_KEY, JSON.stringify(link))
           setNeedsConfirmation(true)
         }
       }
@@ -126,7 +176,7 @@ export default function SignupPage() {
             <h3 style={{ marginBottom: 12 }}>{t('Check your email')}</h3>
             <p style={{ color: '#aaa', marginBottom: 16 }}>
               {t('We sent a confirmation link to ')}<strong>{email}</strong>.<br />
-              {t('After you confirm and sign in, your school')} <strong>{schoolName}</strong> {t('will be registered to your account automatically.')}
+              {t('After you confirm and sign in, your school')} <strong>{selectedSchool?.name || schoolName}</strong> {t('will be linked to your account automatically.')}
             </p>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
               <button className="btn btn-primary" onClick={() => navigate('/auth/login')}>{t('Go to Sign In')}</button>
@@ -186,6 +236,73 @@ export default function SignupPage() {
                 </div>
                 <p style={{ fontSize: 12, color: '#888', margin: 0 }}>
                   🏫 {t('Your school is registered instantly. As an institution you can switch between School, Teacher and Student views.')}
+                </p>
+              </div>
+            )}
+
+            {accountType === 'teacher' && (
+              <div className="card" style={{ padding: 16, marginBottom: 12, background: 'rgba(255,140,0,0.06)', border: '1px solid rgba(255,140,0,0.35)' }}>
+                <div className="form-group">
+                  <label>{t('Your Username')}</label>
+                  <input
+                    type="text"
+                    value={teacherUsername}
+                    onChange={(e) => setTeacherUsername(e.target.value)}
+                    placeholder={t('e.g. acharya.ram')}
+                  />
+                  <p style={{ fontSize: 12, color: '#888', margin: '4px 0 0' }}>
+                    👤 {t('Sign in with this username — it is created by you, along with your password above.')}
+                  </p>
+                </div>
+                <div className="form-group">
+                  <label>{t('Connect a School')}</label>
+                  {selectedSchool ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ flex: 1, background: 'rgba(255,140,0,0.1)', border: '1px solid rgba(255,140,0,0.4)', borderRadius: 6, padding: '8px 10px', fontSize: 14 }}>
+                        🏫 {selectedSchool.name}
+                        {selectedSchool.short_code ? <span style={{ fontFamily: 'monospace', color: '#ff8c00', marginLeft: 8 }}>{selectedSchool.short_code}</span> : null}
+                      </span>
+                      <button type="button" className="btn btn-sm btn-secondary" onClick={() => { setSelectedSchool(null); setSchoolQuery('') }}>
+                        {t('Change')}
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <input
+                        type="text"
+                        value={schoolQuery}
+                        onChange={(e) => setSchoolQuery(e.target.value)}
+                        placeholder={t('Search school name or code...')}
+                      />
+                      {schoolSearching && <p style={{ fontSize: 12, color: '#888', margin: '4px 0 0' }}>⏳ {t('Searching...')}</p>}
+                      {!schoolSearching && !!schoolResults.length && (
+                        <div className="text-list" style={{ marginTop: 6, maxHeight: 180, overflow: 'auto' }}>
+                          {schoolResults.map((sc) => (
+                            <div
+                              className="text-item"
+                              key={sc.id}
+                              style={{ cursor: 'pointer' }}
+                              onClick={() => { setSelectedSchool(sc); setSchoolQuery('') }}
+                            >
+                              <div className="text-title">{sc.name}</div>
+                              <div className="text-meta">
+                                {[sc.short_code, sc.city, sc.state].filter(Boolean).join(' · ')}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {!schoolSearching && schoolQuery.trim().length >= 2 && !schoolResults.length && (
+                        <p style={{ fontSize: 12, color: '#e55', margin: '4px 0 0' }}>{t('No school found — check the spelling or the school code.')}</p>
+                      )}
+                    </>
+                  )}
+                  <p style={{ fontSize: 12, color: '#888', margin: '4px 0 0' }}>
+                    🔗 {t('Your students join the same school with its code, and appear in your real Teacher Dashboard roster.')}
+                  </p>
+                </div>
+                <p style={{ fontSize: 12, color: '#888', margin: 0 }}>
+                  👨‍🏫 {t('Teacher accounts can be linked now or later — the dashboard always shows your real school data, never demo numbers.')}
                 </p>
               </div>
             )}

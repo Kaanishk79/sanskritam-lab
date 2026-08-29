@@ -8,6 +8,7 @@ export interface AuthUser {
   avatarUrl?: string
   accountType: string
   schoolId?: string | null
+  username?: string | null
 }
 
 export interface AuthState {
@@ -27,6 +28,7 @@ function toAuthUser(u: User): AuthUser {
     avatarUrl: (u.user_metadata?.avatar_url as string) || meta.avatar_url as string | undefined,
     accountType: (meta.account_type as string) || 'learner',
     schoolId: (meta.school_id as string) || null,
+    username: (meta.username as string) || (meta.auth_username as string) || null,
   }
 }
 
@@ -82,7 +84,7 @@ export async function signUp(
   email: string,
   password: string,
   displayName: string,
-  opts: { accountType?: string; schoolId?: string } = {},
+  opts: { accountType?: string; schoolId?: string; username?: string } = {},
 ): Promise<AuthUser> {
   state = { ...state, isLoading: true, error: null }
 
@@ -101,6 +103,7 @@ export async function signUp(
   const meta: Record<string, unknown> = { display_name: displayName }
   if (opts.accountType) meta.account_type = opts.accountType
   if (opts.schoolId) meta.school_id = opts.schoolId
+  if (opts.username) meta.username = opts.username.toLowerCase().trim()
 
   const { data, error } = await supabaseAuth.signUp(email, password, meta)
 

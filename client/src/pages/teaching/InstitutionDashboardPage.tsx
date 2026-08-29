@@ -283,6 +283,7 @@ export default function InstitutionDashboardPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
             <input placeholder={t('Name')} value={newTeacher.name || ''} onChange={(e) => setNewTeacher({ ...newTeacher, name: e.target.value })} />
             <input placeholder={t('Email')} value={newTeacher.email || ''} onChange={(e) => setNewTeacher({ ...newTeacher, email: e.target.value })} />
+            <input placeholder={t('Username')} value={newTeacher.auth_username || ''} onChange={(e) => setNewTeacher({ ...newTeacher, auth_username: e.target.value })} />
             <input placeholder={t('Subject')} value={(Array.isArray(newTeacher.subjects) ? newTeacher.subjects[0] : newTeacher.subjects) || ''} onChange={(e) => setNewTeacher({ ...newTeacher, subjects: e.target.value ? [e.target.value] : [] })} />
             <input placeholder={t('Designation')} value={newTeacher.designation || ''} onChange={(e) => setNewTeacher({ ...newTeacher, designation: e.target.value })} />
           </div>
@@ -306,6 +307,7 @@ export default function InstitutionDashboardPage() {
                   <div className="text-meta">
                     {Array.isArray(tc.subjects) ? tc.subjects.join(', ') : tc.subjects || ''} · {tc.designation || 'Teacher'}
                     {tc.email ? ' · ' + tc.email : ''}
+                    {tc.auth_username ? ` · @${tc.auth_username}` : ''}
                   </div>
                 </div>
                 <button className="btn btn-sm" style={{ color: '#e55', background: 'transparent', border: 'none', cursor: 'pointer' }} disabled={busy === 'delTeacher'} onClick={() => run('delTeacher', () => schoolsApi.deactivateTeacher(s.id, tc.id))}>

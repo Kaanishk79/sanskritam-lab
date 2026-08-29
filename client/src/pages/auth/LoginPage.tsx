@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signIn, getAuthState, onAuthChange, resendConfirmation } from '../../services/auth'
+import { schoolsApi } from '../../services/schools'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function LoginPage() {
@@ -25,7 +26,12 @@ export default function LoginPage() {
     setNotConfirmed(false)
     setLoading(true)
     try {
-      await signIn(email, password)
+      let loginEmail = email.trim()
+      if (!loginEmail.includes('@')) {
+        const resolved = await schoolsApi.resolveLogin(loginEmail)
+        loginEmail = resolved.email
+      }
+      await signIn(loginEmail, password)
       navigate('/')
     } catch (err: any) {
       const msg = err.message || ''
@@ -74,8 +80,8 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit}>
             {error && <div className="auth-error">{error}</div>}
             <div className="form-group">
-              <label>{t('Email')}</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="your@email.com" required />
+              <label>{t('Email or Username')}</label>
+              <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('your@email.com or your username')} required />
             </div>
             <div className="form-group">
               <label>{t('Password')}</label>

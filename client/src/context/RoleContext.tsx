@@ -23,6 +23,7 @@ const RoleContext = createContext<RoleContextValue | null>(null)
 
 const ROLE_KEY = 'sanskritlab-view-role'
 const GUEST_KEY = 'sanskritlab-guest'
+const PENDING_TEACHER_KEY = 'sanskritlab-pending-teacher'
 
 export function RoleProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(() => getAuthState().user)
@@ -60,35 +61,60 @@ export function RoleProvider({ children }: { children: React.ReactNode }) {
       setSchool(null)
       return
     }
-    if (u.accountType !== 'institution') {
+    if (u.accountType !== 'institution' && u.accountType !== 'teacher' && u.accountType !== 'student') {
       setSchool(null)
       return
     }
     setSchoolLoading(true)
     try {
-      let detail: SchoolDetail | null = null
-      if (u.schoolId) {
-        detail = await schoolsApi.get(u.schoolId)
-      } else if (u.email) {
-        const found = await schoolsApi.findMy(u.email)
-        if (found) {
-          detail = await schoolsApi.get(found.id)
+      if (u.accountType === 'teacher') {
+        const pendingRaw = localStorage.getItem(PENDING_TEACHER_KEY)
+        if (pendingRaw) {
           try {
-            await updateAccountMeta({ school_id: found.id })
-          } catch {
-            /* non-fatal */
+            const pending = JSON.parse(pendingRaw)
+            await schoolsApi.teacherRegister(pending.school_id, {
+              name: u.displayName,
+              auth_username: pending.username || u.username,
+            })
+            await updateAccountMeta({
+              school_id: pending.school_id,
+              ...(pending.username ? { username: pending.username } : {}),
+            })
+            localStorage.removeItem(PENDING_TEACHER_KEY)
+          } catch (e) {
+            console.error('Pending teacher link failed', e)
           }
-        } else {
-          const pendingRaw = localStorage.getItem('sanskritlab-pending-school')
-          if (pendingRaw) {
+        }
+      }
+      let detail: SchoolDetail | null = null
+      if (u.accountType === 'teacher' || u.accountType === 'student') {
+        if (u.schoolId) {
+          detail = await schoolsApi.get(u.schoolId)
+        }
+      } else if (u.accountType === 'institution') {
+        if (u.schoolId) {
+          detail = await schoolsApi.get(u.schoolId)
+        } else if (u.email) {
+          const found = await schoolsApi.findMy(u.email)
+          if (found) {
+            detail = await schoolsApi.get(found.id)
             try {
-              const pending = JSON.parse(pendingRaw)
-              const created = await schoolsApi.create(pending)
-              localStorage.removeItem('sanskritlab-pending-school')
-              await updateAccountMeta({ school_id: created.id })
-              detail = await schoolsApi.get(created.id)
-            } catch (e) {
-              console.error('Pending school creation failed', e)
+              await updateAccountMeta({ school_id: found.id })
+            } catch {
+              /* non-fatal */
+            }
+          } else {
+            const pendingRaw = localStorage.getItem('sanskritlab-pending-school')
+            if (pendingRaw) {
+              try {
+                const pending = JSON.parse(pendingRaw)
+                const created = await schoolsApi.create(pending)
+                localStorage.removeItem('sanskritlab-pending-school')
+                await updateAccountMeta({ school_id: created.id })
+                detail = await schoolsApi.get(created.id)
+              } catch (e) {
+                console.error('Pending school creation failed', e)
+              }
             }
           }
         }

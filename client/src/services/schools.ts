@@ -39,6 +39,8 @@ export interface Teacher {
   qualification: string | null
   joining_date: string | null
   status: string | null
+  auth_username: string | null
+  auth_user_id: string | null
   created_at: string
 }
 
@@ -172,6 +174,12 @@ export const schoolsApi = {
 
   joinLab: (schoolCode: string, labCode: string) =>
     api<{ data: LabJoinResult }>('/join-lab', { method: 'POST', body: { school_code: schoolCode, lab_code: labCode } }).then((r) => r.data),
+
+  resolveLogin: (login: string) =>
+    api<{ data: { email: string; mode: 'username' | 'email'; name?: string } }>('/resolve-login', { method: 'POST', body: { login } }).then((r) => r.data),
+
+  teacherRegister: (schoolId: string, body: Record<string, unknown>) =>
+    api<{ data: Teacher }>(`/${schoolId}/teacher-register`, { method: 'POST', body }).then((r) => r.data),
 
   getSettings: (schoolId: string) =>
     api<{ data: SchoolSettings | null }>(`/${schoolId}/settings`).then((r) => r.data),
