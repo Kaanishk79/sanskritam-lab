@@ -32,6 +32,13 @@ interface Concept {
   desc: string
 }
 
+const POS_HI: Record<string, string> = {
+  noun: 'संज्ञा',
+  verb: 'क्रिया',
+  adjective: 'विशेषण',
+  indeclinable: 'अव्यय',
+}
+
 export function exploreWord(word: string) {
   window.dispatchEvent(new CustomEvent('sanskritlab:explore', { detail: word }))
 }
@@ -103,9 +110,9 @@ export default function ExplorePanel({ word, onClose }: { word: string; onClose?
       const conceptMatches = iast.split(/[a-z]*/).filter(Boolean)
       const concepts: Concept[] = []
       if (conceptMatches.length || w.length <= 6) {
-        concepts.push({ name: 'Root family', icon: '🌱', desc: row?.root ? `Derives from ${toDevanagari(row.root) || row.root} (${toIAST(row.root)})` : 'Etymology via dictionary root field' })
+        concepts.push({ name: 'Root family', icon: '🌱', desc: row?.root ? (lang === 'hi' ? `मूल ${toDevanagari(row.root) || row.root} (${toIAST(row.root)}) से व्युत्पन्न` : `Derives from ${toDevanagari(row.root) || row.root} (${toIAST(row.root)})`) : t('Etymology via dictionary root field') })
       }
-      if (row?.pos) concepts.push({ name: 'Part of speech', icon: '🏷️', desc: row.pos })
+      if (row?.pos) concepts.push({ name: 'Part of speech', icon: '🏷️', desc: lang === 'hi' ? POS_HI[row.pos] ?? row.pos : row.pos })
       setConcepts(concepts)
       setLoading(false)
     }
@@ -155,7 +162,7 @@ export default function ExplorePanel({ word, onClose }: { word: string; onClose?
           <div className="explore-section">
             <h4>🔤 {t('Grammar')}</h4>
             <p style={{ margin: 0 }}>
-              <span className="chip">{t('Part of speech')}: {entry?.pos || '—'}</span>{' '}
+              <span className="chip">{t('Part of speech')}: {(lang === 'hi' ? POS_HI[entry?.pos ?? ''] ?? entry?.pos : entry?.pos) || '—'}</span>{' '}
               <span className="chip">{t('Root')}: {entry?.root ? `${toDevanagari(entry.root) || entry.root} (${toIAST(entry.root)})` : '—'}</span>{' '}
               <span className="chip">IAST: {iast}</span>
             </p>

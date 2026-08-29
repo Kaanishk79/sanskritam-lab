@@ -8,7 +8,7 @@ const SAMPLE_VERSE = 'सत्यमेव जयते नानृतम्'
 const SAMPLE_WORDS = ['राम', 'सीता', 'कृष्ण', 'विद्या', 'गुरु', 'अग्नि', 'इन्द्र', 'माता', 'पिता']
 
 export default function ExplorePage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const { word: routeWord } = useParams()
   const navigate = useNavigate()
   const [word, setWord] = useState(routeWord ? decodeURIComponent(routeWord) : '')
@@ -47,7 +47,7 @@ export default function ExplorePage() {
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="राम / rāma / a word from a text…"
+          placeholder={lang === 'hi' ? 'राम / rāma / किसी पाठ से शब्द…' : 'राम / rāma / a word from a text…'}
           style={{ flex: 1 }}
         />
         <button type="submit" className="btn btn-primary">{t('Explore')}</button>
