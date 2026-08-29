@@ -357,43 +357,43 @@ export function dayOfYear(d = new Date()): number {
   return Math.floor((d.getTime() - start.getTime()) / 86400000)
 }
 
-export async function wordOfDay(): Promise<{ word: string; meanings: string[]; iast: string } | null> {
+export async function wordOfDay(): Promise<{ word: string; meanings: string[]; meaningsHi: string[]; iast: string } | null> {
   const { data } = await supabase
     .from('dictionary')
-    .select('word, meanings')
+    .select('word, meanings, meanings_hi')
     .order('id')
     .limit(200)
   if (!data || data.length === 0) return null
   const row = data[dayOfYear() % data.length]
-  return { word: row.word, meanings: row.meanings || [], iast: toIAST(row.word) }
+  return { word: row.word, meanings: row.meanings || [], meaningsHi: row.meanings_hi || [], iast: toIAST(row.word) }
 }
 
-export const PHRASES_OF_DAY: { dev: string; iast: string; meaning: string }[] = [
-  { dev: 'सत्यमेव जयते', iast: 'satyameva jayate', meaning: 'Truth alone triumphs' },
-  { dev: 'विद्या ददाति विनयम्', iast: 'vidyā dadāti vinayam', meaning: 'Knowledge gives humility' },
-  { dev: 'अतिथि देवो भव', iast: 'atithi devo bhava', meaning: 'The guest is a god' },
-  { dev: 'वसुधैव कुटुम्बकम्', iast: 'vasudhaiva kuṭumbakam', meaning: 'The world is one family' },
-  { dev: 'सर्वे भवन्तु सुखिनः', iast: 'sarve bhavantu sukhinaḥ', meaning: 'May all be happy' },
-  { dev: 'आ नो भद्राः क्रतवो यन्तु विश्वतः', iast: 'ā no bhadrāḥ kratavo yantu viśvataḥ', meaning: 'Let noble thoughts come from all sides' },
-  { dev: 'उद्धरेदात्मनात्मानम्', iast: 'uddharedātmanātmānam', meaning: 'Lift yourself by yourself' },
-  { dev: 'योगः कर्मसु कौशलम्', iast: 'yogaḥ karmasu kauśalam', meaning: 'Yoga is skill in action' },
-  { dev: 'सा विद्या या विमुक्तये', iast: 'sā vidyā yā vimuktaye', meaning: 'Knowledge is that which liberates' },
-  { dev: 'नास्ति विद्या समं चक्षुः', iast: 'nāsti vidyā samaṃ cakṣuḥ', meaning: 'There is no eye like knowledge' },
-  { dev: 'धर्मो रक्षति रक्षितः', iast: 'dharmo rakṣati rakṣitaḥ', meaning: 'Dharma protects the protector' },
-  { dev: 'संस्कृतं देवभाषा', iast: 'saṃskṛtaṃ devabhāṣā', meaning: 'Sanskrit is the language of the gods' },
+export const PHRASES_OF_DAY: { dev: string; iast: string; meaning: string; meaningHi?: string }[] = [
+  { dev: 'सत्यमेव जयते', iast: 'satyameva jayate', meaning: 'Truth alone triumphs', meaningHi: 'सत्य की सदा विजय होती है' },
+  { dev: 'विद्या ददाति विनयम्', iast: 'vidyā dadāti vinayam', meaning: 'Knowledge gives humility', meaningHi: 'ज्ञान विनय देता है' },
+  { dev: 'अतिथि देवो भव', iast: 'atithi devo bhava', meaning: 'The guest is a god', meaningHi: 'अतिथि देव के समान है' },
+  { dev: 'वसुधैव कुटुम्बकम्', iast: 'vasudhaiva kuṭumbakam', meaning: 'The world is one family', meaningHi: 'सम्पूर्ण विश्व एक परिवार है' },
+  { dev: 'सर्वे भवन्तु सुखिनः', iast: 'sarve bhavantu sukhinaḥ', meaning: 'May all be happy', meaningHi: 'सभी सुखी हों' },
+  { dev: 'आ नो भद्राः क्रतवो यन्तु विश्वतः', iast: 'ā no bhadrāḥ kratavo yantu viśvataḥ', meaning: 'Let noble thoughts come from all sides', meaningHi: 'चारों ओर से श्रेष्ठ विचार आएँ' },
+  { dev: 'उद्धरेदात्मनात्मानम्', iast: 'uddharedātmanātmānam', meaning: 'Lift yourself by yourself', meaningHi: 'स्वयं को स्वयं ही ऊपर उठाएँ' },
+  { dev: 'योगः कर्मसु कौशलम्', iast: 'yogaḥ karmasu kauśalam', meaning: 'Yoga is skill in action', meaningHi: 'योग कर्म में कुशलता है' },
+  { dev: 'सा विद्या या विमुक्तये', iast: 'sā vidyā yā vimuktaye', meaning: 'Knowledge is that which liberates', meaningHi: 'ज्ञान वह है जो मुक्त करता है' },
+  { dev: 'नास्ति विद्या समं चक्षुः', iast: 'nāsti vidyā samaṃ cakṣuḥ', meaning: 'There is no eye like knowledge', meaningHi: 'ज्ञान के समान कोई आँख नहीं' },
+  { dev: 'धर्मो रक्षति रक्षितः', iast: 'dharmo rakṣati rakṣitaḥ', meaning: 'Dharma protects the protector', meaningHi: 'धर्म रक्षक की रक्षा करता है' },
+  { dev: 'संस्कृतं देवभाषा', iast: 'saṃskṛtaṃ devabhāṣā', meaning: 'Sanskrit is the language of the gods', meaningHi: 'संस्कृत देवों की भाषा है' },
 ]
 
-export const VERSES_OF_DAY: { dev: string; iast: string; translation: string; source: string }[] = [
-  { dev: 'कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।', iast: 'karmaṇyevādhikāraste mā phaleṣu kadācana |', translation: 'Your right is to action alone, never to its fruits.', source: 'Bhagavad Gītā 2.47' },
-  { dev: 'उद्यमेन हि सिध्यन्ति कार्याणि न मनोरथैः।', iast: 'udyamena hi sidhyanti kāryāṇi na manorathaiḥ |', translation: 'Tasks succeed by effort, not by wishes.', source: 'Pañcatantra' },
-  { dev: 'मातृवत् परदारेषु परद्रव्येषु लोष्टवत्।', iast: 'mātṛvat paradāreṣu paradravyeṣu loṣṭavat |', translation: 'Treat others\' wives as mothers, others\' wealth as clods of earth.', source: 'Cāṇakya Nīti' },
-  { dev: 'अहिंसा परमो धर्मः', iast: 'ahiṃsā paramo dharmaḥ', translation: 'Non-violence is the highest dharma.', source: 'Mahābhārata' },
-  { dev: 'सत्यं शिवं सुन्दरम्', iast: 'satyaṃ śivaṃ sundaram', translation: 'Truth, goodness, beauty.', source: 'Upaniṣadic motto' },
-  { dev: 'आत्मानं विद्धि', iast: 'ātmānaṃ viddhi', translation: 'Know the Self.', source: 'Kaṭha Upaniṣad' },
-  { dev: 'वसुधैव कुटुम्बकम्', iast: 'vasudhaiva kuṭumbakam', translation: 'The whole world is one family.', source: 'Hitopadeśa' },
-  { dev: 'श्रद्धावान् लभते ज्ञानम्', iast: 'śraddhāvān labhate jñānam', translation: 'The faithful obtain knowledge.', source: 'Bhagavad Gītā 4.39' },
-  { dev: 'परोपकाराय पुण्याय पापाय परपीडनम्', iast: 'paropakārāya puṇyāya pāpāya parapīḍanam', translation: 'For helping others is merit; harming others is sin.', source: 'Vidyāraṇya' },
-  { dev: 'संगच्छध्वं संवदध्वं', iast: 'saṃgacchadhvaṃ saṃvadadhvaṃ', translation: 'Walk together, speak together.', source: 'Ṛgveda 10.191' },
+export const VERSES_OF_DAY: { dev: string; iast: string; translation: string; translationHi?: string; source: string; sourceHi?: string }[] = [
+  { dev: 'कर्मण्येवाधिकारस्ते मा फलेषु कदाचन।', iast: 'karmaṇyevādhikāraste mā phaleṣu kadācana |', translation: 'Your right is to action alone, never to its fruits.', translationHi: 'आपका अधिकार केवल कर्म में है, फलों में कभी नहीं।', source: 'Bhagavad Gītā 2.47', sourceHi: 'श्रीमद्भगवद्गीता 2.47' },
+  { dev: 'उद्यमेन हि सिध्यन्ति कार्याणि न मनोरथैः।', iast: 'udyamena hi sidhyanti kāryāṇi na manorathaiḥ |', translation: 'Tasks succeed by effort, not by wishes.', translationHi: 'कार्य परिश्रम से सिद्ध होते हैं, केवल इच्छा से नहीं।', source: 'Pañcatantra', sourceHi: 'पंचतंत्र' },
+  { dev: 'मातृवत् परदारेषु परद्रव्येषु लोष्टवत्।', iast: 'mātṛvat paradāreṣu paradravyeṣu loṣṭavat |', translation: 'Treat others\' wives as mothers, others\' wealth as clods of earth.', translationHi: 'परस्त्री को माता के समान और पराये धन को मिट्टी के ढेले के समान समझो।', source: 'Cāṇakya Nīti', sourceHi: 'चाणक्य नीति' },
+  { dev: 'अहिंसा परमो धर्मः', iast: 'ahiṃsā paramo dharmaḥ', translation: 'Non-violence is the highest dharma.', translationHi: 'अहिंसा सबसे बड़ा धर्म है।', source: 'Mahābhārata', sourceHi: 'महाभारत' },
+  { dev: 'सत्यं शिवं सुन्दरम्', iast: 'satyaṃ śivaṃ sundaram', translation: 'Truth, goodness, beauty.', translationHi: 'सत्य, शिव, सौन्दर्य।', source: 'Upaniṣadic motto', sourceHi: 'उपनिषद्' },
+  { dev: 'आत्मानं विद्धि', iast: 'ātmānaṃ viddhi', translation: 'Know the Self.', translationHi: 'आत्मा को जानो।', source: 'Kaṭha Upaniṣad', sourceHi: 'कठोपनिषद्' },
+  { dev: 'वसुधैव कुटुम्बकम्', iast: 'vasudhaiva kuṭumbakam', translation: 'The whole world is one family.', translationHi: 'सम्पूर्ण विश्व एक परिवार है।', source: 'Hitopadeśa', sourceHi: 'हितोपदेश' },
+  { dev: 'श्रद्धावान् लभते ज्ञानम्', iast: 'śraddhāvān labhate jñānam', translation: 'The faithful obtain knowledge.', translationHi: 'श्रद्धावान व्यक्ति ज्ञान प्राप्त करता है।', source: 'Bhagavad Gītā 4.39', sourceHi: 'श्रीमद्भगवद्गीता 4.39' },
+  { dev: 'परोपकाराय पुण्याय पापाय परपीडनम्', iast: 'paropakārāya puṇyāya pāpāya parapīḍanam', translation: 'For helping others is merit; harming others is sin.', translationHi: 'दूसरों की सहायता करना पुण्य है, दूसरों को कष्ट देना पाप।', source: 'Vidyāraṇya', sourceHi: 'विद्यारण्य' },
+  { dev: 'संगच्छध्वं संवदध्वं', iast: 'saṃgacchadhvaṃ saṃvadadhvaṃ', translation: 'Walk together, speak together.', translationHi: 'एक साथ चलो, एक साथ बोलो।', source: 'Ṛgveda 10.191', sourceHi: 'ऋग्वेद 10.191' },
 ]
 
 export function phraseOfDay(): typeof PHRASES_OF_DAY[number] {

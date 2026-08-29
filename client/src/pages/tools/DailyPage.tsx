@@ -8,7 +8,7 @@ import { useRole } from '../../context/RoleContext'
 export default function DailyPage() {
   const { t, lang } = useLanguage()
   const { user } = useRole()
-  const [wod, setWod] = useState<{ word: string; meanings: string[]; iast: string } | null>(null)
+  const [wod, setWod] = useState<{ word: string; meanings: string[]; meaningsHi: string[]; iast: string } | null>(null)
   const phrase = phraseOfDay()
   const verse = verseOfDay()
   const [questions, setQuestions] = useState<ChallengeQuestion[]>([])
@@ -64,7 +64,7 @@ export default function DailyPage() {
               <div style={{ fontSize: 34 }}>{wod.word}</div>
               <div style={{ color: '#999', margin: '4px 0' }}>{wod.iast}</div>
               <ul style={{ margin: 0, paddingLeft: 18 }}>
-                {wod.meanings.map((m, i) => <li key={i}>{m}</li>)}
+                {(wod.meaningsHi.length && lang === 'hi' ? wod.meaningsHi : wod.meanings).map((m, i) => <li key={i}>{m}</li>)}
               </ul>
               <button className="btn btn-sm btn-outline" style={{ marginTop: 10 }} onClick={() => speakWithFallback(wod.word)}>🔊 {t('Hear it')}</button>
             </>
@@ -75,7 +75,7 @@ export default function DailyPage() {
           <h3 style={{ marginTop: 0 }}>💬 {t('Phrase of the Day')}</h3>
           <div style={{ fontSize: 24 }}>{phrase.dev}</div>
           <div style={{ color: '#999', margin: '4px 0' }}>{phrase.iast}</div>
-          <div style={{ color: '#ccc' }}>{phrase.meaning}</div>
+          <div style={{ color: '#ccc' }}>{lang === 'hi' ? phrase.meaningHi || phrase.meaning : phrase.meaning}</div>
           <button className="btn btn-sm btn-outline" style={{ marginTop: 10 }} onClick={() => speakWithFallback(phrase.dev)}>🔊 {t('Hear it')}</button>
         </div>
 
@@ -83,8 +83,8 @@ export default function DailyPage() {
           <h3 style={{ marginTop: 0 }}>🪔 {t('Verse of the Day')}</h3>
           <div style={{ fontSize: 20, lineHeight: 1.8 }}>{verse.dev}</div>
           <div style={{ color: '#999', margin: '4px 0', fontSize: 13 }}>{verse.iast}</div>
-          <div style={{ color: '#ccc', fontSize: 14 }}>{verse.translation}</div>
-          <div style={{ color: '#888', fontSize: 12, marginTop: 6 }}>{verse.source}</div>
+          <div style={{ color: '#ccc', fontSize: 14 }}>{lang === 'hi' ? verse.translationHi || verse.translation : verse.translation}</div>
+          <div style={{ color: '#888', fontSize: 12, marginTop: 6 }}>{lang === 'hi' ? verse.sourceHi || verse.source : verse.source}</div>
           <button className="btn btn-sm btn-outline" style={{ marginTop: 10 }} onClick={() => speakWithFallback(verse.dev)}>🔊 {t('Hear it')}</button>
         </div>
       </div>
