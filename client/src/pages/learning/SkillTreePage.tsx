@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useProgress } from '../../hooks/useProgress'
 import { tracks } from '../../data/tracks'
 import { classLevels, getGovClassFor } from '../../data/classes'
-import { books } from '../../data/books'
-import { lessons } from '../../data/lessons'
+import { books, bookHi } from '../../data/books'
+import { lessons, lessonHi } from '../../data/lessons'
 import type { GovClassId, ClassInfo } from '../../types/curriculum'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -115,7 +115,7 @@ function ClassDetail({ classInfo, books: classBooks, lessons: classLessons, comp
   completedLessons: string[]
   onNavigate: (path: string) => void
 }) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const ncertBook = classInfo.ncertBookId ? books.find((b) => b.id === classInfo.ncertBookId) : null
 
   return (
@@ -143,7 +143,7 @@ function ClassDetail({ classInfo, books: classBooks, lessons: classLessons, comp
             <div>
               <div className="class-book-title">{ncertBook.title}</div>
               <div className="class-book-sanskrit">{ncertBook.titleSanskrit}</div>
-              <div className="class-book-author">{ncertBook.author}{ncertBook.publisher ? ` · ${ncertBook.publisher}` : ''}</div>
+              <div className="class-book-author">{lang === 'hi' ? bookHi[ncertBook.id]?.authorHi ?? ncertBook.author : ncertBook.author}{ncertBook.publisher ? ` · ${lang === 'hi' ? bookHi[ncertBook.id]?.publisherHi ?? ncertBook.publisher : ncertBook.publisher}` : ''}</div>
               <div className="class-book-chapters">{ncertBook.totalChapters}{t(' chapters')}</div>
             </div>
           </div>
@@ -160,7 +160,7 @@ function ClassDetail({ classInfo, books: classBooks, lessons: classLessons, comp
                 <span>{b.coverIcon}</span>
                 <div>
                   <div className="class-ref-title">{b.title}</div>
-                  <div className="class-ref-author">{b.author ?? ''}</div>
+                  <div className="class-ref-author">{lang === 'hi' ? bookHi[b.id]?.authorHi ?? b.author : b.author ?? ''}</div>
                 </div>
               </div>
             ))}
@@ -185,9 +185,9 @@ function ClassDetail({ classInfo, books: classBooks, lessons: classLessons, comp
                   <span className="lesson-status">{done ? '✅' : '○'}</span>
                   <div className="lesson-info">
                     <div className="lesson-title">{lesson.title}</div>
-                    <div className="lesson-subtitle">{lesson.subtitle}</div>
+                    <div className="lesson-subtitle">{lang === 'hi' && lessonHi[lesson.id]?.subtitleHi ? lessonHi[lesson.id].subtitleHi : lesson.subtitle}</div>
                   </div>
-                  <span className="lesson-duration">{lesson.duration}</span>
+                  <span className="lesson-duration">{lang === 'hi' && lessonHi[lesson.id]?.durationHi ? lessonHi[lesson.id].durationHi : lesson.duration}</span>
                   {done && <span className="lesson-score">{score}%</span>}
                 </div>
               )

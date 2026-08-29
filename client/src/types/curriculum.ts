@@ -40,10 +40,12 @@ export interface Lesson {
   id: string
   title: string
   subtitle: string
+  subtitleHi?: string
   level: Level
   track: Track
   govClassId: GovClassId
   duration: string
+  durationHi?: string
   content: LessonContent
   quiz: QuizQuestion[]
   unlockables: string[]
@@ -109,6 +111,10 @@ export interface Book {
   track: Track
   totalChapters: number
   description: string
+  authorHi?: string | null
+  publisherHi?: string | null
+  periodHi?: string | null
+  descriptionHi?: string | null
   coverIcon: string
   sortOrder: number
   govClassMin: number

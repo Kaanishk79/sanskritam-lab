@@ -148,6 +148,9 @@ export const miscHi: Record<string, string> = {
   'Interactive timeline showing how Sanskrit language and philosophy evolved over centuries': 'इंटरैक्टिव समय-रेखा दर्शाती है कि संस्कृत भाषा और दर्शन सदियों से कैसे विकसित हुए',
   'All Events': 'सभी घटनाएँ',
   'Text': 'ग्रंथ',
+  'Dictionary': 'शब्दकोश',
+  'Lesson': 'पाठ',
+  'Corpus': 'कोश',
   'Grammar': 'व्याकरण',
   'Philosophy': 'दर्शन',
 
@@ -431,6 +434,8 @@ export const miscHi: Record<string, string> = {
 
   // Role / account keys (used via t() on data-driven labels)
   'School': 'विद्यालय',
+  'Class': 'कक्षा',
+  'CBSE': 'सीबीएसई',
   'Teacher': 'शिक्षक',
   'Student': 'छात्र',
   'Learner': 'शिक्षार्थी',

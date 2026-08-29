@@ -1,6 +1,6 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useState, useMemo, useRef, useEffect } from 'react'
-import { lessons } from '../../data/lessons'
+import { lessons, lessonHi } from '../../data/lessons'
 import { useProgress } from '../../hooks/useProgress'
 import { useKeyboard } from '../../context/KeyboardContext'
 import { useLanguage } from '../../context/LanguageContext'
@@ -30,7 +30,7 @@ export default function LessonPage() {
   const navigate = useNavigate()
   const { completeLesson } = useProgress()
   const { openKeyboard } = useKeyboard()
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [searchParams] = useSearchParams()
 
   const lesson = lessons.find((l) => l.id === lessonId)
@@ -77,10 +77,10 @@ export default function LessonPage() {
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <button className="btn btn-secondary" onClick={() => navigate('/learning/tree')}>← {t('Back')}</button>
-          <span style={{ fontSize: 13, color: '#888' }}>{lesson.duration} · {t('Level')} {lesson.level}</span>
+          <span style={{ fontSize: 13, color: '#888' }}>{lang === 'hi' && lessonHi[lesson.id]?.durationHi ? lessonHi[lesson.id].durationHi : lesson.duration} · {t('Level')} {lesson.level}</span>
         </div>
         <h2 style={{ fontSize: 24, color: '#f0f0f0', marginBottom: 4 }}>{lesson.title}</h2>
-        <p style={{ color: '#888', fontSize: 14 }}>{lesson.subtitle}</p>
+        <p style={{ color: '#888', fontSize: 14 }}>{lang === 'hi' && lessonHi[lesson.id]?.subtitleHi ? lessonHi[lesson.id].subtitleHi : lesson.subtitle}</p>
         <div style={{ width: '100%', height: 4, background: '#1e1e3a', borderRadius: 2, marginTop: 8 }}>
           <div style={{ width: `${progressPct}%`, height: '100%', background: 'var(--sanskrit-gold)', borderRadius: 2, transition: 'width 0.3s' }} />
         </div>

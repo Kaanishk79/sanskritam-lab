@@ -8,7 +8,8 @@ function easeInOutCubic(t: number) {
 }
 
 export default function Curtain({ onDone }: { onDone: () => void }) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const hi = lang === 'hi'
   const [phase, setPhase] = useState<'waiting' | 'opening' | 'done'>('waiting')
   const [progress, setProgress] = useState(0)
 
@@ -83,7 +84,7 @@ export default function Curtain({ onDone }: { onDone: () => void }) {
             onClick={(e) => { e.stopPropagation(); handleClick() }}
           >
             <span style={styles.buttonText}>{t('प्रवेश करें')}</span>
-            <span style={styles.buttonSub}>Enter SanskritLab</span>
+            <span style={styles.buttonSub}>{hi ? 'संस्कृतलैब में प्रवेश करें' : 'Enter SanskritLab'}</span>
           </button>
         )}
       </div>

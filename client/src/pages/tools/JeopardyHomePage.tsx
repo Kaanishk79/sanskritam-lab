@@ -77,7 +77,7 @@ export default function JeopardyHomePage() {
             <p>{t('6 categories, 5 clues each — values from 200 to 1000')}</p>
             <div className="j-mini-cats">
               {categories.map((c) => (
-                <span key={c.id}>{lang === 'hi' ? c.nameSanskrit : c.name}</span>
+                <span key={c.id}>{lang === 'hi' ? c.nameHi ?? c.nameSanskrit : c.name}</span>
               ))}
             </div>
           </div>
@@ -87,7 +87,7 @@ export default function JeopardyHomePage() {
             <p>{t('New board, doubled values — from 400 to 2000')}</p>
             <div className="j-mini-cats">
               {doubleCategories.map((c) => (
-                <span key={c.id}>{lang === 'hi' ? c.nameSanskrit : c.name}</span>
+                <span key={c.id}>{lang === 'hi' ? c.nameHi ?? c.nameSanskrit : c.name}</span>
               ))}
             </div>
           </div>
@@ -147,8 +147,8 @@ export default function JeopardyHomePage() {
             <div className="j-news-card" key={a.id}>
               <span className="j-news-icon">{a.icon}</span>
               <span className="j-news-tag">{t(a.tag)}</span>
-              <h4>{a.title}</h4>
-              <p>{a.excerpt}</p>
+              <h4>{lang === 'hi' ? a.titleHi ?? a.title : a.title}</h4>
+              <p>{lang === 'hi' ? a.excerptHi ?? a.excerpt : a.excerpt}</p>
               <span className="j-news-date">{a.date}</span>
             </div>
           ))}

@@ -117,7 +117,7 @@ export default function TeacherDashboardPage() {
                   <div>
                     <div className="text-title">{tc.name}</div>
                     <div className="text-meta">
-                      {Array.isArray(tc.subjects) ? tc.subjects.join(', ') : tc.subjects || tc.designation || 'Teacher'} · {tc.teacher_code}
+                      {Array.isArray(tc.subjects) ? tc.subjects.join(', ') : tc.subjects || tc.designation || t('Teacher')} · {tc.teacher_code}
                     </div>
                   </div>
                 </div>

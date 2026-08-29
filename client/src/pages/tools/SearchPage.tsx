@@ -18,7 +18,8 @@ const KIND_LABEL: Record<SearchResult['kind'], string> = {
 }
 
 export default function SearchPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const hi = lang === 'hi'
   const navigate = useNavigate()
   const [q, setQ] = useState('')
   const [results, setResults] = useState<SearchResult[]>([])
@@ -74,7 +75,7 @@ export default function SearchPage() {
                 <span style={{ fontSize: 22 }}>{KIND_ICON[r.kind]}</span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{r.title}{r.extra ? <span style={{ color: '#888', fontWeight: 400 }}> · {r.extra}</span> : null}</div>
-                  <div style={{ color: '#999', fontSize: 13 }}>{r.sub}</div>
+                  <div style={{ color: '#999', fontSize: 13 }}>{hi ? r.subHi ?? r.sub : r.sub}</div>
                 </div>
                 <span className="chip">{t(KIND_LABEL[r.kind])}</span>
               </div>

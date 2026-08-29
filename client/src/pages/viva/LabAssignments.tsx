@@ -25,7 +25,7 @@ const clearAll = (setContent: (c: LabProjectContent) => void) =>
   setContent({ passageIds: [], listeningIds: [], writingIds: [], readingIds: [] })
 
 function ContentPicker({ content, setContent }: { content: LabProjectContent; setContent: (c: LabProjectContent) => void }) {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   return (
     <div className="lab-picker">
       <div className="lab-picker-group">
@@ -78,7 +78,7 @@ function ContentPicker({ content, setContent }: { content: LabProjectContent; se
                 })
               }
             />
-            {w.prompt}
+            {lang === 'hi' ? w.promptHi ?? w.prompt : w.prompt}
           </label>
         ))}
       </div>

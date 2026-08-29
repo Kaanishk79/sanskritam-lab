@@ -8,6 +8,7 @@ import { useLanguage } from '../../context/LanguageContext'
 
 export default function ShlokaPage() {
   const { t, lang } = useLanguage()
+  const hi = lang === 'hi'
   const [passages, setPassages] = useState<ReadingPassage[]>(readingPassages)
   const [verses, setVerses] = useState<Shloka[]>(SHLOKAS)
   const [openPassage, setOpenPassage] = useState<string | null>(null)
@@ -65,10 +66,10 @@ export default function ShlokaPage() {
           {openPassage === p.id && (
             <div style={{ borderTop: '1px solid rgba(255,255,255,.08)', paddingTop: 12 }}>
               <div style={{ color: '#999', fontStyle: 'italic' }}>{p.transliteration}</div>
-              <div style={{ color: '#ccc', marginTop: 6 }}>{p.translation}</div>
+              <div style={{ color: '#ccc', marginTop: 6 }}>{hi ? p.translationHi ?? p.translation : p.translation}</div>
               <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {p.words.slice(0, 10).map((w) => (
-                  <span key={w.word} className="chip">{w.word} <span style={{ color: '#999' }}>= {w.meaning}</span></span>
+                  <span key={w.word} className="chip">{w.word} <span style={{ color: '#999' }}>= {hi ? w.meaningHi ?? w.meaning : w.meaning}</span></span>
                 ))}
               </div>
             </div>

@@ -6,7 +6,7 @@ import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function ConceptExplorerPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [concepts, setConcepts] = useState<Concept[]>(CONCEPTS)
   const [cat, setCat] = useState<'all' | Concept['cat']>('all')
   const [selId, setSelId] = useState(CONCEPTS[0].id)
@@ -52,11 +52,11 @@ export default function ConceptExplorerPage() {
             </h3>
             <button className="btn btn-sm btn-secondary" onClick={() => speak(sel.sa + '. ' + sel.example)} disabled={speaking}>🔊 {t('Hear')}</button>
           </div>
-          <p style={{ margin: '8px 0 0', fontSize: 15, fontWeight: 600, color: 'var(--vt-orange)' }}>{sel.def}</p>
-          <p style={{ margin: '10px 0 0' }}>{sel.detail}</p>
+          <p style={{ margin: '8px 0 0', fontSize: 15, fontWeight: 600, color: 'var(--vt-orange)' }}>{lang === 'hi' && sel.defHi ? sel.defHi : sel.def}</p>
+          <p style={{ margin: '10px 0 0' }}>{lang === 'hi' && sel.detailHi ? sel.detailHi : sel.detail}</p>
           <div className="card" style={{ marginTop: 12, padding: '10px 14px', background: 'var(--vt-white)' }}>
             <p style={{ margin: 0, fontSize: 18 }}>{sel.example}</p>
-            <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{sel.exampleEn}</p>
+            <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{lang === 'hi' && sel.exampleEnHi ? sel.exampleEnHi : sel.exampleEn}</p>
           </div>
           {sel.related.length > 0 && (
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 12 }}>
@@ -82,7 +82,7 @@ export default function ConceptExplorerPage() {
               onClick={() => go(c.id)}
             >
               <strong>{c.emoji} {c.sa}</strong>
-              <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--vt-muted)' }}>{c.en} — {c.def}</p>
+              <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--vt-muted)' }}>{c.en} — {lang === 'hi' && c.defHi ? c.defHi : c.def}</p>
             </button>
           ))}
         </div>

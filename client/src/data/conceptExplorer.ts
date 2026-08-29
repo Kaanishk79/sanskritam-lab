@@ -7,6 +7,9 @@ export interface Concept {
   detail: string
   example: string
   exampleEn: string
+  defHi?: string
+  detailHi?: string
+  exampleEnHi?: string
   related: string[]
   emoji: string
 }
@@ -17,6 +20,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The joining of sounds when words meet.',
     detail: 'When two sounds come together in speech, they change to flow smoothly: इ + अ → य (yaṇ), अ + आ → आ (dīrgha), अ + इ → ए (guṇa). Pāṇini gave 3000+ rules for these joins — try the Sandhi Tool to see them live.',
     example: 'इदम् + अस्ति = इदमस्ति', exampleEn: 'this + is = this is',
+    defHi: 'शब्दों के मिलने पर ध्वनियों का मेल।',
+    detailHi: 'जब बोलते समय दो ध्वनियाँ पास आती हैं, तो वे सुचारु बहाव के लिए बदल जाती हैं: इ + अ → य (यण्), अ + आ → आ (दीर्घ), अ + इ → ए (गुण)। पाणिनि ने इन संधियों के लिए 3000 से अधिक नियम दिए — संधि उपकरण से इन्हें सजीव देखिए।',
+    exampleEnHi: 'यह + है = यह है',
     related: ['vyakarana', 'prakriya'],
   },
   {
@@ -24,6 +30,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Two or more words packed into one.',
     detail: 'Like building blocks, Sanskrit stacks words: राजन् + पुरुष = राजपुरुष (king’s man). There are main types: Tatpuruṣa, Dvandva, Bahuvrīhi, Karmadhāraya, Avyayībhāva. English does this too — “rainfall”, “snowman”.',
     example: 'गजानन = गज + आनन', exampleEn: 'elephant-faced (Ganesha)',
+    defHi: 'दो या अधिक शब्दों का एक में समाहित होना।',
+    detailHi: 'खिलौने के टुकड़ों की तरह संस्कृत शब्दों को जोड़ती है: राजन् + पुरुष = राजपुरुष (राजा का पुरुष)। मुख्य प्रकार: तत्पुरुष, द्वन्द्व, बहुव्रीहि, कर्मधारय, अव्ययीभाव। अंग्रेज़ी में भी यह होता है — "rainfall", "snowman"।',
+    exampleEnHi: 'गज (हाथी) के मुख वाला — गणेश',
     related: ['vyakarana', 'sandhi'],
   },
   {
@@ -31,6 +40,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The role a word plays in an action.',
     detail: 'Kārakas answer “who does what to whom”: kartā (agent, nominative), karma (object, accusative), karaṇa (instrument), sampradāna (recipient), apādāna (source), adhikaraṇa (location). These 6 roles drive the 8 noun cases.',
     example: 'रामः (कर्ता) फलम् (कर्म) खादति', exampleEn: 'Rama (agent) eats a fruit (object)',
+    defHi: 'क्रिया में एक शब्द की भूमिका।',
+    detailHi: 'कारक "कौन किसके साथ क्या करता है" का उत्तर देते हैं: कर्ता (क्रिया करने वाला), कर्म (क्रिया का उद्देश्य), करण (साधन), सम्प्रदान (प्राप्तकर्ता), अपादान (स्रोत), अधिकरण (स्थान)। ये 6 भूमिकाएँ 8 विभक्तियों को चलाती हैं।',
+    exampleEnHi: 'राम (कर्ता) फल (कर्म) खाता है',
     related: ['vibhakti', 'vyakarana'],
   },
   {
@@ -38,6 +50,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The endings a noun takes for its role.',
     detail: 'Sanskrit nouns change endings: रामः, रामम्, रामेण, रामाय… Eight cases × three numbers = a rich grid. This is why word order is free — the ending tells you the grammar, not the position.',
     example: 'रामः / रामम् / रामेण / रामाय', exampleEn: 'Rama / to Rama / by Rama / for Rama',
+    defHi: 'संज्ञा की भूमिका के अनुसार लगने वाले विभक्ति प्रत्यय।',
+    detailHi: 'संस्कृत संज्ञाएँ विभक्ति बदलती हैं: रामः, रामम्, रामेण, रामाय… आठ विभक्तियाँ × तीन वचन = एक समृद्ध तालिका। इसीलिए शब्द-क्रम स्वतंत्र है — विभक्ति व्याकरण बताती है, स्थान नहीं।',
+    exampleEnHi: 'राम / राम को / राम से / राम के लिए',
     related: ['kAraka', 'vyakarana'],
   },
   {
@@ -45,6 +60,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The science of speech — “separation back into parts”.',
     detail: 'From Pāṇini’s Aṣṭādhyāyī (c. 500 BCE), the most precise grammar ever written — its rules are so algorithmic they inspired modern computer language design. Sanskrit grammar is called śabda-śāstra, the science of words.',
     example: 'अष्टाध्यायी — 8 chapters, ~4000 sūtras', exampleEn: 'Pāṇini’s grammar',
+    defHi: 'वाक् का विज्ञान — "पृथक् करके विश्लेषण"।',
+    detailHi: 'पाणिनि की अष्टाध्यायी (लगभग 500 ई.पू.) से — अब तक लिखा गया सबसे सूक्ष्म व्याकरण; इसके नियम इतने कलन-विधि (algorithmic) हैं कि इन्होंने आधुनिक कंप्यूटर भाषाओं को प्रेरित किया। संस्कृत व्याकरण शब्द-शास्त्र कहलाता है।',
+    exampleEnHi: 'पाणिनि का व्याकरण',
     related: ['sandhi', 'samasa', 'dhatu'],
   },
   {
@@ -52,6 +70,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The seed of every verb — the smallest meaningful unit.',
     detail: 'Every Sanskrit verb grows from a root: भू (be), कृ (do), गम् (go). About 2000 roots, grouped in 10 classes (gaṇas), generate the entire verb system. The Dhātu Explorer lists them.',
     example: '√भू → भवति, भविष्यति, अभवत्', exampleEn: 'be → is, will be, was',
+    defHi: 'हर क्रिया का बीज — सबसे छोटी सार्थक इकाई।',
+    detailHi: 'हर संस्कृत क्रिया एक धातु से बनती है: भू (होना), कृ (करना), गम् (जाना)। लगभग 2000 धातुएँ, 10 गणों में विभाजित, पूरी क्रिया-प्रणाली उत्पन्न करती हैं। धातु अन्वेषक में इनकी सूची है।',
+    exampleEnHi: 'होना → है, होगा, था',
     related: ['vyakarana', 'prakriya'],
   },
   {
@@ -59,6 +80,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The step-by-step making of a word.',
     detail: 'Root + suffix + endings, with sound changes along the way: √धा + क्त → हित. The derivation (prakriyā) shows every intermediate step — like showing your work in math.',
     example: '√गम् + तुम् = गन्तुम्', exampleEn: 'to go (infinitive)',
+    defHi: 'शब्द निर्माण की चरणबद्ध प्रक्रिया।',
+    detailHi: 'धातु + प्रत्यय + विभक्ति, बीच में ध्वनि-परिवर्तन के साथ: √धा + क्त → हित। प्रक्रिया हर मध्य चरण दिखाती है — जैसे गणित में अपना काम दिखाना।',
+    exampleEnHi: 'जाना (इनफिनिटिव)',
     related: ['dhatu', 'vyakarana'],
   },
   {
@@ -66,6 +90,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The one reality behind everything — infinite, unchanging, blissful.',
     detail: 'The Upaniṣads ask: what is real when everything changes? Their answer: Brahman — the ground of all being, and (in Advaita) identical with the innermost self, Ātman. “Tat tvam asi — That thou art.”',
     example: 'सत्यं ज्ञानम् अनन्तम् ब्रह्म', exampleEn: 'Brahman is truth, knowledge, infinity',
+    defHi: 'सबके पीछे एक सत्य — अनंत, अपरिवर्तनीय, आनंदमय।',
+    detailHi: 'उपनिषद् पूछते हैं: जब सब कुछ बदलता है, तो असली क्या है? उनका उत्तर: ब्रह्म — सबके होने का आधार, और (अद्वैत में) अंतरतम आत्मा के समान। "तत्त्वमसि — तू वह है।"',
+    exampleEnHi: 'ब्रह्म सत्य, ज्ञान, अनंत है',
     related: ['atman', 'maya'],
   },
   {
@@ -73,6 +100,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The innermost self — pure awareness, not the body or mind.',
     detail: 'We say “my body”, “my mind” — who owns them? The Ātman. Yoga and Vedānta teach knowing the self directly through meditation (dhyāna).',
     example: 'आत्मानं विद्धि', exampleEn: 'Know thyself',
+    defHi: 'अंतरतम स्व — शुद्ध चेतना, न शरीर, न मन।',
+    detailHi: 'हम कहते हैं "मेरा शरीर", "मेरा मन" — उनका स्वामी कौन? आत्मा। योग और वेदांत ध्यान के द्वारा स्व को सीधे जानना सिखाते हैं।',
+    exampleEnHi: 'अपने स्व को जानो',
     related: ['brahman', 'dhyana', 'maya'],
   },
   {
@@ -80,6 +110,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The power that makes the one appear as many.',
     detail: 'Māyā is not “the world is fake” — it is that we mistake the changing for the real. Like mistaking a rope for a snake in dim light: the snake is māyā, the rope is Brahman.',
     example: 'रज्जुसर्पन्यायः', exampleEn: 'the rope-snake analogy',
+    defHi: 'वह शक्ति जो एक को अनेक दिखाती है।',
+    detailHi: 'माया का अर्थ "दुनिया झूठी है" नहीं — बल्कि यह कि हम बदलने वाले को सत्य समझ लेते हैं। जैसे धुंधलके में रस्सी को साँप समझना: साँप माया है, रस्सी ब्रह्म।',
+    exampleEnHi: 'रस्सी-साँप दृष्टांत',
     related: ['brahman', 'atman'],
   },
   {
@@ -87,6 +120,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Every action leaves a trace that shapes the future.',
     detail: 'Karma is not “fate” — it is causality of action: the seed you plant grows. The Gītā’s great teaching: act without attachment to results (niṣkāma karma).',
     example: 'कर्मण्येवाधिकारस्ते', exampleEn: 'Your right is to action alone',
+    defHi: 'हर कर्म एक छाप छोड़ता है जो भविष्य को आकार देता है।',
+    detailHi: 'कर्म "भाग्य" नहीं — यह कर्म का कारण-कार्य है: जो बीज बोओगे, वही उगता है। गीता का महान संदेश: फल की आसक्ति के बिना कर्म करो (निष्काम कर्म)।',
+    exampleEnHi: 'कर्म करने में ही तुम्हारा अधिकार है',
     related: ['dharma', 'moksha'],
   },
   {
@@ -94,6 +130,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Freedom from the cycle of birth, death and rebirth.',
     detail: 'The highest goal of classical Indian thought: liberation from saṃsāra by realising the self’s identity with Brahman. Paths: knowledge (jñāna), action (karma), devotion (bhakti), yoga.',
     example: 'मोक्षो हि नान्यत्', exampleEn: 'Liberation is nothing else',
+    defHi: 'जन्म, मृत्यु और पुनर्जन्म के चक्र से मुक्ति।',
+    detailHi: 'भारतीय दर्शन का सर्वोच्च लक्ष्य: आत्मा की ब्रह्म से अभिन्नता का साक्षात्कार करके संसार-चक्र से मुक्त होना। मार्ग: ज्ञान, कर्म, भक्ति, योग।',
+    exampleEnHi: 'मुक्ति कुछ और नहीं है',
     related: ['brahman', 'atman', 'karma-s'],
   },
   {
@@ -101,6 +140,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Unbroken focus of the mind on one object.',
     detail: 'The 7th limb of Patañjali’s yoga. When attention flows without interruption, it becomes samādhi — the state where the seer, seeing, and seen merge.',
     example: 'ध्यानेन सर्वम् साध्यम्', exampleEn: 'Everything is achievable by meditation',
+    defHi: 'एक वस्तु पर मन की अखंड एकाग्रता।',
+    detailHi: 'पतंजलि योग का सातवाँ अंग। जब ध्यान बिना रुकावट बहता है, वह समाधि बन जाता है — जहाँ द्रष्टा, दर्शन और दृश्य एक हो जाते हैं।',
+    exampleEnHi: 'ध्यान से सब कुछ साध्य है',
     related: ['yoga', 'atman'],
   },
   {
@@ -108,6 +150,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Union of the mind with its deepest stillness.',
     detail: 'From √युज् (to yoke). Patañjali: “yogaś citta-vṛtti-nirodhaḥ” — the stilling of the mind’s fluctuations. The Yoga Sūtras are 196 crisp aphorisms — the world’s best meditation manual.',
     example: 'योगः चित्तवृत्तिनिरोधः', exampleEn: 'Yoga is the stilling of the mind',
+    defHi: 'मन का अपनी गहनतम शांति से मिलन।',
+    detailHi: '√युज् (जोड़ना) से। पतंजलि: "योगश्चित्तवृत्तिनिरोधः" — मन की वृत्तियों का निरोध। योग-सूत्र 196 सूक्ष्म सूत्र हैं — दुनिया की सर्वश्रेष्ठ ध्यान पुस्तिका।',
+    exampleEnHi: 'योग मन की वृत्तियों का निरोध है',
     related: ['dhyana', 'atman'],
   },
   {
@@ -115,6 +160,9 @@ export const CONCEPTS: Concept[] = [
     def: 'What holds things together — your role’s natural duty.',
     detail: 'From √धृ (to hold). A fire’s dharma is to burn, a doctor’s to heal, a friend’s to listen. Dharma is context-sensitive: what is right for a soldier in war differs from a monk’s duty.',
     example: 'धर्मो रक्षति रक्षितः', exampleEn: 'Dharma protects the protected',
+    defHi: 'जो चीज़ों को जोड़े रखता है — आपकी भूमिका का स्वाभाविक कर्तव्य।',
+    detailHi: '√धृ (धारण करना) से। अग्नि का धर्म जलाना है, डॉक्टर का चिकित्सा, मित्र का सुनना। धर्म संदर्भ-संवेदी है: युद्ध में सैनिक का कर्तव्य साधु के कर्तव्य से भिन्न होता है।',
+    exampleEnHi: 'धर्म रक्षित की रक्षा करता है',
     related: ['karma-s', 'satya'],
   },
   {
@@ -122,6 +170,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Truthfulness in thought, word and deed.',
     detail: 'The first of the five yamas (restraints) of yoga. Truth is not just not-lying — it is alignment: what you think, say and do match. India’s national motto: Satyameva Jayate.',
     example: 'सत्यमेव जयते', exampleEn: 'Truth alone triumphs',
+    defHi: 'विचार, वचन और कर्म में सत्यनिष्ठा।',
+    detailHi: 'योग के पाँच यमों में पहला। सत्य सिर्फ झूठ न बोलना नहीं — यह सुसंगति है: सोचो, कहो और करो एक समान। भारत का राष्ट्रीय आदर्श वाक्य: सत्यमेव जयते।',
+    exampleEnHi: 'सत्य की ही विजय होती है',
     related: ['dharma', 'ahimsa'],
   },
   {
@@ -129,6 +180,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Not harming any being in thought, word or deed.',
     detail: 'The first yama, raised to a global force by Gandhi (who called it satyāgraha, “truth-force”). Mahābhārata: “ahimsā paramo dharmaḥ — non-violence is the highest dharma.”',
     example: 'अहिंसा परमो धर्मः', exampleEn: 'Non-violence is the highest duty',
+    defHi: 'किसी भी प्राणी को विचार, वचन या कर्म से न सताना।',
+    detailHi: 'पहला यम, जिसे गांधी (सत्याग्रह कहने वाले) ने वैश्विक शक्ति बनाया। महाभारत: "अहिंसा परमो धर्मः — अहिंसा सर्वोच्च धर्म है।"',
+    exampleEnHi: 'अहिंसा सर्वोच्च कर्तव्य है',
     related: ['satya', 'daya'],
   },
   {
@@ -136,6 +190,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Feeling another’s joy and pain as your own.',
     detail: 'Compassion is the root of service (sevā). Buddhism made it the first of the four brahma-vihāras; Sanskrit ethics call it the mother of all virtues.',
     example: 'दया सर्वगुणेषु श्रेष्ठा', exampleEn: 'Compassion is the best of all virtues',
+    defHi: 'दूसरे के सुख-दुख को अपना सा अनुभव करना।',
+    detailHi: 'करुणा सेवा की जड़ है। बौद्ध धर्म ने इसे चार ब्रह्मविहारों में पहला बनाया; संस्कृत नीति इसे सभी गुणों की माता कहती है।',
+    exampleEnHi: 'दया सभी गुणों में श्रेष्ठ है',
     related: ['ahimsa', 'dana'],
   },
   {
@@ -143,6 +200,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Giving without expecting return.',
     detail: 'Dāna is the first of the three acts that sustain society (dāna, dāya, bhakti). The Gītā says the best giving is done without pride and without strings.',
     example: 'दानं यज्ञः तपः', exampleEn: 'Giving, sacrifice, austerity',
+    defHi: 'प्रतिफल की आशा के बिना देना।',
+    detailHi: 'दान समाज को बनाए रखने वाले तीन कर्मों में पहला है (दान, दाय, भक्ति)। गीता कहती है: सबसे उत्तम दान बिना अहंकार और बिना अपेक्षा का है।',
+    exampleEnHi: 'दान, यज्ञ, तप',
     related: ['daya', 'karma-s'],
   },
   {
@@ -150,6 +210,9 @@ export const CONCEPTS: Concept[] = [
     def: 'Work done as worship — serving others without ego.',
     detail: 'Modern movements like Swachh Bharat and volunteering echo sevā: doing work not for pay or praise, but because it needs doing. Gandhi: “The best way to find yourself is to lose yourself in the service of others.”',
     example: 'सेवा परमो धर्मः', exampleEn: 'Service is the highest duty',
+    defHi: 'पूजा के रूप में किया गया कर्म — बिना अहंकार दूसरों की सेवा।',
+    detailHi: 'स्वच्छ भारत जैसे आधुनिक आंदोलन सेवा की ही गूंज हैं: काम वेतन या प्रशंसा के लिए नहीं, बल्कि इसलिए कि उसे होना चाहिए। गांधी: "दूसरों की सेवा में खुद को खोना ही आत्म-खोज का सर्वोत्तम मार्ग है।"',
+    exampleEnHi: 'सेवा सर्वोच्च कर्तव्य है',
     related: ['dana', 'daya'],
   },
   {
@@ -157,6 +220,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The Song of God — 700 verses of the Mahābhārata.',
     detail: 'On the battlefield, Arjuna despairs; Kṛṣṇa teaches him karma, dharma, yoga and bhakti. The Gītā is the most translated Indian text, read by Gandhi, Einstein, Oppenheimer and millions.',
     example: 'गीता शास्त्रम् अमृतम्', exampleEn: 'The Gītā is the nectar of scriptures',
+    defHi: 'ईश्वर का गीत — महाभारत के 700 श्लोक।',
+    detailHi: 'रणभूमि पर अर्जुन निराश है; कृष्ण उसे कर्म, धर्म, योग और भक्ति सिखाते हैं। गीता सबसे अधिक अनूदित भारतीय ग्रंथ है, जिसे गांधी, आइंस्टीन, ओपेनहाइमर और लाखों लोगों ने पढ़ा।',
+    exampleEnHi: 'गीता शास्त्रों का अमृत है',
     related: ['karma-s', 'dharma', 'moksha'],
   },
   {
@@ -164,6 +230,9 @@ export const CONCEPTS: Concept[] = [
     def: 'The story of Rāma — the ideal life in 24,000 verses.',
     detail: 'By Vālmīki, the first poet (ādikavi). Exile, love, war and duty: Rāma shows dharma under pressure — a king who loses everything and keeps his word. The dāsya-bhakti tradition cherishes Hanumān.',
     example: 'रामो विग्रहवान् धर्मः', exampleEn: 'Rāma is dharma embodied',
+    defHi: 'राम की कथा — 24,000 श्लोकों में आदर्श जीवन।',
+    detailHi: 'वाल्मीकि द्वारा, प्रथम कवि (आदिकवि)। वनवास, प्रेम, युद्ध और कर्तव्य: राम दबाव में धर्म दिखाते हैं — एक राजा जो सब कुछ खोकर भी अपना वचन निभाता है। दास्य-भक्ति परंपरा हनुमान को प्रिय मानती है।',
+    exampleEnHi: 'राम साक्षात् धर्म हैं',
     related: ['dharma', 'satya'],
   },
   {
@@ -171,6 +240,9 @@ export const CONCEPTS: Concept[] = [
     def: '“Sitting near” — the secret teachings of the Vedas.',
     detail: '108 known texts; the great ones (Īśa, Kena, Kaṭha, Chāndogya…) ask the deepest questions: What is real? Who am I? What happens at death? They are called Vedānta — the end of the Veda.',
     example: 'तत्त्वमसि', exampleEn: 'That thou art',
+    defHi: '"समीप बैठना" — वेदों की गुप्त शिक्षाएँ।',
+    detailHi: '108 ज्ञात ग्रंथ; प्रमुख (ईश, केन, कठ, छांदोग्य…) गहनतम प्रश्न पूछते हैं: सत्य क्या है? मैं कौन हूँ? मृत्यु पर क्या होता है? इन्हें वेदांत कहते हैं — वेद का अंत।',
+    exampleEnHi: 'तू वह है',
     related: ['brahman', 'atman', 'moksha'],
   },
 ]

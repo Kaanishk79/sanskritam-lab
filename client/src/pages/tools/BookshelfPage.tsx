@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { books, chapters, grammarBooks } from '../../data/books'
+import { books, chapters, grammarBooks, bookHi } from '../../data/books'
 import type { Book, GrammarBook, Chapter } from '../../types/curriculum'
 import { useLanguage } from '../../context/LanguageContext'
 import { fetchBookChapters, fetchChapterVerses } from '../../services/data'
@@ -182,12 +182,12 @@ export default function BookshelfPage() {
                 <div className="book-info">
                   <div className="book-title">{book.title}</div>
                   <div className="book-sanskrit">{book.titleSanskrit}</div>
-                  {book.author && <div className="book-author">{book.author}{book.publisher ? ` · ${book.publisher}` : ''} · {book.period}</div>}
+                  {book.author && <div className="book-author">{(lang === 'hi' ? bookHi[book.id]?.authorHi ?? book.author : book.author)}{book.publisher ? ` · ${lang === 'hi' ? bookHi[book.id]?.publisherHi ?? book.publisher : book.publisher}` : ''} · {lang === 'hi' ? bookHi[book.id]?.periodHi ?? book.period : book.period}</div>}
                   <div className="book-meta">
                     <span className="book-level">{formatGovClassRange(book.govClassMin, book.govClassMax)}</span>
                     <span className="book-chapters">{book.totalChapters} {t('chapters')}</span>
                   </div>
-                  <div className="book-desc">{book.description}</div>
+                  <div className="book-desc">{lang === 'hi' ? bookHi[book.id]?.descriptionHi ?? book.description : book.description}</div>
                 </div>
               </div>
             ))}
@@ -236,8 +236,8 @@ export default function BookshelfPage() {
             <div>
               <h2>{selectedBook.title}</h2>
               <div className="book-sanskrit large">{selectedBook.titleSanskrit}</div>
-              {selectedBook.author && <p className="book-author">{selectedBook.author}{selectedBook.publisher ? ` · ${selectedBook.publisher}` : ''} · {selectedBook.period}</p>}
-              <p className="book-desc">{selectedBook.description}</p>
+              {selectedBook.author && <p className="book-author">{(lang === 'hi' ? bookHi[selectedBook.id]?.authorHi ?? selectedBook.author : selectedBook.author)}{selectedBook.publisher ? ` · ${lang === 'hi' ? bookHi[selectedBook.id]?.publisherHi ?? selectedBook.publisher : selectedBook.publisher}` : ''} · {lang === 'hi' ? bookHi[selectedBook.id]?.periodHi ?? selectedBook.period : selectedBook.period}</p>}
+              <p className="book-desc">{lang === 'hi' ? bookHi[selectedBook.id]?.descriptionHi ?? selectedBook.description : selectedBook.description}</p>
               <div className="grammar-stats">
                 <span>{formatGovClassRange(selectedBook.govClassMin, selectedBook.govClassMax)}</span>
                 <span>{selectedBook.totalChapters} {t('chapters')}</span>

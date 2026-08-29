@@ -10,6 +10,7 @@ interface Turn {
   who: 'you' | 'rival'
   sa: string
   en: string
+  hi?: string
 }
 
 export default function DebatePage() {
@@ -33,20 +34,21 @@ export default function DebatePage() {
 
   const pickSide = (s: 'for' | 'against') => {
     setSide(s)
-    setTurns([{ who: 'rival', sa: s === 'for' ? topic!.against.points[0].sa : topic!.for.points[0].sa, en: s === 'for' ? topic!.against.points[0].en : topic!.for.points[0].en }])
+    const first = s === 'for' ? topic!.against.points[0] : topic!.for.points[0]
+    setTurns([{ who: 'rival', sa: first.sa, en: first.en, hi: first.hi }])
   }
 
   const rivalReply = (): Turn => {
     const stance = side === 'for' ? topic!.against : topic!.for
     const used = turns.filter((x) => x.who === 'rival').length
     const pt = stance.points[used % stance.points.length]
-    return { who: 'rival', sa: pt.sa, en: pt.en }
+    return { who: 'rival', sa: pt.sa, en: pt.en, hi: pt.hi }
   }
 
-  const playTurn = async (mine: string) => {
+  const playTurn = async (mine: string, info?: { en: string; hi?: string }) => {
     if (typing) return
     setTyping(true)
-    setTurns((ts) => [...ts, { who: 'you', sa: mine, en: '' }])
+    setTurns((ts) => [...ts, { who: 'you', sa: mine, en: info?.en ?? '', hi: info?.hi }])
     let reply: Turn
     try {
       const res = await api.tutor.chat(
@@ -114,7 +116,7 @@ export default function DebatePage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
               {stance.points.map((pt, i) => (
-                <button key={i} className="card" style={{ margin: 0, textAlign: 'left' }} onClick={() => playTurn(pt.sa)}>
+                <button key={i} className="card" style={{ margin: 0, textAlign: 'left' }} onClick={() => playTurn(pt.sa, { en: pt.en, hi: pt.hi })}>
                   <strong>{pt.sa}</strong>
                   <span style={{ display: 'block', fontSize: 12, opacity: 0.65, fontStyle: 'italic' }}>{toIAST(pt.sa)}</span>
                   <span style={{ display: 'block', fontSize: 13, opacity: 0.8, marginTop: 4 }}>{lang === 'hi' && pt.hi ? pt.hi : pt.en}</span>
@@ -149,7 +151,7 @@ export default function DebatePage() {
                     }}
                   >
                     <p style={{ margin: 0 }}>{tn.sa}</p>
-                    {tn.en && <p style={{ margin: '4px 0 0', fontSize: 13, opacity: 0.75 }}>{tn.en}</p>}
+                    {(lang === 'hi' ? (tn.hi || tn.en) : tn.en) && <p style={{ margin: '4px 0 0', fontSize: 13, opacity: 0.75 }}>{lang === 'hi' ? (tn.hi || tn.en) : tn.en}</p>}
                     {tn.who === 'rival' && (
                       <button className="btn btn-sm btn-secondary" style={{ marginTop: 8, padding: '2px 8px' }} onClick={() => speakPoint(tn.sa)}>
                         🔊

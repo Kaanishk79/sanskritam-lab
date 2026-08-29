@@ -104,7 +104,7 @@ export default function StudentWorkspacePage() {
         {activeTool === 'text' && (
           <div className="card">
             <div style={{ fontSize: 12, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
-              {t('Current Assignment — Bhagavad Gītā 2.47 ·')} {sampleClass?.name || 'Class'} — {sampleSection?.name || 'A'}
+              {t('Current Assignment — Bhagavad Gītā 2.47 ·')} {sampleClass?.name || t('Class')} — {sampleSection?.name || 'A'}
             </div>
             <div style={{ fontSize: 28, lineHeight: 1.8, fontFamily: "'Noto Sans Devanagari', serif", color: '#f0f0f0', marginBottom: 16 }}>
               मा फलेषु कदाचन । मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि ॥

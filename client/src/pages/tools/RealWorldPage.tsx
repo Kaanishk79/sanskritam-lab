@@ -6,7 +6,8 @@ import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function RealWorldPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const hi = lang === 'hi'
   const [concepts, setConcepts] = useState<Concept[]>(CONCEPTS)
   const [q, setQ] = useState('')
   const [sel, setSel] = useState<Concept>(CONCEPTS[Math.floor(Math.random() * CONCEPTS.length)])
@@ -20,7 +21,7 @@ export default function RealWorldPage() {
   }, [])
 
   const filtered = useMemo(
-    () => concepts.filter((c) => (c.word + c.meaning + c.today).toLowerCase().includes(q.toLowerCase())),
+    () => concepts.filter((c) => (c.word + c.meaning + c.today + (c.meaningHi ?? '') + (c.todayHi ?? '')).toLowerCase().includes(q.toLowerCase())),
     [concepts, q],
   )
 
@@ -54,11 +55,11 @@ export default function RealWorldPage() {
               🔊 {t('Hear it')}
             </button>
           </div>
-          <p style={{ margin: '6px 0', fontSize: 15, fontWeight: 600, color: 'var(--vt-orange)' }}>{sel.meaning}</p>
-          <p style={{ margin: 0 }}>{t('Today:')} {sel.today}</p>
+          <p style={{ margin: '6px 0', fontSize: 15, fontWeight: 600, color: 'var(--vt-orange)' }}>{hi ? sel.meaningHi ?? sel.meaning : sel.meaning}</p>
+          <p style={{ margin: 0 }}>{t('Today:')} {hi ? sel.todayHi ?? sel.today : sel.today}</p>
           <div className="card" style={{ marginTop: 12, padding: '10px 14px', background: 'var(--vt-white)' }}>
             <p style={{ margin: 0, fontSize: 18 }}>{sel.example}</p>
-            <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{sel.exampleEn}</p>
+            <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{hi ? sel.exampleHi ?? sel.exampleEn : sel.exampleEn}</p>
             <p style={{ margin: '2px 0 0', color: 'var(--vt-muted)', fontSize: 13, fontStyle: 'italic' }}>{toIAST(sel.example)}</p>
           </div>
         </div>
@@ -72,7 +73,7 @@ export default function RealWorldPage() {
               onClick={() => setSel(c)}
             >
               <strong>{c.emoji} {c.word} <span style={{ fontWeight: 400, color: 'var(--vt-muted)' }}>{c.iast}</span></strong>
-              <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--vt-muted)' }}>{c.meaning}</p>
+              <p style={{ margin: '4px 0 0', fontSize: 13, color: 'var(--vt-muted)' }}>{hi ? c.meaningHi ?? c.meaning : c.meaning}</p>
             </button>
           ))}
         </div>

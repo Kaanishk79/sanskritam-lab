@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { lessons } from '../../data/lessons'
+import { lessons, lessonHi } from '../../data/lessons'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function CurriculumBuilderPage() {
   const navigate = useNavigate()
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [selectedLevel, setSelectedLevel] = useState<number>(0)
   const [customTitle, setCustomTitle] = useState('')
   const [customContent, setCustomContent] = useState('')
@@ -54,7 +54,7 @@ export default function CurriculumBuilderPage() {
               >
                 <div>
                   <div className="text-title">{l.title}</div>
-                  <div className="text-meta">{l.track} · {l.duration} · {l.quiz.length}{t(' questions')}</div>
+                  <div className="text-meta">{l.track} · {lang === 'hi' && lessonHi[l.id]?.durationHi ? lessonHi[l.id].durationHi : l.duration} · {l.quiz.length}{t(' questions')}</div>
                 </div>
                 <span style={{ fontSize: 12, color: '#888' }}>{l.content.sections.length}{t(' sections')}</span>
               </div>

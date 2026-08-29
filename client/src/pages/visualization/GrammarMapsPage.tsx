@@ -7,7 +7,8 @@ export default function GrammarMapsPage() {
   const [activeTab, setActiveTab] = useState<'grammar' | 'philosophy'>('grammar')
   const [rules, setRules] = useState<GrammarRule[]>(GRAMMAR_RULES)
   const [philosophies, setPhilosophies] = useState<PhilosophyNetwork[]>(PHILOSOPHY_NETWORKS)
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const hi = lang === 'hi'
 
   useEffect(() => {
     let live = true
@@ -95,7 +96,7 @@ export default function GrammarMapsPage() {
             {rules.map((r) => (
               <div key={r.id} className="text-item">
                 <div>
-                  <div className="text-title">{r.rule} — {r.meaning}</div>
+                  <div className="text-title">{r.rule} — {hi ? r.meaningHi ?? r.meaning : r.meaning}</div>
                   <div className="text-meta">Aṣṭādhyāyī {r.id} · {r.category}</div>
                 </div>
               </div>
@@ -111,8 +112,8 @@ export default function GrammarMapsPage() {
               style={{ borderTop: `3px solid ${p.color}` }}
             >
               <h3>{p.name}</h3>
-              <p style={{ marginTop: 8 }}><strong>{t('Focus:')}</strong> {p.focus}</p>
-              <p style={{ marginTop: 4 }}><strong>{t('Texts:')}</strong> {p.texts}</p>
+              <p style={{ marginTop: 8 }}><strong>{t('Focus:')}</strong> {hi ? p.focusHi ?? p.focus : p.focus}</p>
+              <p style={{ marginTop: 4 }}><strong>{t('Texts:')}</strong> {hi ? p.textsHi ?? p.texts : p.texts}</p>
             </div>
           ))}
         </div>

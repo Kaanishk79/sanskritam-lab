@@ -43,7 +43,7 @@ export default function DhatuPage() {
           style={{ flex: 1, minWidth: 200, fontSize: 16 }}
         />
         <select value={gana} onChange={(e) => setGana(e.target.value)} style={{ padding: '8px 10px' }}>
-          {GANAS.map((g) => <option key={g} value={g}>{g}</option>)}
+          {GANAS.map((g) => <option key={g} value={g}>{g === 'All' ? (lang === 'hi' ? 'सभी' : 'All') : g}</option>)}
         </select>
         <span style={{ color: '#888', fontSize: 13 }}>{rows.length} {t('roots')}</span>
       </div>

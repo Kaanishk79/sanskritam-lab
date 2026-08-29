@@ -43,3 +43,12 @@ export const anytimeTestQuestions: TestQuestion[] = [
 
 export const TEST_PASS_THRESHOLD = 21
 export const TEST_TIME_SECONDS = 10 * 60
+
+export const CATEGORY_HI: Record<string, string> = {
+  Alphabet: 'वर्णमाला',
+  Grammar: 'व्याकरण',
+  Sandhi: 'संधि',
+  Texts: 'ग्रंथ',
+  Philosophy: 'दर्शन',
+  Culture: 'संस्कृति',
+}

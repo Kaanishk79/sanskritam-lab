@@ -136,7 +136,7 @@ export default function InstitutionDashboardPage() {
                 <div style={{ flex: 1 }}>
                   <div className="text-title">{s.name}</div>
                   <div className="text-meta">
-                    {s.city || ''}{s.city && s.state ? ', ' : ''}{s.state || ''} · {s.school_type || 'School'} · {s.board || ''} · {t('Code')}: {s.short_code || '—'}
+                    {s.city || ''}{s.city && s.state ? ', ' : ''}{s.state || ''} · {s.school_type || t('School')} · {s.board || ''} · {t('Code')}: {s.short_code || '—'}
                   </div>
                   {s.owner_id && <div className="text-meta" style={{ color: '#e55' }}>{t('Already claimed by another account')}</div>}
                 </div>
@@ -183,7 +183,7 @@ export default function InstitutionDashboardPage() {
     <div>
       <div className="page-header">
         <h2>🏫 {t('Institution HQ')} — {s.name}</h2>
-        <p>{s.city || ''}{s.city && s.state ? ', ' : ''}{s.state || ''} · {s.school_type || 'School'} · {s.board || 'CBSE'} · {t('Short code')}: {s.short_code || '—'}</p>
+        <p>{s.city || ''}{s.city && s.state ? ', ' : ''}{s.state || ''} · {s.school_type || t('School')} · {s.board || t('CBSE')} · {t('Short code')}: {s.short_code || '—'}</p>
         {notice && <p style={{ color: '#4caf50', fontWeight: 600 }}>{notice}</p>}
       </div>
 
@@ -292,7 +292,7 @@ export default function InstitutionDashboardPage() {
             style={{ marginBottom: 16 }}
             disabled={busy === 'teacher' || !newTeacher.name}
             onClick={() => {
-              const body = { ...newTeacher, designation: newTeacher.designation || 'Teacher' }
+              const body = { ...newTeacher, designation: newTeacher.designation || t('Teacher') }
               setNewTeacher({})
               void run('teacher', () => schoolsApi.createTeacher(s.id, body))
             }}
@@ -305,7 +305,7 @@ export default function InstitutionDashboardPage() {
                 <div style={{ flex: 1 }}>
                   <div className="text-title">{tc.name} <span style={{ color: '#ff8c00', fontFamily: 'monospace', fontSize: 12 }}>{tc.teacher_code}</span></div>
                   <div className="text-meta">
-                    {Array.isArray(tc.subjects) ? tc.subjects.join(', ') : tc.subjects || ''} · {tc.designation || 'Teacher'}
+                    {Array.isArray(tc.subjects) ? tc.subjects.join(', ') : tc.subjects || ''} · {tc.designation || t('Teacher')}
                     {tc.email ? ' · ' + tc.email : ''}
                     {tc.auth_username ? ` · @${tc.auth_username}` : ''}
                   </div>

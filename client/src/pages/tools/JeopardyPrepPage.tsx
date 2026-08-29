@@ -36,16 +36,16 @@ export default function JeopardyPrepPage() {
               <button className="j-prep-head" onClick={() => setOpen(isOpen ? null : topic.id)}>
                 <span className="j-prep-icon">{topic.icon}</span>
                 <span className="j-prep-title">
-                  <strong>{topic.title}</strong>
+                  <strong>{lang === 'hi' ? topic.titleHi ?? topic.title : topic.title}</strong>
                   <small>{lang === 'hi' ? topic.titleSanskrit : topic.title}</small>
                 </span>
                 <span className="j-prep-chevron">{isOpen ? '▲' : '▼'}</span>
               </button>
               {isOpen && (
                 <div className="j-prep-body">
-                  <p className="j-prep-summary">{topic.summary}</p>
+                  <p className="j-prep-summary">{lang === 'hi' ? topic.summaryHi ?? topic.summary : topic.summary}</p>
                   <ul className="j-prep-points">
-                    {topic.points.map((pt, i) => (
+                    {(lang === 'hi' ? topic.pointsHi ?? topic.points : topic.points).map((pt, i) => (
                       <li key={i}>{pt}</li>
                     ))}
                   </ul>

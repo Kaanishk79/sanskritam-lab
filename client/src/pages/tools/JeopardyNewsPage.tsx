@@ -8,7 +8,7 @@ import '../tools/jeopardy.css'
 const tags = ['All', 'News & Events', 'Behind the Scenes', 'Contestants']
 
 export default function JeopardyNewsPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [articles, setArticles] = useState<NewsArticle[] | null>(null)
   const [tag, setTag] = useState('All')
 
@@ -50,8 +50,8 @@ export default function JeopardyNewsPage() {
           <article className="j-news-card" key={a.id}>
             <span className="j-news-icon">{a.icon}</span>
             <span className="j-news-tag">{t(a.tag)}</span>
-            <h4>{a.title}</h4>
-            <p>{a.excerpt}</p>
+            <h4>{lang === 'hi' ? a.titleHi ?? a.title : a.title}</h4>
+            <p>{lang === 'hi' ? a.excerptHi ?? a.excerpt : a.excerpt}</p>
             <span className="j-news-date">{a.date}</span>
           </article>
         ))}

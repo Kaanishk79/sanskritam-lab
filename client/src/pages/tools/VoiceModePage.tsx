@@ -7,6 +7,7 @@ import { useLanguage } from '../../context/LanguageContext'
 interface VoiceEntry {
   word: string | null
   meanings: string[]
+  meanings_hi?: string[]
   iast: string | null
   pos: string | null
   suggestions: { title: string; sub: string }[]
@@ -31,6 +32,12 @@ const SAMPLES = [
   'नमस्ते', 'जल', 'विद्या', 'गुरु', 'शान्ति', 'सत्य',
 ]
 
+const POS_HI: Record<string, string> = {
+  noun: 'संज्ञा', verb: 'क्रिया', adjective: 'विशेषण', adverb: 'क्रियाविशेषण',
+  pronoun: 'सर्वनाम', particle: 'अव्यय', indeclinable: 'अव्यय', interjection: 'विस्मयादिबोधक',
+  root_verb: 'धातु', prefix: 'उपसर्ग', suffix: 'प्रत्यय', symbol: 'संकेत', numeral: 'संख्यावाची',
+}
+
 function tokens(text: string): string[] {
   return text
     .replace(/[।॥\.,!?;:"'“”‘’()\-—\u200c\u200d]+/g, ' ')
@@ -42,7 +49,8 @@ function tokens(text: string): string[] {
 const stripEnding = (w: string) => (w.length > 1 ? w.replace(/[ाःाीूेैोौंँ]$/, '') : w)
 
 export default function VoiceModePage() {
-  const { t } = useLanguage()
+  const { t, lang: uiLang } = useLanguage()
+  const hi = uiLang === 'hi'
   const [supported] = useState(isSpeechSupported)
   const [hasVoice] = useState(hasTTS)
   const [listening, setListening] = useState(false)
@@ -92,12 +100,12 @@ export default function VoiceModePage() {
     for (const c of candidates) {
       const hit = await api.dictionary.lookup(c)
       if (hit && hit.meanings?.length) {
-        return { word: c, meanings: hit.meanings.slice(0, 5), iast: toIAST(c), pos: hit.pos || null, suggestions: [] }
+        return { word: c, meanings: hit.meanings.slice(0, 5), meanings_hi: hit.meanings_hi?.slice(0, 5), iast: toIAST(c), pos: hit.pos || null, suggestions: [] }
       }
     }
     const sug = await api.dictionary.lookup(dev || word).catch(() => null)
     if (sug && sug.meanings?.length) {
-      return { word: dev || word, meanings: sug.meanings.slice(0, 5), iast: toIAST(dev || word), pos: sug.pos || null, suggestions: [] }
+      return { word: dev || word, meanings: sug.meanings.slice(0, 5), meanings_hi: sug.meanings_hi?.slice(0, 5), iast: toIAST(dev || word), pos: sug.pos || null, suggestions: [] }
     }
     return null
   }
@@ -108,7 +116,7 @@ export default function VoiceModePage() {
       return 'नमस्ते! 🙏 अहम् संस्कृतम् अध्यापयामि। किम् इच्छसि भोः? — I teach Sanskrit. What would you like to learn?'
     }
     if (found.length > 0) {
-      const parts = found.slice(0, 3).map((e) => `${e.word} — ${e.meanings.slice(0, 2).join(', ')}`)
+      const parts = found.slice(0, 3).map((e) => `${e.word} — ${(hi && e.meanings_hi?.length ? e.meanings_hi : e.meanings).slice(0, 2).join(', ')}`)
       return parts.join(' । ')
     }
     return 'क्षम्यताम् — क्षमा करें, यह शब्द मेरे शब्दकोश में नहीं मिला। नीचे के सुझाव देखें।'
@@ -140,7 +148,7 @@ export default function VoiceModePage() {
       if (!res) {
         const { searchAll } = await import('../../services/sanskrit')
         const sres = await searchAll(clean, 4)
-        suggestions.push({ word: null, meanings: [], iast: null, pos: null, suggestions: sres.map((s) => ({ title: s.title, sub: s.sub })) })
+        suggestions.push({ word: null, meanings: [], iast: null, pos: null, suggestions: sres.map((s) => ({ title: s.title, sub: hi ? s.subHi ?? s.sub : s.sub })) })
       }
     }
     setEntries(found)
@@ -250,11 +258,11 @@ export default function VoiceModePage() {
                       <div>
                         <span style={{ fontSize: 22, fontWeight: 700 }}>{e.word}</span>
                         {e.iast && <span style={{ color: 'var(--vt-muted)', marginLeft: 8 }}>{e.iast}</span>}
-                        {e.pos && <span className="badge" style={{ marginLeft: 8 }}>{e.pos}</span>}
+                        {e.pos && <span className="badge" style={{ marginLeft: 8 }}>{hi ? POS_HI[e.pos] || e.pos : e.pos}</span>}
                       </div>
                       <button className="btn btn-sm btn-secondary" onClick={() => speak(e.word!)}>🔊 {t('Hear')}</button>
                     </div>
-                    <p style={{ margin: '6px 0 0', color: 'var(--vt-muted)' }}>{e.meanings.join(' · ')}</p>
+                    <p style={{ margin: '6px 0 0', color: 'var(--vt-muted)' }}>{(hi && e.meanings_hi?.length ? e.meanings_hi : e.meanings).join(' · ')}</p>
                   </div>
                 ))}
               </div>
@@ -295,7 +303,7 @@ export default function VoiceModePage() {
                   <p style={{ margin: 0, fontWeight: 600 }}>“{h.heard}”</p>
                   <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)', fontSize: 14 }}>
                     {h.entries.length > 0
-                      ? h.entries.map((e) => `${e.word} — ${e.meanings[0] || ''}`).join(' · ')
+                      ? h.entries.map((e) => `${e.word} — ${hi ? e.meanings_hi?.[0] || e.meanings[0] : e.meanings[0] || ''}`).join(' · ')
                       : h.reply}
                   </p>
                 </div>

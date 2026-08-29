@@ -8,6 +8,13 @@ interface DictRow {
   root: string | null
   pos: string | null
   meanings: string[]
+  meanings_hi?: string[] | null
+}
+
+const POS_HI: Record<string, string> = {
+  noun: 'संज्ञा', verb: 'क्रिया', adjective: 'विशेषण', adverb: 'क्रियाविशेषण',
+  pronoun: 'सर्वनाम', particle: 'अव्यय', indeclinable: 'अव्यय', interjection: 'विस्मयादिबोधक',
+  root_verb: 'धातु', prefix: 'उपसर्ग', suffix: 'प्रत्यय', symbol: 'संकेत', numeral: 'संख्यावाची',
 }
 
 interface RootNode {
@@ -16,27 +23,28 @@ interface RootNode {
   words: DictRow[]
 }
 
-const CURATED_ROOTS: { root: string; meaning: string }[] = [
-  { root: 'कृ', meaning: 'to do, make' },
-  { root: 'भू', meaning: 'to be, become' },
-  { root: 'गम्', meaning: 'to go' },
-  { root: 'धा', meaning: 'to place, hold' },
-  { root: 'श्रु', meaning: 'to hear' },
-  { root: 'जन्', meaning: 'to be born' },
-  { root: 'वद्', meaning: 'to speak' },
-  { root: 'दृश्', meaning: 'to see' },
-  { root: 'स्था', meaning: 'to stand' },
-  { root: 'इ', meaning: 'to go' },
-  { root: 'जि', meaning: 'to conquer' },
-  { root: 'हन्', meaning: 'to strike' },
-  { root: 'दा', meaning: 'to give' },
-  { root: 'पा', meaning: 'to drink, protect' },
-  { root: 'चर्', meaning: 'to move' },
-  { root: 'स्मृ', meaning: 'to remember' },
+const CURATED_ROOTS: { root: string; meaning: string; meaningHi: string }[] = [
+  { root: 'कृ', meaning: 'to do, make', meaningHi: 'करना, बनाना' },
+  { root: 'भू', meaning: 'to be, become', meaningHi: 'होना, बनना' },
+  { root: 'गम्', meaning: 'to go', meaningHi: 'जाना' },
+  { root: 'धा', meaning: 'to place, hold', meaningHi: 'रखना, धारण करना' },
+  { root: 'श्रु', meaning: 'to hear', meaningHi: 'सुनना' },
+  { root: 'जन्', meaning: 'to be born', meaningHi: 'जन्म लेना' },
+  { root: 'वद्', meaning: 'to speak', meaningHi: 'बोलना, कहना' },
+  { root: 'दृश्', meaning: 'to see', meaningHi: 'देखना' },
+  { root: 'स्था', meaning: 'to stand', meaningHi: 'खड़ा होना, रहना' },
+  { root: 'इ', meaning: 'to go', meaningHi: 'जाना' },
+  { root: 'जि', meaning: 'to conquer', meaningHi: 'जीतना' },
+  { root: 'हन्', meaning: 'to strike', meaningHi: 'मारना, प्रहार करना' },
+  { root: 'दा', meaning: 'to give', meaningHi: 'देना' },
+  { root: 'पा', meaning: 'to drink, protect', meaningHi: 'पीना, रक्षा करना' },
+  { root: 'चर्', meaning: 'to move', meaningHi: 'चलना, भटकना' },
+  { root: 'स्मृ', meaning: 'to remember', meaningHi: 'स्मरण करना' },
 ]
 
 export default function EtymologyTreePage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const hi = lang === 'hi'
   const [rows, setRows] = useState<DictRow[]>([])
   const [selRoot, setSelRoot] = useState<string | null>(null)
   const [q, setQ] = useState('')
@@ -45,7 +53,7 @@ export default function EtymologyTreePage() {
     let alive = true
     supabase
       .from('dictionary')
-      .select('word, root, pos, meanings')
+      .select('word, root, pos, meanings, meanings_hi')
       .not('root', 'is', null)
       .limit(2000)
       .then(({ data }) => {
@@ -77,7 +85,7 @@ export default function EtymologyTreePage() {
   const filteredWords = useMemo(() => {
     const base = roots.find((r) => r.root === selRoot)?.words || []
     if (!q.trim()) return base
-    return base.filter((w) => (w.word + (w.meanings || []).join(' ')).toLowerCase().includes(q.toLowerCase()))
+    return base.filter((w) => (w.word + (w.meanings || []).join(' ') + ((w.meanings_hi as string[] | undefined) || []).join(' ')).toLowerCase().includes(q.toLowerCase()))
   }, [roots, selRoot, q])
 
   const curRoot = roots.find((r) => r.root === selRoot)
@@ -108,7 +116,7 @@ export default function EtymologyTreePage() {
             <p style={{ margin: 0, fontSize: 24, fontWeight: 700 }}>
               √{curRoot.root} <span style={{ color: 'var(--vt-muted)', fontSize: 15, fontWeight: 400 }}>√{toIAST(curRoot.root)}</span>
             </p>
-            {curRootNote && <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{curRootNote.meaning}</p>}
+            {curRootNote && <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{hi ? curRootNote.meaningHi : curRootNote.meaning}</p>}
             <p style={{ margin: '10px 0 0', fontSize: 13 }}>
               {t('This root grows')} <strong>{curRoot.count}</strong> {t('words in our dictionary')}
               {curRoot.count === 0 && t(' — add words from the dictionary to see more branches.')}
@@ -128,10 +136,10 @@ export default function EtymologyTreePage() {
             <div key={w.word} className="card" style={{ margin: 0, padding: '12px 14px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 6 }}>
                 <strong style={{ fontSize: 17 }}>{w.word}</strong>
-                {w.pos && <span className="badge">{w.pos}</span>}
+                {w.pos && <span className="badge">{hi ? POS_HI[w.pos] || w.pos : w.pos}</span>}
               </div>
               <p style={{ margin: '6px 0 0', color: 'var(--vt-muted)', fontSize: 13 }}>
-                {(w.meanings || []).slice(0, 3).join(' · ')}
+                {(hi && Array.isArray(w.meanings_hi) && w.meanings_hi.length ? w.meanings_hi : (w.meanings || [])).slice(0, 3).join(' · ')}
               </p>
               <p style={{ margin: '4px 0 0', fontSize: 12, color: 'var(--vt-muted)', fontStyle: 'italic' }}>{toIAST(w.word)}</p>
               <a href={`#/explore/${encodeURIComponent(w.word)}`} style={{ fontSize: 13, color: 'var(--vt-orange)' }}>{t('Explore →')}</a>

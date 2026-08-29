@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { anytimeTestQuestions, TEST_PASS_THRESHOLD, TEST_TIME_SECONDS } from '../../data/jeopardyTest'
+import { anytimeTestQuestions, TEST_PASS_THRESHOLD, TEST_TIME_SECONDS, CATEGORY_HI } from '../../data/jeopardyTest'
 import { syncTestBestFromDb, persistTestBestToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 import JeopardyHeader from '../../components/jeopardy/JeopardyHeader'
@@ -124,7 +124,7 @@ export default function JeopardyTestPage() {
             <div className="j-progress-bar"><div className="j-progress-fill" style={{ width: `${progress}%` }} /></div>
           </div>
           <div className="j-test-card">
-            <span className="j-test-cat">{question.category}</span>
+            <span className="j-test-cat">{lang === 'hi' ? CATEGORY_HI[question.category] || question.category : question.category}</span>
             <h3>{lang === 'hi' && question.promptHi ? question.promptHi : question.prompt}</h3>
             <div className="j-test-options">
               {question.options.map((opt, i) => {
@@ -164,7 +164,7 @@ export default function JeopardyTestPage() {
           <div className="j-result-cats">
             {Object.entries(results.byCategory).map(([cat, v]) => (
               <div className="j-result-cat" key={cat}>
-                <span>{cat}</span>
+                <span>{lang === 'hi' ? CATEGORY_HI[cat] || cat : cat}</span>
                 <span className="j-result-frac">{v.c}/{v.t}</span>
               </div>
             ))}

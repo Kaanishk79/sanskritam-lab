@@ -499,7 +499,7 @@ export default function LanguageLabPage() {
                 className={`lab-passage-item ${activePassage.id === p.id ? 'active' : ''}`}
                 onClick={() => setActivePassage(p)}
               >
-                <span className="lab-passage-level">{p.level}</span>
+                <span className="lab-passage-level">{lang === 'hi' ? p.levelHi || p.level : p.level}</span>
                 <span className="lab-passage-title">{lang === 'hi' ? p.titleSanskrit : p.title}</span>
               </button>
             ))}
@@ -507,7 +507,7 @@ export default function LanguageLabPage() {
           <div className="lab-passage-viewer">
             <div className="lab-passage-head">
               <h3>{lang === 'hi' ? viewPassage.titleSanskrit : viewPassage.title}</h3>
-              <span className="lab-passage-level">{viewPassage.level}</span>
+              <span className="lab-passage-level">{lang === 'hi' ? viewPassage.levelHi || viewPassage.level : viewPassage.level}</span>
             </div>
             <div className="lab-passage-text">{viewPassage.text}</div>
             <div className="lab-passage-translit">{viewPassage.transliteration}</div>
@@ -528,12 +528,12 @@ export default function LanguageLabPage() {
               {viewPassage.words.map((w) => (
                 <div className="lab-word" key={w.word}>
                   <span className="lab-word-sa">{w.word}</span>
-                  <span className="lab-word-en">{w.meaning}</span>
+                  <span className="lab-word-en">{lang === 'hi' ? w.meaningHi || w.meaning : w.meaning}</span>
                 </div>
               ))}
             </div>
             <div className="lab-translation">
-              <strong>{t('Translation')}: </strong>{viewPassage.translation}
+              <strong>{t('Translation')}: </strong>{lang === 'hi' ? viewPassage.translationHi || viewPassage.translation : viewPassage.translation}
             </div>
           </div>
         </div>
@@ -562,7 +562,7 @@ export default function LanguageLabPage() {
             </div>
             <div className="lab-phrase-box">
               <p className="lab-phrase">{scopedListening[listeningIndex].transliteration}</p>
-              <p className="lab-hint">{t('Hint')}: {scopedListening[listeningIndex].hint}</p>
+              <p className="lab-hint">{t('Hint')}: {lang === 'hi' ? scopedListening[listeningIndex].hintHi || scopedListening[listeningIndex].hint : scopedListening[listeningIndex].hint}</p>
             </div>
             <div className="lab-input-row">
               <textarea
@@ -636,7 +636,7 @@ export default function LanguageLabPage() {
           <div className="lab-reading-select">
             {scopedPassages.map((p) => (
               <button key={p.id} className={`btn btn-sm ${readingPassageId === p.id ? 'btn-primary' : 'btn-secondary'}`} onClick={() => { setReadingPassageId(p.id); setReadingAnswers({}); setReadingScore(null) }}>
-                {p.title}
+                {lang === 'hi' ? p.titleSanskrit : p.title}
               </button>
             ))}
           </div>
@@ -647,7 +647,7 @@ export default function LanguageLabPage() {
               </div>
               {readingQ.map((q, qi) => (
                 <div className="lab-question" key={q.id}>
-                  <p className="lab-q-text">{qi + 1}. {q.question}</p>
+                  <p className="lab-q-text">{qi + 1}. {lang === 'hi' ? q.questionHi || q.question : q.question}</p>
                   <div className="lab-options">
                     {q.options.map((opt, oi) => (
                       <button
@@ -655,7 +655,7 @@ export default function LanguageLabPage() {
                         className={`lab-opt ${readingAnswers[q.id] === oi ? 'chosen' : ''}`}
                         onClick={() => setReadingAnswers((a) => ({ ...a, [q.id]: oi }))}
                       >
-                        {opt}
+                        {lang === 'hi' ? q.optionsHi?.[oi] ?? opt : opt}
                       </button>
                     ))}
                   </div>
@@ -686,8 +686,8 @@ export default function LanguageLabPage() {
               </button>
             </div>
             <div className="lab-phrase-box">
-              <p className="lab-prompt">{scopedWriting[writingIndex].prompt}</p>
-              <p className="lab-hint">{t('Hint')}: {scopedWriting[writingIndex].hint}</p>
+              <p className="lab-prompt">{lang === 'hi' ? scopedWriting[writingIndex].promptHi || scopedWriting[writingIndex].prompt : scopedWriting[writingIndex].prompt}</p>
+              <p className="lab-hint">{t('Hint')}: {lang === 'hi' ? scopedWriting[writingIndex].hintHi || scopedWriting[writingIndex].hint : scopedWriting[writingIndex].hint}</p>
             </div>
             <div className="lab-input-row">
               <textarea

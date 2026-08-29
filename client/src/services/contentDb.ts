@@ -60,6 +60,10 @@ export async function loadRealWorldConcepts(): Promise<RealConcept[]> {
     exampleEn: String(r.example_en ?? ''),
     emoji: String(r.emoji ?? ''),
   }))
+    .map((c) => {
+      const loc = REAL_CONCEPTS.find((x) => x.word === c.word)
+      return loc ? { ...c, meaningHi: loc.meaningHi, todayHi: loc.todayHi, exampleHi: loc.exampleHi } : c
+    })
 }
 
 export async function loadFestivals(): Promise<Festival[]> {
@@ -132,6 +136,12 @@ export async function loadExplorerConcepts(): Promise<ExplConcept[]> {
     related: (r.related as string[]) ?? [],
     emoji: String(r.emoji ?? ''),
   }))
+    .map((c) => {
+      const loc = EXPL_CONCEPTS.find((x) => x.id === c.id)
+      return loc
+        ? { ...c, defHi: loc.defHi, detailHi: loc.detailHi, exampleEnHi: loc.exampleEnHi }
+        : c
+    })
 }
 
 export async function loadWordPairs(): Promise<WordPair[]> {
@@ -163,6 +173,28 @@ export async function loadDebateTopics(): Promise<DebateTopic[]> {
     for: (r.for_side as DebateStance) ?? { side: 'for', label: 'For', points: [] },
     against: (r.against_side as DebateStance) ?? { side: 'against', label: 'Against', points: [] },
   }))
+    .map((d) => {
+      const loc = DEBATE_TOPICS.find((x) => x.id === d.id)
+      if (!loc) return d
+      const mergeStance = (s: DebateStance, ls: DebateStance): DebateStance => {
+        if (!s || !ls) return s
+        return {
+          ...s,
+          labelHi: ls.labelHi ?? s.labelHi,
+          points: s.points.map((p, i) => {
+            const lp = ls.points[i]
+            return lp ? { ...p, hi: lp.hi ?? p.hi } : p
+          }),
+        }
+      }
+      return {
+        ...d,
+        titleHi: loc.titleHi,
+        questionHi: loc.questionHi,
+        for: mergeStance(d.for, loc.for),
+        against: mergeStance(d.against, loc.against),
+      }
+    })
 }
 
 export async function loadMeters(): Promise<Meter[]> {
@@ -197,6 +229,10 @@ export async function loadVivaQuestions(): Promise<VivaQuestion[]> {
     keyPoints: (r.key_points as string[]) ?? [],
     difficulty: Number(r.difficulty ?? 3),
   }))
+    .map((q) => {
+      const loc = VIVA_QUESTIONS.find((x) => x.id === q.id)
+      return loc ? { ...q, questionHi: loc.questionHi, keyPointsHi: loc.keyPointsHi } : q
+    })
 }
 
 export async function loadTimelineEvents(): Promise<TimelineEvent[]> {
@@ -208,6 +244,10 @@ export async function loadTimelineEvents(): Promise<TimelineEvent[]> {
     description: String(r.description),
     category: r.category as TimelineEvent['category'],
   }))
+    .map((e) => {
+      const loc = TIMELINE_EVENTS.find((x) => x.year === e.year)
+      return loc ? { ...e, titleHi: loc.titleHi, descriptionHi: loc.descriptionHi } : e
+    })
 }
 
 export async function loadGrammarRules(): Promise<GrammarRule[]> {
@@ -219,6 +259,10 @@ export async function loadGrammarRules(): Promise<GrammarRule[]> {
     meaning: String(r.meaning),
     category: String(r.category),
   }))
+    .map((g) => {
+      const loc = GRAMMAR_RULES.find((x) => x.id === g.id)
+      return loc ? { ...g, meaningHi: loc.meaningHi } : g
+    })
 }
 
 export async function loadPhilosophyNetworks(): Promise<PhilosophyNetwork[]> {
@@ -230,6 +274,10 @@ export async function loadPhilosophyNetworks(): Promise<PhilosophyNetwork[]> {
     texts: String(r.texts),
     color: String(r.color),
   }))
+    .map((p) => {
+      const loc = PHILOSOPHY_NETWORKS.find((x) => x.name === p.name)
+      return loc ? { ...p, focusHi: loc.focusHi, textsHi: loc.textsHi } : p
+    })
 }
 
 export async function loadManuscripts(): Promise<Manuscript[]> {
@@ -243,6 +291,10 @@ export async function loadManuscripts(): Promise<Manuscript[]> {
     transcription: String(r.transcription),
     color: String(r.color),
   }))
+    .map((m) => {
+      const loc = MANUSCRIPTS.find((x) => x.id === m.id)
+      return loc ? { ...m, nameHi: loc.nameHi, scriptHi: loc.scriptHi, periodHi: loc.periodHi } : m
+    })
 }
 
 export async function loadShlokas(): Promise<Shloka[]> {
@@ -254,6 +306,10 @@ export async function loadShlokas(): Promise<Shloka[]> {
     translation: String(r.translation),
     source: String(r.source),
   }))
+    .map((s) => {
+      const loc = SHLOKAS.find((x) => x.dev === s.dev)
+      return loc ? { ...s, translationHi: loc.translationHi } : s
+    })
 }
 
 export async function loadDhatus(): Promise<Dhatu[]> {
@@ -267,6 +323,10 @@ export async function loadDhatus(): Promise<Dhatu[]> {
     meaning: String(r.meaning),
     present: String(r.present),
   }))
+    .map((d) => {
+      const loc = DHATUS.find((x) => x.root === d.root)
+      return loc ? { ...d, meaningHi: loc.meaningHi } : d
+    })
 }
 
 export async function loadPrepTopics(): Promise<PrepTopic[]> {
@@ -280,6 +340,10 @@ export async function loadPrepTopics(): Promise<PrepTopic[]> {
     summary: String(r.summary),
     points: (r.points as string[]) ?? [],
   }))
+    .map((t) => {
+      const loc = prepTopics.find((x) => x.id === t.id)
+      return loc ? { ...t, titleHi: loc.titleHi, summaryHi: loc.summaryHi, pointsHi: loc.pointsHi } : t
+    })
 }
 
 export async function loadNewsArticles(): Promise<NewsArticle[]> {
@@ -293,12 +357,21 @@ export async function loadNewsArticles(): Promise<NewsArticle[]> {
     date: String(r.date),
     icon: String(r.icon),
   }))
+    .map((n) => {
+      const loc = newsArticles.find((x) => x.id === n.id)
+      return loc ? { ...n, titleHi: loc.titleHi, excerptHi: loc.excerptHi } : n
+    })
 }
 
-export async function loadFlashcardDecks(): Promise<{ id: string; name: string; icon: string }[]> {
+export async function loadFlashcardDecks(): Promise<{ id: string; name: string; icon: string; nameHi: string }[]> {
   const rows = await loadRows('flashcard_decks')
-  if (!rows.length) return flashcardDecks
-  return rows.map((r) => ({ id: String(r.id), name: String(r.name), icon: String(r.icon) }))
+  if (!rows.length) return flashcardDecks.map((d) => ({ id: d.id, name: d.name, icon: d.icon, nameHi: d.nameHi ?? '' }))
+  return rows
+    .map((r) => ({ id: String(r.id), name: String(r.name), icon: String(r.icon) }))
+    .map((d) => {
+      const loc = flashcardDecks.find((x) => x.id === d.id)
+      return { ...d, nameHi: loc?.nameHi ?? '' }
+    })
 }
 
 export async function loadFlashcards(): Promise<Flashcard[]> {
@@ -329,6 +402,10 @@ export async function loadStoryThemes(): Promise<StoryTheme[]> {
     patterns: (r.patterns as StoryTheme['patterns']) ?? [],
     outro: (r.outro as string[]) ?? [],
   }))
+    .map((s) => {
+      const loc = STORY_THEMES.find((x) => x.id === s.id)
+      return loc ? { ...s, titleHi: loc.titleHi } : s
+    })
 }
 
 export async function loadShlokaPassages(): Promise<ReadingPassage[]> {
@@ -344,6 +421,10 @@ export async function loadShlokaPassages(): Promise<ReadingPassage[]> {
     translation: String(r.translation),
     words: (r.words as ReadingPassage['words']) ?? [],
   }))
+    .map((p) => {
+      const loc = readingPassages.find((x) => x.id === p.id)
+      return loc ? { ...p, levelHi: loc.levelHi, translationHi: loc.translationHi } : p
+    })
 }
 
 export interface JeopardyBoardData {

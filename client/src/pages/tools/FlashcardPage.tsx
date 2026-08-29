@@ -6,6 +6,19 @@ import { loadFlashcards, loadFlashcardDecks } from '../../services/contentDb'
 import { syncSRSFromDb, persistSRSToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 
+const TAG_HI: Record<string, string> = {
+  vowel: 'स्वर', consonant: 'व्यंजन', noun: 'संज्ञा', family: 'परिवार', nature: 'प्रकृति',
+  verb: 'क्रिया', adjective: 'विशेषण', case: 'विभक्ति', karaka: 'कारक', sandhi: 'संधि',
+  compound: 'समास', tatpurusa: 'तत्पुरुष', bahuvrihi: 'बहुव्रीहि', karmadharaya: 'कर्मधारय',
+  dvandva: 'द्वन्द्व', avyayibhava: 'अव्ययीभाव', tense: 'काल', mood: 'वृत्ति', metre: 'छंद',
+  grammar: 'व्याकरण', text: 'ग्रंथ', school: 'पाठ्यपुस्तक', academic: 'शैक्षणिक',
+  author: 'लेखक', category: 'श्रेणी', genre: 'विधा', drama: 'नाटक', poetry: 'काव्य',
+  epic: 'महाकाव्य', gita: 'गीता', kalidasa: 'कालिदास', nyaya: 'न्याय',
+  epistemology: 'ज्ञानमीमांसा', logic: 'तर्क', vedanta: 'वेदांत', philosophy: 'दर्शन',
+  philosopher: 'दार्शनिक', yoga: 'योग', research: 'शोध', textcrit: 'पाठ्य-समालोचना',
+  paleography: 'प्राचीन लेखन', codicology: 'ग्रंथ-विज्ञान', digital: 'डिजिटल',
+}
+
 export default function FlashcardPage() {
   const { t, lang } = useLanguage()
   const [srsState, setSrsState] = useState<SRSState>(loadSRS())
@@ -84,7 +97,7 @@ export default function FlashcardPage() {
   }
 
   const deckCards = deck === 'all' ? cardPool : cardPool.filter((f) => f.deckId === deck)
-  const currentDeckName = deck === 'all' ? 'All Decks' : decks.find((d) => d.id === deck)?.name || 'All'
+  const currentDeckName = deck === 'all' ? t('All Decks') : (lang === 'hi' ? decks.find((d) => d.id === deck)?.nameHi || decks.find((d) => d.id === deck)?.name || t('All Decks') : decks.find((d) => d.id === deck)?.name || t('All Decks'))
 
   return (
     <div>
@@ -107,7 +120,7 @@ export default function FlashcardPage() {
             <span>{t('Deck:')}</span>
             <select value={deck} onChange={(e) => setDeck(e.target.value)}>
               <option value="all">{t('All Decks')}</option>
-              {decks.map((d) => <option key={d.id} value={d.id}>{d.icon} {d.name}</option>)}
+              {decks.map((d) => <option key={d.id} value={d.id}>{d.icon} {lang === 'hi' ? d.nameHi || d.name : d.name}</option>)}
             </select>
             <button className="btn btn-primary btn-sm" onClick={startReview}>{t('Start Review')}</button>
           </div>
@@ -146,7 +159,7 @@ export default function FlashcardPage() {
               return (
                 <div key={d.id} className="card deck-card" onClick={() => { setDeck(d.id); startReview() }}>
                   <div className="deck-icon">{d.icon}</div>
-                  <div className="deck-name">{d.name}</div>
+                  <div className="deck-name">{lang === 'hi' ? d.nameHi || d.name : d.name}</div>
                   <div className="deck-count">{c.length} {t('cards')} · {due} {t('due')}</div>
                 </div>
               )
@@ -169,7 +182,7 @@ export default function FlashcardPage() {
                 <div className="flashcard-text">{lang === 'hi' && currentCard.card.backHi ? currentCard.card.backHi : currentCard.card.back}</div>
                 {(lang === 'hi' ? (currentCard.card.hintHi || currentCard.card.hint) : currentCard.card.hint) && <div className="flashcard-hint">💡 {lang === 'hi' && currentCard.card.hintHi ? currentCard.card.hintHi : currentCard.card.hint}</div>}
                 <div className="flashcard-tags">
-                  {currentCard.card.tags.map((t) => <span key={t} className="tag">{t}</span>)}
+                  {currentCard.card.tags.map((t) => <span key={t} className="tag">{lang === 'hi' ? TAG_HI[t] || t : t}</span>)}
                 </div>
               </div>
             </div>
@@ -204,7 +217,7 @@ export default function FlashcardPage() {
             <span>{t('Deck:')}</span>
             <select value={deck} onChange={(e) => setDeck(e.target.value)}>
               <option value="all">{t('All Decks')}</option>
-              {decks.map((d) => <option key={d.id} value={d.id}>{d.icon} {d.name}</option>)}
+              {decks.map((d) => <option key={d.id} value={d.id}>{d.icon} {lang === 'hi' ? d.nameHi || d.name : d.name}</option>)}
             </select>
             <span className="browse-count">{deckCards.length} {t('cards')}</span>
           </div>
@@ -219,7 +232,7 @@ export default function FlashcardPage() {
                   <div className="browse-front">{fc.front}</div>
                   <div className="browse-back">{lang === 'hi' && fc.backHi ? fc.backHi : fc.back}</div>
                   <div className="browse-meta">
-                    {fc.tags.map((t) => <span key={t} className="tag">{t}</span>)}
+                    {fc.tags.map((t) => <span key={t} className="tag">{lang === 'hi' ? TAG_HI[t] || t : t}</span>)}
                     {isNew && <span className="badge badge-new">{t('New')}</span>}
                     {due && <span className="badge badge-due">{t('Due')}</span>}
                     {sc && sc.repetitions > 0 && <span className="badge badge-learned">{t('Ease:')} {sc.ease}</span>}

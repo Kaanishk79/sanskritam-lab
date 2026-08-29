@@ -64,7 +64,7 @@ export const api = {
 
   dictionary: {
     lookup: (word: string) =>
-      fetchJson<{ word: string; meanings: string[]; root?: string; derivations?: string[]; pos?: string } | null>(
+      fetchJson<{ word: string; meanings: string[]; meanings_hi?: string[]; root?: string; derivations?: string[]; pos?: string } | null>(
         `${API_BASE}/dictionary/lookup?word=${encodeURIComponent(word)}`
       ).catch(() => null),
     compoundSplit: (compound: string) =>

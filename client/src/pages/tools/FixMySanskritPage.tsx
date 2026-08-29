@@ -4,7 +4,7 @@ import { api } from '../../services/api'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function FixMySanskritPage() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const [input, setInput] = useState('')
   const [result, setResult] = useState<FixResult | null>(null)
   const [busy, setBusy] = useState(false)
@@ -97,8 +97,8 @@ export default function FixMySanskritPage() {
                   <div key={i} className="card" style={{ padding: '12px 14px', margin: 0, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                     <span style={{ fontSize: 20 }}>{iss.icon}</span>
                     <div style={{ flex: 1 }}>
-                      <p style={{ margin: 0 }}><strong>{iss.message}</strong></p>
-                      <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{iss.suggestion}</p>
+                      <p style={{ margin: 0 }}><strong>{lang === 'hi' && iss.messageHi ? iss.messageHi : iss.message}</strong></p>
+                      <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{lang === 'hi' && iss.suggestionHi ? iss.suggestionHi : iss.suggestion}</p>
                     </div>
                     <button className="btn btn-sm btn-secondary" onClick={() => apply(iss.fix)}>{t('Apply')}</button>
                   </div>

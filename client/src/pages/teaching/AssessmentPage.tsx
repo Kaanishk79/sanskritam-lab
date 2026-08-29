@@ -5,40 +5,52 @@ import { getAuthState } from '../../services/auth'
 
 interface Question {
   prompt: string
+  promptHi?: string
   options: string[]
+  optionsHi?: string[]
   correctIdx: number
   explanation: string
+  explanationHi?: string
 }
 
 const sampleQuestions: Question[] = [
   {
     prompt: 'What is the correct form of राम (Rama) in instrumental singular?',
+    promptHi: 'राम का तृतीया एकवचन (करण) कौन सा सही रूप है?',
     options: ['रामेण', 'रामाय', 'रामात्', 'रामस्य'],
+    optionsHi: ['रामेण', 'रामाय', 'रामात्', 'रामस्य'],
     correctIdx: 0,
     explanation: 'Instrumental singular of राम is रामेण (rāmeṇa).',
+    explanationHi: 'राम का तृतीया एकवचन रामेण है।',
   },
   {
     prompt: 'Which sandhi rule applies to अग्नि + इव?',
+    promptHi: 'अग्नि + इव में कौन सा संधि नियम लागू होता है?',
     options: ['गुणः (i + i → e)', 'वृद्धिः (a + ā → ā)', 'यण् (i + a → ya)', 'अयादि (e + a → ay)'],
+    optionsHi: ['गुणः (इ + इ → ए)', 'वृद्धिः (अ + आ → आ)', 'यण् (इ + अ → य)', 'अयादि (ए + अ → अय)'],
     correctIdx: 0,
     explanation: 'इ + इ → ए by गुण sandhi: अग्नि + इव → अग्निरिव.',
+    explanationHi: 'गुण संधि से इ + इ → ए: अग्नि + इव → अग्निरिव।',
   },
   {
     prompt: 'What is the dative singular of फल (phala, neuter)?',
+    promptHi: 'फल (नपुंसक) का चतुर्थी एकवचन क्या है?',
     options: ['फलाय', 'फलेन', 'फलात्', 'फलस्य'],
+    optionsHi: ['फलाय', 'फलेन', 'फलात्', 'फलस्य'],
     correctIdx: 0,
     explanation: 'Dative singular of neuter फल is फलाय (phalāya).',
+    explanationHi: 'नपुंसक फल का चतुर्थी एकवचन फलाय है।',
   },
 ]
 
 export default function AssessmentPage() {
+  const { t, lang } = useLanguage()
   const [currentQ, setCurrentQ] = useState(0)
   const [selected, setSelected] = useState<number | null>(null)
   const [score, setScore] = useState(0)
   const [finished, setFinished] = useState(false)
   const [answers, setAnswers] = useState<{ selected: number; correct: boolean }[]>([])
   const [attempts, setAttempts] = useState<{ id: string; lesson_id: string; score: number; max_score: number; created_at: string }[]>([])
-  const { t } = useLanguage()
 
   const q = sampleQuestions[currentQ]
 
@@ -162,7 +174,7 @@ export default function AssessmentPage() {
           </span>
         </div>
 
-        <h3 style={{ fontSize: 18, marginBottom: 20, lineHeight: 1.5 }}>{q.prompt}</h3>
+        <h3 style={{ fontSize: 18, marginBottom: 20, lineHeight: 1.5 }}>{lang === 'hi' && q.promptHi ? q.promptHi : q.prompt}</h3>
 
         <div style={{ marginBottom: 20 }}>
           {q.options.map((opt, idx) => (
@@ -174,7 +186,7 @@ export default function AssessmentPage() {
               onClick={() => handleAnswer(idx)}
               disabled={selected !== null}
             >
-              {opt}
+              {lang === 'hi' && q.optionsHi ? q.optionsHi[idx] : opt}
             </button>
           ))}
         </div>
@@ -184,7 +196,7 @@ export default function AssessmentPage() {
             <div style={{ color: selected === q.correctIdx ? '#4caf50' : '#f44336', fontWeight: 600, marginBottom: 8 }}>
               {selected === q.correctIdx ? '✓ ' + t('Correct!') : '✗ ' + t('Incorrect')}
             </div>
-            <div style={{ color: '#aaa', fontSize: 14 }}>{q.explanation}</div>
+            <div style={{ color: '#aaa', fontSize: 14 }}>{lang === 'hi' && q.explanationHi ? q.explanationHi : q.explanation}</div>
           </div>
         )}
 

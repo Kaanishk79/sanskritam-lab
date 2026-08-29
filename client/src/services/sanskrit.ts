@@ -441,6 +441,7 @@ export interface SearchResult {
   id: string
   title: string
   sub: string
+  subHi?: string
   extra?: string
 }
 
@@ -449,8 +450,8 @@ export async function searchAll(q: string, limit = 8): Promise<SearchResult[]> {
   if (!query) return []
   const results: SearchResult[] = []
   const [dict, dictEn, lessons, texts, corpus] = await Promise.all([
-    supabase.from('dictionary').select('word, meanings').ilike('word', `%${query}%`).limit(limit),
-    supabase.from('dictionary').select('word, meanings').contains('meanings', [query]).limit(limit),
+    supabase.from('dictionary').select('word, meanings, meanings_hi').ilike('word', `%${query}%`).limit(limit),
+    supabase.from('dictionary').select('word, meanings, meanings_hi').contains('meanings', [query]).limit(limit),
     supabase.from('lessons').select('id, title, level').ilike('title', `%${query}%`).limit(limit),
     supabase.from('texts').select('id, title, author').ilike('title', `%${query}%`).limit(limit),
     supabase.from('corpus_texts').select('id, title').ilike('title', `%${query}%`).limit(limit),
@@ -464,6 +465,7 @@ export async function searchAll(q: string, limit = 8): Promise<SearchResult[]> {
         id: d.word,
         title: d.word,
         sub: (d.meanings || []).slice(0, 2).join(' · '),
+        subHi: (d.meanings_hi || []).slice(0, 2).join(' · ') || undefined,
         extra: toIAST(d.word),
       })
     }
@@ -477,23 +479,24 @@ export async function searchAll(q: string, limit = 8): Promise<SearchResult[]> {
         id: d.word,
         title: `${d.word} — ${(d.meanings || [])[0] || ''}`,
         sub: (d.meanings || []).slice(1, 3).join(' · ') || 'English meaning match',
+        subHi: (d.meanings_hi || []).slice(1, 3).join(' · ') || undefined,
         extra: toIAST(d.word),
       })
     }
   }
   if (lessons.data) {
     for (const l of lessons.data) {
-      results.push({ kind: 'lesson', id: l.id, title: l.title, sub: `Level ${l.level} lesson` })
+      results.push({ kind: 'lesson', id: l.id, title: l.title, sub: `Level ${l.level} lesson`, subHi: `स्तर ${l.level} · पाठ` })
     }
   }
   if (texts.data) {
     for (const tx of texts.data) {
-      results.push({ kind: 'text', id: tx.id, title: tx.title, sub: tx.author || 'Sanskrit text' })
+      results.push({ kind: 'text', id: tx.id, title: tx.title, sub: tx.author || 'Sanskrit text', subHi: tx.author || 'संस्कृत ग्रंथ' })
     }
   }
   if (corpus.data) {
     for (const c of corpus.data) {
-      results.push({ kind: 'corpus', id: c.id, title: c.title, sub: 'Corpus text' })
+      results.push({ kind: 'corpus', id: c.id, title: c.title, sub: 'Corpus text', subHi: 'कोश में पाठ' })
     }
   }
   return results.slice(0, 12)

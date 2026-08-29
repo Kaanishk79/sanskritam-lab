@@ -144,7 +144,8 @@ export default function Viewer3DPage() {
   const [manuscripts, setManuscripts] = useState<Manuscript[]>(MANUSCRIPTS)
   const [activeMs, setActiveMs] = useState<Manuscript>(MANUSCRIPTS[0])
   const [isDark, setIsDark] = useState(false)
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
+  const hi = lang === 'hi'
 
   useEffect(() => {
     let live = true
@@ -194,8 +195,8 @@ export default function Viewer3DPage() {
                 onClick={() => setActiveMs(ms)}
               >
                 <div>
-                  <div className="text-title">{ms.name}</div>
-                  <div className="text-meta">{ms.script} · {ms.period}</div>
+                  <div className="text-title">{hi ? ms.nameHi ?? ms.name : ms.name}</div>
+                  <div className="text-meta">{hi ? ms.scriptHi ?? ms.script : ms.script} · {hi ? ms.periodHi ?? ms.period : ms.period}</div>
                 </div>
                 {activeMs.id === ms.id && <span className="ms-active-badge">{t('Viewing')}</span>}
               </div>
