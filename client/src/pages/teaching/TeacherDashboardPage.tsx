@@ -64,9 +64,9 @@ export default function TeacherDashboardPage() {
 
   if (live && school && user?.accountType !== 'student') {
     return (
-      <div>
+      <div className="page-container">
         <div className="page-header">
-          <h2>👨‍🏫 {t('Teacher Dashboard')} — {school.name}</h2>
+          <h2>{t('Teacher Dashboard')} — {school.name}</h2>
           <p>{t('Live roster from your institution. Switch views from the top bar.')}</p>
         </div>
 
@@ -165,9 +165,9 @@ export default function TeacherDashboardPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>👨‍🏫 {t('Teacher Dashboard')}</h2>
+        <h2>{t('Teacher Dashboard')}</h2>
         <p>{t('Create custom lesson plans, design interactive exercises, and annotate manuscripts for classes')}</p>
       </div>
 

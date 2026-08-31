@@ -12,6 +12,9 @@ export default function CurriculumBuilderPage() {
 
   const filtered = lessons.filter((l) => l.level === selectedLevel)
 
+  const [showPreview, setShowPreview] = useState(false)
+  const [saveMessage, setSaveMessage] = useState('')
+
   const handleExport = () => {
     const data = JSON.stringify({ title: customTitle, content: customContent, level: selectedLevel }, null, 2)
     const blob = new Blob([data], { type: 'application/json' })
@@ -23,10 +26,28 @@ export default function CurriculumBuilderPage() {
     URL.revokeObjectURL(url)
   }
 
+  const handleSaveCustom = () => {
+    if (!customTitle.trim()) return
+    try {
+      const stored = localStorage.getItem('sanskritlab_custom_curriculum')
+      const list = stored ? JSON.parse(stored) : []
+      list.push({
+        id: 'custom-' + Date.now(),
+        title: customTitle,
+        content: customContent,
+        level: selectedLevel,
+        createdAt: new Date().toISOString(),
+      })
+      localStorage.setItem('sanskritlab_custom_curriculum', JSON.stringify(list))
+      setSaveMessage(t('Saved to custom curriculum!'))
+      setTimeout(() => setSaveMessage(''), 3000)
+    } catch {}
+  }
+
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>👨‍🏫 {t('Curriculum Builder')}</h2>
+        <h2>{t('Curriculum Builder')}</h2>
         <p>{t('Design custom lessons, browse existing content by level, and export your own curriculum.')}</p>
       </div>
 
@@ -87,20 +108,39 @@ export default function CurriculumBuilderPage() {
               style={{
                 minHeight: 200,
                 resize: 'vertical',
-                background: '#1e1e3a',
-                color: '#e0e0e0',
-                border: '1px solid #333',
+                background: 'var(--vt-bg)',
+                color: 'var(--vt-text)',
+                border: '1px solid var(--vt-border)',
                 borderRadius: 6,
                 padding: 12,
                 fontFamily: "'Noto Sans Devanagari', sans-serif",
               }}
             />
-            <div style={{ display: 'flex', gap: 12 }}>
-              <button className="btn btn-primary" onClick={handleExport}>{t('Export Lesson')}</button>
-              <button className="btn btn-secondary" onClick={() => navigate(`/learning/lesson/${filtered[0]?.id ?? ''}`)}>
-                {t('Preview')}
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+              <button className="btn btn-primary" onClick={handleExport} disabled={!customTitle.trim()}>
+                {t('Export Lesson')}
               </button>
+              <button className="btn btn-secondary" onClick={handleSaveCustom} disabled={!customTitle.trim()}>
+                {t('Save to Library')}
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowPreview(!showPreview)}>
+                {showPreview ? t('Hide Preview') : t('Preview')}
+              </button>
+              {saveMessage && <span style={{ color: 'var(--vt-green)', fontSize: 13, fontWeight: 500 }}>✓ {saveMessage}</span>}
             </div>
+
+            {showPreview && (
+              <div style={{ marginTop: 16, padding: 16, background: 'var(--vt-bg)', borderRadius: 8, border: '1px solid var(--vt-border)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <span style={{ fontSize: 12, color: 'var(--vt-orange)', fontWeight: 600 }}>{t('Level')} {selectedLevel}</span>
+                  <span style={{ fontSize: 11, color: 'var(--vt-text-lighter)' }}>{t('Preview Mode')}</span>
+                </div>
+                <h4 style={{ margin: '0 0 8px 0', fontSize: 18 }}>{customTitle || t('Untitled Lesson')}</h4>
+                <div style={{ fontSize: 14, lineHeight: 1.7, whiteSpace: 'pre-wrap', color: 'var(--vt-text-light)', fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
+                  {customContent || t('No content entered yet.')}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

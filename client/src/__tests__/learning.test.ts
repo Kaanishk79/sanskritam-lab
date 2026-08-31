@@ -1,10 +1,13 @@
 /// <reference types="vitest/globals" />
 import { describe, it, expect, beforeEach } from 'vitest'
 import { getDefaultProgress, calculateXP, updateProgress, getRecommendedTrack, getLevelLabel, getLevelForTrack } from '../services/learning'
+import { toIAST } from '../services/sanskrit'
 import type { Track, Level, UserProgress } from '../types/curriculum'
 
 beforeEach(() => {
-  localStorage.clear()
+  if (typeof window !== 'undefined' && window.localStorage) {
+    window.localStorage.clear()
+  }
 })
 
 describe('getDefaultProgress', () => {
@@ -117,5 +120,14 @@ describe('getLevelForTrack', () => {
   ]
   it.each(cases)('track %s has levels %j', (track, levels) => {
     expect(getLevelForTrack(track)).toEqual(levels)
+  })
+})
+
+describe('toIAST transliteration', () => {
+  it('correctly transliterates basic words and ligatures without extra inherent vowels', () => {
+    expect(toIAST('राम')).toBe('rāma')
+    expect(toIAST('त्रि')).toBe('tri')
+    expect(toIAST('अग्नि')).toBe('agni')
+    expect(toIAST('विद्या')).toBe('vidyā')
   })
 })

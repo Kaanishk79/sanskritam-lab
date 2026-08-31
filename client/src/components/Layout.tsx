@@ -1,5 +1,13 @@
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import {
+  Home, Search, Sparkles, BookOpen, Sun, Moon, TreePine, Smile, Landmark,
+  FileText, Layers, Activity, School, GraduationCap, ClipboardCheck,
+  Bot, Mic, Puzzle, Stethoscope, Compass, Calendar, MessageSquareQuote,
+  Network, Gamepad2, Swords, Palette, Layers2, BookMarked, Languages,
+  Volume2, Sprout, Trophy, Keyboard, Menu, X, User, Globe
+} from 'lucide-react'
+import { OmIcon, PalmLeafIcon, TempleIcon, ShlokaIcon } from './icons'
 import { useTheme } from '../context/ThemeContext'
 import { useKeyboard } from '../context/KeyboardContext'
 import { useLanguage } from '../context/LanguageContext'
@@ -7,93 +15,105 @@ import { useRole } from '../context/RoleContext'
 import { signOut } from '../services/auth'
 import type { ViewRole } from '../context/RoleContext'
 
-const navSections = [
+interface NavLinkItem {
+  to: string
+  icon: React.ReactNode
+  label: string
+  schoolOnly?: boolean
+}
+
+interface NavSection {
+  title: string
+  links: NavLinkItem[]
+}
+
+const navSections: NavSection[] = [
   {
     title: 'Dashboard',
     links: [
-      { to: '/', icon: '🏠', label: 'Overview' },
+      { to: '/', icon: <Home size={18} />, label: 'Overview' },
     ],
   },
   {
     title: 'Discover',
     links: [
-      { to: '/search', icon: '🔍', label: 'Sanskrit Search' },
-      { to: '/explore', icon: '✨', label: 'Explore Mode' },
-      { to: '/dictionary', icon: '📖', label: 'Dictionary' },
-      { to: '/daily', icon: '🌅', label: 'Daily Sanskrit' },
+      { to: '/search', icon: <Search size={18} />, label: 'Sanskrit Search' },
+      { to: '/explore', icon: <Sparkles size={18} />, label: 'Explore Mode' },
+      { to: '/dictionary', icon: <BookOpen size={18} />, label: 'Dictionary' },
+      { to: '/daily', icon: <Sun size={18} />, label: 'Daily Sanskrit' },
     ],
   },
   {
     title: 'NCERT Curriculum',
     links: [
-      { to: '/research/ncert', icon: '📘', label: 'NCERT Library' },
+      { to: '/research/ncert', icon: <BookMarked size={18} />, label: 'NCERT Library' },
     ],
   },
   {
     title: 'Learning',
     links: [
-      { to: '/learning/tree', icon: '🌳', label: 'Learning Path' },
-      { to: '/learning/child', icon: '🧒', label: 'Fun Mode (Kids)' },
-      { to: '/learning/research', icon: '🏛️', label: 'Research Workspace' },
-      { to: '/learning/curriculum', icon: '👨‍🏫', label: 'Curriculum Builder' },
+      { to: '/learning/tree', icon: <TreePine size={18} />, label: 'Learning Path' },
+      { to: '/learning/child', icon: <Smile size={18} />, label: 'Fun Mode (Kids)' },
+      { to: '/learning/research', icon: <Landmark size={18} />, label: 'Research Workspace' },
+      { to: '/learning/curriculum', icon: <GraduationCap size={18} />, label: 'Curriculum Builder' },
     ],
   },
   {
     title: 'Research Suite',
     links: [
-      { to: '/research/corpus', icon: '📚', label: 'Corpus & Search' },
-      { to: '/research/ocr', icon: '📄', label: 'Manuscript OCR' },
-      { to: '/research/annotate', icon: '🏛️', label: 'Annotation Tool' },
+      { to: '/research/corpus', icon: <PalmLeafIcon size={18} />, label: 'Corpus & Search' },
+      { to: '/research/ocr', icon: <FileText size={18} />, label: 'Manuscript OCR' },
+      { to: '/research/annotate', icon: <TempleIcon size={18} />, label: 'Annotation Tool' },
     ],
   },
   {
     title: 'Visualization',
     links: [
-      { to: '/visualization/3d', icon: '🎨', label: '3D Viewer' },
-      { to: '/visualization/grammar', icon: '🌳', label: 'Grammar Maps' },
-      { to: '/visualization/timeline', icon: '📈', label: 'Timeline' },
+      { to: '/visualization/3d', icon: <Layers size={18} />, label: '3D Viewer' },
+      { to: '/visualization/grammar', icon: <Network size={18} />, label: 'Grammar Maps' },
+      { to: '/visualization/timeline', icon: <Activity size={18} />, label: 'Timeline' },
     ],
   },
   {
     title: 'Teaching',
     links: [
-      { to: '/teaching/school', icon: '🏫', label: 'Institution HQ' },
-      { to: '/teaching/dashboard', icon: '👨‍🏫', label: 'Teacher Dashboard' },
-      { to: '/teaching/workspace', icon: '🧑‍🎓', label: 'Student Workspace' },
-      { to: '/teaching/assessment', icon: '📝', label: 'Assessment' },
+      { to: '/teaching/school', icon: <School size={18} />, label: 'Institution HQ' },
+      { to: '/teaching/dashboard', icon: <GraduationCap size={18} />, label: 'Teacher Dashboard' },
+      { to: '/teaching/workspace', icon: <User size={18} />, label: 'Student Workspace' },
+      { to: '/teaching/assessment', icon: <ClipboardCheck size={18} />, label: 'Assessment' },
     ],
   },
   {
     title: 'AI Tools',
     links: [
-      { to: '/tools/tutor', icon: '🤖', label: 'AI Sanskrit Tutor' },
-      { to: '/tools/voice', icon: '🎤', label: 'Voice Mode' },
-      { to: '/tools/sentence', icon: '🧩', label: 'Sentence Builder' },
-      { to: '/tools/fix', icon: '🩺', label: 'Fix My Sanskrit' },
-      { to: '/tools/story', icon: '📖', label: 'Story Generator' },
-      { to: '/tools/realworld', icon: '🌍', label: 'Sanskrit → Real World' },
-      { to: '/tools/calendar', icon: '🪔', label: 'Culture Calendar' },
-      { to: '/tools/whosaid', icon: '🗣️', label: 'Who Said It?' },
-      { to: '/tools/etymology', icon: '🌱', label: 'Etymology Tree' },
-      { to: '/tools/concepts', icon: '🔎', label: 'Concept Explorer' },
-      { to: '/tools/games', icon: '🎮', label: 'Learn Through Games' },
-      { to: '/tools/debate', icon: '⚔️', label: 'Debate Mode' },
-      { to: '/tools/studio', icon: '🎨', label: 'Creative Studio' },
-      { to: '/tools/flashcards', icon: '📇', label: 'Flashcards (SRS)' },
-      { to: '/tools/bookshelf', icon: '📚', label: 'Bookshelf' },
-      { to: '/tools/transliterate', icon: '🔤', label: 'Transliteration' },
-      { to: '/tools/sandhi', icon: '🔊', label: 'Sandhi Tool' },
-      { to: '/tools/dhatu', icon: '🌱', label: 'Dhātu Explorer' },
-      { to: '/tools/shloka', icon: '🪔', label: 'Shloka Explorer' },
-      { to: '/tools/jeopardy', icon: '🎮', label: 'Sanskrit Jeopardy' },
+      { to: '/tools/tutor', icon: <Bot size={18} />, label: 'AI Sanskrit Tutor' },
+      { to: '/tools/voice', icon: <Mic size={18} />, label: 'Voice Mode' },
+      { to: '/tools/sentence', icon: <Puzzle size={18} />, label: 'Sentence Builder' },
+      { to: '/tools/fix', icon: <Stethoscope size={18} />, label: 'Fix My Sanskrit' },
+      { to: '/tools/story', icon: <BookOpen size={18} />, label: 'Story Generator' },
+      { to: '/tools/realworld', icon: <Globe size={18} />, label: 'Sanskrit → Real World' },
+      { to: '/tools/calendar', icon: <Calendar size={18} />, label: 'Culture Calendar' },
+      { to: '/tools/whosaid', icon: <MessageSquareQuote size={18} />, label: 'Who Said It?' },
+      { to: '/tools/etymology', icon: <Sprout size={18} />, label: 'Etymology Tree' },
+      { to: '/tools/concepts', icon: <Compass size={18} />, label: 'Concept Explorer' },
+      { to: '/tools/games', icon: <Gamepad2 size={18} />, label: 'Learn Through Games' },
+      { to: '/tools/debate', icon: <Swords size={18} />, label: 'Debate Mode' },
+      { to: '/tools/studio', icon: <Palette size={18} />, label: 'Creative Studio' },
+      { to: '/tools/flashcards', icon: <Layers2 size={18} />, label: 'Flashcards (SRS)' },
+      { to: '/tools/bookshelf', icon: <BookMarked size={18} />, label: 'Bookshelf' },
+      { to: '/tools/transliterate', icon: <Languages size={18} />, label: 'Transliteration' },
+      { to: '/tools/sandhi', icon: <Volume2 size={18} />, label: 'Sandhi Tool' },
+      { to: '/tools/dhatu', icon: <Sprout size={18} />, label: 'Dhātu Explorer' },
+      { to: '/tools/shloka', icon: <ShlokaIcon size={18} />, label: 'Shloka Explorer' },
+      { to: '/tools/jeopardy', icon: <Trophy size={18} />, label: 'Sanskrit Jeopardy' },
     ],
   },
   {
     title: 'Exam Practice',
     links: [
-      { to: '/viva/simulator', icon: '🎙️', label: 'Viva Simulator' },
-      { to: '/viva/lab', icon: '🗣️', label: 'Language Lab', schoolOnly: true },
-      { to: '/viva/analytics', icon: '📊', label: 'Analytics' },
+      { to: '/viva/simulator', icon: <Mic size={18} />, label: 'Viva Simulator' },
+      { to: '/viva/lab', icon: <Languages size={18} />, label: 'Language Lab', schoolOnly: true },
+      { to: '/viva/analytics', icon: <Activity size={18} />, label: 'Analytics' },
     ],
   },
 ]
@@ -107,10 +127,10 @@ export default function Layout() {
   const { user, role, setRole, canSwitch, guest, endGuest } = useRole()
   const kbDummyRef = useRef<HTMLTextAreaElement | null>(null)
 
-  const ROLE_OPTIONS: { value: ViewRole; icon: string; label: string }[] = [
-    { value: 'institution', icon: '🏫', label: 'School' },
-    { value: 'teacher', icon: '👨‍🏫', label: 'Teacher' },
-    { value: 'student', icon: '🧑‍🎓', label: 'Student' },
+  const ROLE_OPTIONS: { value: ViewRole; icon: React.ReactNode; label: string }[] = [
+    { value: 'institution', icon: <School size={15} />, label: 'School' },
+    { value: 'teacher', icon: <GraduationCap size={15} />, label: 'Teacher' },
+    { value: 'student', icon: <User size={15} />, label: 'Student' },
   ]
 
   const handleSignOut = () => {
@@ -126,13 +146,13 @@ export default function Layout() {
       <nav className={`sidebar${sidebarOpen ? ' open' : ''}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
-            <div className="sidebar-logo">ॐ</div>
+            <div className="sidebar-logo"><OmIcon size={22} /></div>
             <div className="sidebar-brand-text">
               <h1>संस्कृतम्</h1>
               <div className="subtitle">SanskritLab</div>
             </div>
           </div>
-          <button className="sidebar-close" onClick={() => setSidebarOpen(false)} aria-label={t('Close')}>✕</button>
+          <button className="sidebar-close" onClick={() => setSidebarOpen(false)} aria-label={t('Close')}><X size={18} /></button>
         </div>
         {navSections.map((section) => (
           <div className="nav-section" key={section.title}>
@@ -153,7 +173,7 @@ export default function Layout() {
         ))}
         <div className="sidebar-footer">
           <span>{t('Theme')}</span>
-          <button className="theme-btn" onClick={toggle}>{theme === 'dark' ? '☀️' : '🌙'}</button>
+          <button className="theme-btn" onClick={toggle}>{theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}</button>
         </div>
       </nav>
 
@@ -161,9 +181,10 @@ export default function Layout() {
         {/* Vedantu-style top orange navbar */}
         <div className="top-nav">
           <div className="top-nav-left">
-            <button className="top-nav-hamburger" onClick={() => setSidebarOpen(true)}>☰</button>
-            <div className="top-nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-              संस्कृतम् <span>Lab</span>
+            <button className="top-nav-hamburger" onClick={() => setSidebarOpen(true)} aria-label="Open menu"><Menu size={22} /></button>
+            <div className="top-nav-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
+              <OmIcon size={20} />
+              <span>संस्कृतम् <strong>Lab</strong></span>
             </div>
             <div className="top-nav-links">
               <a onClick={() => navigate('/learning/tree')}>{t('Learn')}</a>
@@ -185,39 +206,43 @@ export default function Layout() {
             </button>
             <button
               className={`btn btn-sm ${keyboardVisible ? 'btn-primary' : 'btn-outline'}`}
-              style={{ marginLeft: 8 }}
+              style={{ marginLeft: 8, display: 'inline-flex', alignItems: 'center', gap: 6 }}
               onClick={() => toggleKeyboard(kbDummyRef as any)}
               title={t('Devanagari Keyboard')}
             >
-              ⌨️ देव
+              <Keyboard size={15} /> <span>देव</span>
             </button>
-            <button className="btn-signin" onClick={toggle} title={t('Toggle theme')}>{theme === 'dark' ? '☀️' : '🌙'}</button>
-            <button className="btn btn-sm btn-outline" style={{ marginLeft: 8 }} onClick={() => navigate('/tools/tutor')}>🤖 {t('Tutor')}</button>
+            <button className="theme-btn" onClick={toggle} title={t('Toggle theme')}>{theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}</button>
+            <button className="btn btn-sm btn-outline" style={{ marginLeft: 8, display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => navigate('/tools/tutor')}>
+              <Bot size={15} /> <span>{t('Tutor')}</span>
+            </button>
             {canSwitch && (
               <div className="role-switcher" style={{ marginLeft: 8, display: 'inline-flex', background: 'rgba(255,140,0,0.12)', border: '1px solid rgba(255,140,0,0.4)', borderRadius: 8, padding: 2 }}>
                 {ROLE_OPTIONS.map((o) => (
                   <button
                     key={o.value}
                     className={`btn btn-sm ${role === o.value ? 'btn-primary' : ''}`}
-                    style={{ border: 'none', padding: '4px 10px', borderRadius: 6 }}
+                    style={{ border: 'none', padding: '4px 10px', borderRadius: 6, display: 'inline-flex', alignItems: 'center', gap: 4 }}
                     onClick={() => setRole(o.value)}
                     title={t('View as') + ': ' + t(o.label)}
                   >
-                    {o.icon} {t(o.label)}
+                    {o.icon} <span>{t(o.label)}</span>
                   </button>
                 ))}
               </div>
             )}
             {user ? (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginLeft: 8 }}>
-                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: '#fff', background: 'rgba(255,140,0,0.15)', padding: '4px 10px', borderRadius: 8 }}>
-                  {user.accountType === 'institution' ? '🏫' : user.accountType === 'teacher' ? '👨‍🏫' : user.accountType === 'student' ? '🧑‍🎓' : '🧑‍🎓'} {user.displayName}
+                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: '#fff', background: 'rgba(255,140,0,0.15)', padding: '4px 10px', borderRadius: 8, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {user.accountType === 'institution' ? <School size={14} /> : user.accountType === 'teacher' ? <GraduationCap size={14} /> : <User size={14} />} {user.displayName}
                 </span>
                 <button className="btn btn-sm btn-outline" onClick={handleSignOut}>{t('Sign Out')}</button>
               </div>
             ) : guest ? (
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginLeft: 8 }}>
-                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: '#fff', background: 'rgba(255,140,0,0.15)', padding: '4px 10px', borderRadius: 8 }}>🆓 {t('Guest')}</span>
+                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: '#fff', background: 'rgba(255,140,0,0.15)', padding: '4px 10px', borderRadius: 8, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <User size={14} /> <span>{t('Guest')}</span>
+                </span>
                 <button className="btn btn-sm btn-outline" onClick={handleSignOut}>{t('Leave Guest')}</button>
               </div>
             ) : (

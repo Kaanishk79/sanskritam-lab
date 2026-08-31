@@ -18,9 +18,9 @@ export default function TimelinePage() {
   }, [])
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>📈 {t('Evolutionary Timeline')}</h2>
+        <h2>{t('Evolutionary Timeline')}</h2>
         <p>{t('Interactive timeline showing how Sanskrit language and philosophy evolved over centuries')}</p>
       </div>
 

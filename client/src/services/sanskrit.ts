@@ -9,7 +9,7 @@ const DEV_VOWELS: [string, string][] = [
 ]
 
 const DEV_CONSONANTS: [string, string][] = [
-  ['क्ष', 'kṣ'], ['त्र', 'tra'], ['ज्ञ', 'jñ'],
+  ['क्ष', 'kṣ'], ['त्र', 'tr'], ['ज्ञ', 'jñ'],
   ['क', 'k'], ['ख', 'kh'], ['ग', 'g'], ['घ', 'gh'], ['ङ', 'ṅ'],
   ['च', 'c'], ['छ', 'ch'], ['ज', 'j'], ['झ', 'jh'], ['ञ', 'ñ'],
   ['ट', 'ṭ'], ['ठ', 'ṭh'], ['ड', 'ḍ'], ['ढ', 'ḍh'], ['ण', 'ṇ'],
@@ -36,13 +36,31 @@ export function toIAST(input: string): string {
     const pair = next ? c + next : ''
     const trip = next2 ? c + next + next2 : ''
     const triple = DEV_CONSONANTS.find(([d]) => d === trip)
-    if (triple) { out += triple[1]; i += 3; continue }
+    if (triple) {
+      out += triple[1]
+      i += 3
+      const sign = DEV_SIGNS.find(([d]) => d === s[i])
+      if (sign) {
+        i += 1
+        if (sign[0] === 'ं' || sign[0] === 'ँ' || sign[0] === 'ः') { out += 'a' + sign[1] }
+        else { out += sign[1] }
+      } else {
+        out += 'a'
+      }
+      continue
+    }
     const dbl = DEV_CONSONANTS.find(([d]) => d === pair)
     if (dbl) {
       out += dbl[1]
       i += 2
       const sign = DEV_SIGNS.find(([d]) => d === s[i])
-      if (sign) { out += sign[1]; i += 1 }
+      if (sign) {
+        i += 1
+        if (sign[0] === 'ं' || sign[0] === 'ँ' || sign[0] === 'ः') { out += 'a' + sign[1] }
+        else { out += sign[1] }
+      } else {
+        out += 'a'
+      }
       continue
     }
     if (c === 'अ') { out += 'a'; i += 1; continue }

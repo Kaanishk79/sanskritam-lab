@@ -24,9 +24,9 @@ export default function GrammarMapsPage() {
   }, [])
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>🌳 {t('Grammar & Philosophy Maps')}</h2>
+        <h2>{t('Grammar & Philosophy Maps')}</h2>
         <p>{t("3D branching diagrams of Pāṇini's grammar and visual network maps of Indian philosophy")}</p>
       </div>
 

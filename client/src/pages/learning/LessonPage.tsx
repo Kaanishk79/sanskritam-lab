@@ -41,10 +41,10 @@ export default function LessonPage() {
   const [quizDone, setQuizDone] = useState(false)
 
   const quizScore = useMemo(() => {
-    if (!quizDone || !lesson) return 0
+    if (!lesson) return 0
     const correct = lesson.quiz.filter((q) => quizAnswers[q.id] === q.correctIndex).length
     return lesson.quiz.length > 0 ? correct / lesson.quiz.length : 0
-  }, [quizDone, quizAnswers, lesson])
+  }, [quizAnswers, lesson])
 
   if (!lesson) {
     return (
@@ -64,8 +64,10 @@ export default function LessonPage() {
   }
 
   const submitQuiz = () => {
+    const correct = lesson.quiz.filter((q) => quizAnswers[q.id] === q.correctIndex).length
+    const score = lesson.quiz.length > 0 ? correct / lesson.quiz.length : 0
     setQuizDone(true)
-    completeLesson(lesson.id, quizScore, lesson.quiz[0]?.difficulty ?? 1)
+    completeLesson(lesson.id, score, lesson.quiz[0]?.difficulty ?? 1)
   }
 
   const progressPct = quizDone

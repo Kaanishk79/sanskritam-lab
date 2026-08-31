@@ -24,13 +24,13 @@ const sampleQuestions: Question[] = [
     explanationHi: 'राम का तृतीया एकवचन रामेण है।',
   },
   {
-    prompt: 'Which sandhi rule applies to अग्नि + इव?',
-    promptHi: 'अग्नि + इव में कौन सा संधि नियम लागू होता है?',
-    options: ['गुणः (i + i → e)', 'वृद्धिः (a + ā → ā)', 'यण् (i + a → ya)', 'अयादि (e + a → ay)'],
-    optionsHi: ['गुणः (इ + इ → ए)', 'वृद्धिः (अ + आ → आ)', 'यण् (इ + अ → य)', 'अयादि (ए + अ → अय)'],
+    prompt: 'Which sandhi rule applies to अग्नि + इव (yielding अग्नीव)?',
+    promptHi: 'अग्नि + इव (अग्नीव) में कौन सा संधि नियम लागू होता है?',
+    options: ['सवर्णदीर्घः (i + i → ī)', 'गुणः (a + i → e)', 'वृद्धिः (a + e → ai)', 'यण् (i + a → ya)'],
+    optionsHi: ['सवर्णदीर्घः (इ + इ → ई)', 'गुणः (अ + इ → ए)', 'वृद्धिः (अ + ए → ऐ)', 'यण् (इ + अ → य)'],
     correctIdx: 0,
-    explanation: 'इ + इ → ए by गुण sandhi: अग्नि + इव → अग्निरिव.',
-    explanationHi: 'गुण संधि से इ + इ → ए: अग्नि + इव → अग्निरिव।',
+    explanation: 'इ + इ → ई by सवर्णदीर्घ sandhi (Pāṇini 6.1.101 akaḥ savarṇe dīrghaḥ): अग्नि + इव → अग्नीव.',
+    explanationHi: 'सवर्णदीर्घ संधि से इ + इ → ई (अकः सवर्णे दीर्घः): अग्नि + इव → अग्नीव।',
   },
   {
     prompt: 'What is the dative singular of फल (phala, neuter)?',
@@ -130,13 +130,12 @@ export default function AssessmentPage() {
 
   if (finished) {
     return (
-      <div>
+      <div className="page-container">
         <div className="page-header">
-          <h2>📝 {t('Assessment Engine')}</h2>
+          <h2>{t('Assessment Engine')}</h2>
           <p>{t('Auto-generated drills for declensions, sandhi exercises, and timed practice quizzes')}</p>
         </div>
         <div className="card" style={{ textAlign: 'center', padding: 40 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
           <h3 style={{ fontSize: 24, marginBottom: 8 }}>{t('Assessment Complete!')}</h3>
           <div style={{ fontSize: 48, fontWeight: 700, color: 'var(--sanskrit-gold)', margin: '16px 0' }}>
             {score}/{sampleQuestions.length}
@@ -158,9 +157,9 @@ export default function AssessmentPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>📝 {t('Assessment Engine')}</h2>
+        <h2>{t('Assessment Engine')}</h2>
         <p>{t('Auto-generated drills for declensions, sandhi exercises, and timed practice quizzes')}</p>
       </div>
 

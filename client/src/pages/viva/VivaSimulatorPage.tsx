@@ -102,25 +102,24 @@ export default function VivaSimulatorPage() {
 
   if (!started) {
     return (
-      <div>
+      <div className="page-container">
         <div className="page-header">
-          <h2>🎙️ {t('AI Oral Exam (Viva) Simulator')}</h2>
+          <h2>{t('AI Oral Exam (Viva) Simulator')}</h2>
           <p>{t('Real speech recognition + AI evaluation for Sanskrit oral exams')}</p>
         </div>
         <div className="card viva-start-card">
-          <div className="viva-start-icon">🎙️</div>
           <h3>{t('Ready for your Viva?')}</h3>
           <p>{t('The AI examiner will ask questions on Sanskrit grammar, philosophy, and texts. Respond via text or speech.')}</p>
           <div className="viva-start-features">
-            <span>🎤 {t('Speech recognition')}</span>
-            <span>📝 {t('Auto-evaluation')}</span>
-            <span>📊 {t('Scoring & history')}</span>
-            <span>🔊 {t('Text-to-speech questions')}</span>
+            <span>{t('Speech recognition')}</span>
+            <span>{t('Auto-evaluation')}</span>
+            <span>{t('Scoring & history')}</span>
+            <span>{t('Text-to-speech questions')}</span>
           </div>
           <button className="btn btn-primary" onClick={() => setStarted(true)}>{t('Start Viva Session')}</button>
         </div>
         <div className="viva-lab-promo">
-          <span>🗣️ {t('Want guided skill practice first?')}</span>
+          <span>{t('Want guided skill practice first?')}</span>
           <a className="btn btn-secondary btn-sm" href="/viva/lab">{t('Open Language Lab')}</a>
         </div>
       </div>
@@ -128,9 +127,9 @@ export default function VivaSimulatorPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>🎙️ {t('Viva Simulator')}</h2>
+        <h2>{t('Viva Simulator')}</h2>
         <div className="viva-progress">
           <span>{t('Question')} {currentQ + 1} {t('of')} {questions.length}</span>
           <div className="viva-progress-bar">

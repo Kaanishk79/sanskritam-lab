@@ -124,9 +124,9 @@ export default function OCRPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>📄 {t('Manuscript OCR')}</h2>
+        <h2>{t('Manuscript OCR')}</h2>
         <p>{t('Convert scanned Devanagari and Grantha manuscripts into searchable Unicode text')}</p>
       </div>
 

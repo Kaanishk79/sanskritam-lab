@@ -80,9 +80,9 @@ export default function AnnotationPage() {
   const selected = texts.find((t) => t.id === selectedText)
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>🏛️ {t('Annotation Tool')}</h2>
+        <h2>{t('Annotation Tool')}</h2>
         <p>{t('Add multi-level notes to texts — from grammar breakdowns to classical commentaries')}</p>
       </div>
 

@@ -57,9 +57,9 @@ export default function AnalyticsPage() {
   }, [])
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>📊 {t('Analytics Engine')}</h2>
+        <h2>{t('Analytics Engine')}</h2>
         <p>{t('Track student performance, highlight weak areas, and get customized study paths')}</p>
       </div>
 

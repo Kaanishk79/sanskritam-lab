@@ -69,13 +69,13 @@ export default function CorpusPage() {
   const selected = texts.find((t) => t.id === selectedId) ?? null
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>📚 {t('Corpus & Search')}</h2>
+        <h2>{t('Corpus & Search')}</h2>
         <p>{t('Searchable library of Sanskrit texts from the database, sorted alphabetically')}</p>
         <div style={{ marginTop: 10 }}>
           <button className="btn btn-primary" onClick={() => setViewerOpen(true)}>
-            🧊 {t('3D PDF Viewer')}
+            {t('3D PDF Viewer')}
           </button>
         </div>
       </div>

@@ -20,9 +20,9 @@ export default function SkillTreePage() {
   const [expandedClass, setExpandedClass] = useState<string | null>(currentClass)
 
   return (
-    <div className="learning-path">
+    <div className="page-container learning-path">
       <div className="page-header">
-        <h2>📖 {t('Learning Path — Government Sanskrit Curriculum')}</h2>
+        <h2>{t('Learning Path — Government Sanskrit Curriculum')}</h2>
         <p>{t('Follow the NCERT → UGC syllabus from Class 1 to PhD')}</p>
       </div>
 

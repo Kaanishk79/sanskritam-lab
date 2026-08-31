@@ -33,14 +33,18 @@ export function getDefaultProgress(): UserProgress {
 
 export function loadProgress(): UserProgress {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const storage = typeof window !== 'undefined' ? window.localStorage : null
+    const raw = storage?.getItem(STORAGE_KEY)
     if (raw) return JSON.parse(raw)
   } catch {}
   return getDefaultProgress()
 }
 
 export function saveProgress(p: UserProgress): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(p))
+  try {
+    const storage = typeof window !== 'undefined' ? window.localStorage : null
+    storage?.setItem(STORAGE_KEY, JSON.stringify(p))
+  } catch {}
 }
 
 export function getLevelForTrack(track: Track): Level[] {

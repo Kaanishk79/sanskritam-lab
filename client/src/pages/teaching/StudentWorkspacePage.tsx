@@ -58,9 +58,9 @@ export default function StudentWorkspacePage() {
 
   if (inStudentView && school && sampleStudent) {
     return (
-      <div>
+      <div className="page-container">
         <div className="page-header">
-          <h2>🧑‍🎓 {t('Student Workspace')} — {school.name}</h2>
+          <h2>{t('Student Workspace')} — {school.name}</h2>
           <p>
             {t('Previewing as')} <strong>{sampleStudent.name}</strong> · {sampleClass?.name || '—'} — {sampleSection?.name || '—'} · {t('Roll')} {sampleStudent.roll_no || '—'}
           </p>
@@ -167,9 +167,9 @@ export default function StudentWorkspacePage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>🧑‍🎓 {t('Student Workspace')}</h2>
+        <h2>{t('Student Workspace')}</h2>
         <p>{t('Guided learning area with interactive texts, visualization tools, and collaboration')}</p>
       </div>
 

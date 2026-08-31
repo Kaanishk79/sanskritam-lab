@@ -8,16 +8,34 @@ const manuscripts = [
 ]
 
 const baseText = 'अथ धर्मं व्याख्यास्यामः । ते च मया भवति ।'
+const NOTES_KEY = 'sanskritlab_phd_paleography_notes'
 
 export default function ResearchWorkspacePage() {
   const { t } = useLanguage()
   const [activeTool, setActiveTool] = useState<'collation' | 'apparatus' | 'paleography'>('collation')
-  const [notes, setNotes] = useState('')
+  const [notes, setNotes] = useState(() => {
+    try {
+      return typeof window !== 'undefined' ? window.localStorage?.getItem(NOTES_KEY) || '' : ''
+    } catch {
+      return ''
+    }
+  })
+  const [savedStatus, setSavedStatus] = useState(false)
+
+  const handleSaveNotes = () => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(NOTES_KEY, notes)
+        setSavedStatus(true)
+        setTimeout(() => setSavedStatus(false), 3000)
+      }
+    } catch {}
+  }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>🏛️ {t('PhD Research Workspace')}</h2>
+        <h2>{t('PhD Research Workspace')}</h2>
         <p>{t('Critical edition tools — collation, apparatus criticus, and paleographic analysis')}</p>
       </div>
 
@@ -141,7 +159,10 @@ export default function ResearchWorkspacePage() {
                 fontFamily: "'Noto Sans Devanagari', sans-serif",
               }}
             />
-            <button className="btn btn-primary" style={{ marginTop: 12 }}>{t('Save Notes')}</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
+              <button className="btn btn-primary" onClick={handleSaveNotes}>{t('Save Notes')}</button>
+              {savedStatus && <span style={{ color: 'var(--vt-green)', fontSize: 13, fontWeight: 500 }}>✓ {t('Notes saved successfully!')}</span>}
+            </div>
           </div>
         </div>
       )}

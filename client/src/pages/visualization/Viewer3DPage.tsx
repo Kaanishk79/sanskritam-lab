@@ -100,11 +100,13 @@ function Manuscript3DScene({ manuscript, isDark }: { manuscript: Manuscript; isD
     textSprite.position.set(0, 0.12, 0)
     leafGroup.add(textSprite)
 
-    const frameId = requestAnimationFrame(function animate() {
+    let animId = 0
+    function animate() {
       controls.update()
       renderer.render(scene, camera)
-      requestAnimationFrame(animate)
-    })
+      animId = requestAnimationFrame(animate)
+    }
+    animId = requestAnimationFrame(animate)
 
     const handleResize = () => {
       const nw = container.clientWidth
@@ -115,12 +117,20 @@ function Manuscript3DScene({ manuscript, isDark }: { manuscript: Manuscript; isD
     }
     window.addEventListener('resize', handleResize)
 
-    sceneRef.current = { scene, camera, renderer, controls, leaf, frame: frameId }
+    sceneRef.current = { scene, camera, renderer, controls, leaf, frame: animId }
 
     return () => {
-      cancelAnimationFrame(frameId)
+      cancelAnimationFrame(animId)
       window.removeEventListener('resize', handleResize)
-      container.removeChild(renderer.domElement)
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement)
+      }
+      leafGeo.dispose()
+      leafMat.dispose()
+      edgeGeo.dispose()
+      edgeMat.dispose()
+      textTexture.dispose()
+      textMat.dispose()
       renderer.dispose()
     }
   }, [manuscript, isDark])
@@ -171,9 +181,9 @@ export default function Viewer3DPage() {
   }, [])
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>🎨 {t('3D Manuscript Viewer')}</h2>
+        <h2>{t('3D Manuscript Viewer')}</h2>
         <p>{t('Interactive Three.js 3D models of palm-leaf manuscripts with digitized text overlays')}</p>
       </div>
 
@@ -181,7 +191,7 @@ export default function Viewer3DPage() {
         <div>
           <Manuscript3DScene manuscript={activeMs} isDark={isDark} />
           <div className="viewer-controls-hint">
-            <span>🖱 {t('Drag to rotate · Scroll to zoom · Auto-rotating')}</span>
+            <span>{t('Drag to rotate · Scroll to zoom · Auto-rotating')}</span>
           </div>
         </div>
 
