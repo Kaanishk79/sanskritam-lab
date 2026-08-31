@@ -1,5 +1,5 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal EnableExtensions
 
 title SanskritLab Launcher
 echo ============================================================
@@ -7,9 +7,10 @@ echo               SANSKRIT LAB STARTUP SCRIPT
 echo ============================================================
 echo.
 
-cd /d "%~dp0"
+set "ROOT=%~dp0"
+cd /d "%ROOT%"
 
-:: 1. Check prerequisites
+REM Check Node.js prerequisite
 where node >nul 2>nul
 if %ERRORLEVEL% neq 0 (
     echo [ERROR] Node.js is not found in PATH. Please install Node.js.
@@ -17,37 +18,31 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-where cargo >nul 2>nul
-if %ERRORLEVEL% neq 0 (
-    echo [WARNING] Rust / Cargo is not found in PATH.
-    echo The client will run using built-in offline fallbacks.
-)
-
-:: 2. Check and install client dependencies if needed
-if not exist "client\node_modules" (
+REM Check and install client dependencies if needed
+if not exist "%ROOT%client\node_modules" (
     echo [INFO] Installing client dependencies...
-    cd client
+    pushd "%ROOT%client"
     call npm install
-    cd ..
+    popd
     echo [INFO] Dependencies installed successfully.
     echo.
 )
 
-:: 3. Launch Rust Backend (if cargo available)
+REM Launch Rust Backend
 where cargo >nul 2>nul
 if %ERRORLEVEL% equ 0 (
     echo [INFO] Starting Unified Rust Backend on http://127.0.0.1:8080...
-    start "SanskritLab - Rust Backend (Port 8080)" cmd /k "cd /d ""%~dp0backend\rust"" && cargo run"
+    start "SanskritLab - Rust Backend (Port 8080)" cmd /k "cd /d %ROOT%backend\rust && cargo run"
 ) else (
-    echo [INFO] Skipping Rust backend launch (cargo not in PATH).
+    echo [INFO] Skipping Rust backend launch - cargo not in PATH.
 )
 
-:: 4. Launch React Client
+REM Launch React Client
 echo [INFO] Starting SanskritLab Frontend on http://localhost:5173...
-start "SanskritLab - Frontend (Vite)" cmd /k "cd /d ""%~dp0client"" && npm run dev"
+start "SanskritLab - Frontend (Vite)" cmd /k "cd /d %ROOT%client && npm run dev"
 
-:: 5. Open browser
-timeout /t 3 /nobreak >nul
+REM Wait and open browser
+timeout /t 3 /nobreak >nul 2>nul
 echo [INFO] Opening SanskritLab in your default browser...
 start http://localhost:5173
 
