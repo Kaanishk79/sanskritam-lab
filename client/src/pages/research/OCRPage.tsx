@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { History, UploadCloud, Check } from 'lucide-react'
 import { createWorker } from 'tesseract.js'
 import { useLanguage } from '../../context/LanguageContext'
 import { syncOcrFromDb, saveOcrToDb, type OcrResult } from '../../services/userDb'
@@ -113,7 +114,7 @@ export default function OCRPage() {
       const { data } = await worker.recognize(processedUrl)
       const text = data.text?.trim() || ''
       setResult(text)
-      setStatus(text ? t('Done') + ' ✅' : t('No text detected — try a clearer image.'))
+      setStatus(text ? t('Done') : t('No text detected — try a clearer image.'))
       if (text) saveOcrToDb(file.name, script, text)
     } catch (err) {
       setStatus(t('OCR failed:') + ' ' + (err instanceof Error ? err.message : String(err)))
@@ -132,7 +133,7 @@ export default function OCRPage() {
 
       <div className="card" style={{ maxWidth: 600 }}>
         <div style={{ marginBottom: 20 }}>
-          <label style={{ display: 'block', marginBottom: 8, color: '#aaa', fontSize: 13 }}>
+          <label style={{ display: 'block', marginBottom: 8, color: 'var(--vt-muted)', fontSize: 13 }}>
             {t('Upload Manuscript Image')}
           </label>
           <input
@@ -149,23 +150,26 @@ export default function OCRPage() {
             <option value="Devanagari">{t('Devanagari')}</option>
             <option value="Grantha">{t('Grantha')}</option>
           </select>
-          <div style={{ fontSize: 12, color: '#888', marginBottom: 12 }}>
+          <div style={{ fontSize: 12, color: 'var(--vt-muted)', marginBottom: 12 }}>
             {script === 'Grantha'
               ? t('Note: Grantha has no dedicated model — the Devanagari engine is used as a best-effort fallback.')
               : t('Tip: use clear, high-contrast scans for best results.')}
           </div>
-          <button className="btn btn-primary" onClick={handleUpload} disabled={!file || busy}>
-            {busy ? t('Recognizing…') : t('Recognize Text')}
+          <button className="btn btn-primary" onClick={handleUpload} disabled={!file || busy} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <UploadCloud size={14} /> <span>{busy ? t('Recognizing…') : t('Recognize Text')}</span>
           </button>
         </div>
 
         {status && (
-          <div style={{ fontSize: 13, color: '#aaa', marginBottom: 12 }}>{status}</div>
+          <div style={{ fontSize: 13, color: 'var(--vt-muted)', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+            {status === t('Done') ? <Check size={14} color="#2ecc71" /> : null}
+            <span>{status}</span>
+          </div>
         )}
 
         {result && (
           <div>
-            <label style={{ display: 'block', marginBottom: 8, color: '#aaa', fontSize: 13 }}>
+            <label style={{ display: 'block', marginBottom: 8, color: 'var(--vt-muted)', fontSize: 13 }}>
               {t('Recognized Text')}
             </label>
             <div
@@ -176,7 +180,7 @@ export default function OCRPage() {
                 padding: 20,
                 background: 'rgba(0,0,0,0.2)',
                 borderRadius: 8,
-                color: '#f0f0f0',
+                color: 'var(--vt-text)',
               }}
             >
               {result}
@@ -187,7 +191,9 @@ export default function OCRPage() {
 
       {recent.length > 0 && (
         <div className="card" style={{ marginTop: 16, maxWidth: 600 }}>
-          <h3 style={{ marginTop: 0, marginBottom: 12 }}>🕘 {t('Recent transcriptions')}</h3>
+          <h3 style={{ marginTop: 0, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <History size={18} /> <span>{t('Recent transcriptions')}</span>
+          </h3>
           <div className="text-list">
             {recent.map((r) => (
               <div key={r.id} className="text-item" style={{ cursor: 'pointer' }} onClick={() => setResult(r.text)}>
@@ -196,7 +202,7 @@ export default function OCRPage() {
                   <div className="text-meta">
                     {r.script} · {new Date(r.createdAt).toLocaleDateString()}
                   </div>
-                  <div style={{ color: '#aaa', fontSize: 13, marginTop: 4 }}>
+                  <div style={{ color: 'var(--vt-muted)', fontSize: 13, marginTop: 4 }}>
                     {r.text.length > 160 ? r.text.slice(0, 160) + '…' : r.text}
                   </div>
                 </div>

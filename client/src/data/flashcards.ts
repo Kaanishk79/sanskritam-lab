@@ -1,15 +1,15 @@
 import type { Flashcard } from '../services/srs'
 
 export const flashcardDecks = [
-  { id: 'alphabet', name: 'Alphabet & Pronunciation', nameHi: 'वर्णमाला और उच्चारण', icon: '🔤' },
-  { id: 'vocabulary', name: 'Basic Vocabulary', nameHi: 'मूल शब्दावली', icon: '📖' },
-  { id: 'declensions', name: 'Noun Declensions', nameHi: 'नाम रूप / विभक्तियाँ', icon: '📊' },
-  { id: 'sandhi', name: 'Sandhi Rules', nameHi: 'संधि नियम', icon: '🔊' },
-  { id: 'compounds', name: 'Compounds (Samāsa)', nameHi: 'समास', icon: '🧩' },
-  { id: 'philosophy', name: 'Philosophy & Darśana', nameHi: 'दर्शन', icon: '🧠' },
-  { id: 'texts', name: 'Classical Texts', nameHi: 'शास्त्रीय ग्रंथ', icon: '📜' },
-  { id: 'grammar', name: 'Advanced Grammar', nameHi: 'उच्च व्याकरण', icon: '📐' },
-  { id: 'research', name: 'Research Methods', nameHi: 'अनुसंधान विधियाँ', icon: '🔬' },
+  { id: 'alphabet', name: 'Alphabet & Pronunciation', nameHi: 'वर्णमाला और उच्चारण', icon: 'alphabet' },
+  { id: 'vocabulary', name: 'Basic Vocabulary', nameHi: 'मूल शब्दावली', icon: 'vocab' },
+  { id: 'declensions', name: 'Noun Declensions', nameHi: 'नाम रूप / विभक्तियाँ', icon: 'declensions' },
+  { id: 'sandhi', name: 'Sandhi Rules', nameHi: 'संधि नियम', icon: 'sandhi' },
+  { id: 'compounds', name: 'Compounds (Samāsa)', nameHi: 'समास', icon: 'compounds' },
+  { id: 'philosophy', name: 'Philosophy & Darśana', nameHi: 'दर्शन', icon: 'philosophy' },
+  { id: 'texts', name: 'Classical Texts', nameHi: 'शास्त्रीय ग्रंथ', icon: 'manuscript' },
+  { id: 'grammar', name: 'Advanced Grammar', nameHi: 'उच्च व्याकरण', icon: 'grammar' },
+  { id: 'research', name: 'Research Methods', nameHi: 'अनुसंधान विधियाँ', icon: 'paleography' },
 ]
 
 export const flashcards: Flashcard[] = [

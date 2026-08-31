@@ -1,30 +1,31 @@
 import { useNavigate } from 'react-router-dom'
+import { Sparkles, User, School, ArrowRight } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 import { useRole } from '../../context/RoleContext'
 
 const OPTIONS = [
   {
     key: 'guest',
-    icon: '🆓',
+    icon: Sparkles,
     title: 'Free / Guest',
     desc: 'Start exploring instantly — no account, no email. Perfect for a quick look.',
-    cta: 'Continue as Guest →',
+    cta: 'Continue as Guest',
     features: ['Full access to lessons & tools', 'Progress kept on this device', 'Upgrade anytime to save online'],
   },
   {
     key: 'individual',
-    icon: '🧑‍🎓',
+    icon: User,
     title: 'Individual',
     desc: 'A free personal account to learn at your own pace and track progress across devices.',
-    cta: 'Sign up / Sign in →',
+    cta: 'Sign up / Sign in',
     features: ['Unlimited lessons & quizzes', 'Progress, XP & streaks saved', 'Daily challenges & flashcards'],
   },
   {
     key: 'school',
-    icon: '🏫',
+    icon: School,
     title: 'Institution / School',
     desc: 'Register your school, create classes, manage teachers, students and assessments.',
-    cta: 'Register School →',
+    cta: 'Register School',
     features: ['Instant school registration', 'School, teacher & student views', 'Rosters, assessments & analytics'],
   },
 ]
@@ -62,43 +63,51 @@ export default function RolePickPage() {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: 12, marginBottom: 16 }}>
-          {OPTIONS.map((o) => (
-            <div
-              key={o.key}
-              className="card"
-              style={{
-                padding: 20,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-                cursor: 'pointer',
-                transition: 'transform .15s, border-color .15s',
-                border: '1px solid rgba(255,140,0,0.25)',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#ff8c00' }}
-              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'rgba(255,140,0,0.25)' }}
-              onClick={() => {
-                if (o.key === 'guest') {
-                  beginGuest()
-                  navigate('/')
-                } else if (o.key === 'individual') {
-                  navigate('/auth/login')
-                } else {
-                  navigate('/auth/signup?type=institution')
-                }
-              }}
-            >
-              <div style={{ fontSize: 34 }}>{o.icon}</div>
-              <strong style={{ fontSize: 15 }}>{t(o.title)}</strong>
-              <p style={{ fontSize: 12.5, color: '#aaa', margin: 0, lineHeight: 1.5 }}>{t(o.desc)}</p>
-              <ul style={{ margin: '4px 0 8px', paddingLeft: 16, fontSize: 12, color: '#bbb', lineHeight: 1.7 }}>
-                {o.features.map((f) => (
-                  <li key={f}>{t(f)}</li>
-                ))}
-              </ul>
-              <button className="btn btn-sm btn-primary" style={{ marginTop: 'auto', justifyContent: 'center' }}>{t(o.cta)}</button>
-            </div>
-          ))}
+          {OPTIONS.map((o) => {
+            const Icon = o.icon
+            return (
+              <div
+                key={o.key}
+                className="card"
+                style={{
+                  padding: 20,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                  cursor: 'pointer',
+                  transition: 'transform .15s, border-color .15s',
+                  border: '1px solid rgba(255,140,0,0.25)',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.borderColor = '#ff8c00' }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.borderColor = 'rgba(255,140,0,0.25)' }}
+                onClick={() => {
+                  if (o.key === 'guest') {
+                    beginGuest()
+                    navigate('/')
+                  } else if (o.key === 'individual') {
+                    navigate('/auth/login')
+                  } else {
+                    navigate('/auth/signup?type=institution')
+                  }
+                }}
+              >
+                <div style={{ display: 'inline-flex', alignItems: 'center', marginBottom: 4 }}>
+                  <Icon size={28} color="var(--vt-orange)" />
+                </div>
+                <strong style={{ fontSize: 15 }}>{t(o.title)}</strong>
+                <p style={{ fontSize: 12.5, color: 'var(--vt-muted)', margin: 0, lineHeight: 1.5 }}>{t(o.desc)}</p>
+                <ul style={{ margin: '4px 0 8px', paddingLeft: 16, fontSize: 12, color: 'var(--vt-text-light)', lineHeight: 1.7 }}>
+                  {o.features.map((f) => (
+                    <li key={f}>{t(f)}</li>
+                  ))}
+                </ul>
+                <button className="btn btn-sm btn-primary" style={{ marginTop: 'auto', justifyContent: 'center', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span>{t(o.cta)}</span>
+                  <ArrowRight size={13} />
+                </button>
+              </div>
+            )
+          })}
         </div>
 
         <div className="auth-footer" style={{ margin: 0 }}>

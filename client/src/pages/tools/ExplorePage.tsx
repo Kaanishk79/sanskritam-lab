@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { Search, Compass } from 'lucide-react'
 import ExplorePanel from '../../components/ExplorePanel'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -37,9 +38,9 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="page">
+    <div className="page-container">
       <div className="page-header">
-        <h1>🔍 {t('Explore Mode')}</h1>
+        <h2>{t('Explore Mode')}</h2>
         <p>{t('Click any Sanskrit word to see its meaning, grammar, pronunciation, related words and where it appears in texts.')}</p>
       </div>
 
@@ -50,7 +51,9 @@ export default function ExplorePage() {
           placeholder={lang === 'hi' ? 'राम / rāma / किसी पाठ से शब्द…' : 'राम / rāma / a word from a text…'}
           style={{ flex: 1 }}
         />
-        <button type="submit" className="btn btn-primary">{t('Explore')}</button>
+        <button type="submit" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <Search size={15} /> <span>{t('Explore')}</span>
+        </button>
       </form>
 
       <div style={{ margin: '16px 0', display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
@@ -64,7 +67,9 @@ export default function ExplorePage() {
 
       {!word && (
         <div className="card" style={{ padding: 24, maxWidth: 560 }}>
-          <h3 style={{ marginTop: 0 }}>{t('Try the clickable verse')}</h3>
+          <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Compass size={18} color="var(--vt-orange)" /> <span>{t('Try the clickable verse')}</span>
+          </h3>
           <p style={{ fontSize: 22, margin: '12px 0', lineHeight: 2 }}>
             {SAMPLE_VERSE.split(' ').map((w, i) => (
               <span key={i}>

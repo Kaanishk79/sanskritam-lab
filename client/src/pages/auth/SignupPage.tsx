@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  User, School, GraduationCap, BookOpen,
+  Mail, Check, Clock, Link2
+} from 'lucide-react'
 import { signUp, getAuthState, onAuthChange, updateAccountMeta, resendConfirmation } from '../../services/auth'
 import { supabase } from '../../services/supabase'
 import { schoolsApi } from '../../services/schools'
-import type { School } from '../../services/schools'
+import type { School as SchoolType } from '../../services/schools'
 import { useLanguage } from '../../context/LanguageContext'
 
 export const PENDING_SCHOOL_KEY = 'sanskritlab-pending-school'
@@ -28,8 +32,8 @@ function ResendConfirmation({ email }: { email: string }) {
   }
   return (
     <span>
-      <button className="btn btn-secondary" disabled={busy} onClick={resend}>
-        {busy ? '⏳' : done ? '✅ ' + t('Sent!') : t('Resend email')}
+      <button className="btn btn-secondary" disabled={busy} onClick={resend} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+        {busy ? <Clock size={13} /> : done ? <><Check size={13} color="#2ecc71" /> <span>{t('Sent!')}</span></> : <><Mail size={13} /> <span>{t('Resend email')}</span></>}
       </button>
       {err && <span style={{ color: '#e55', fontSize: 12, marginLeft: 8 }}>{err}</span>}
     </span>
@@ -38,11 +42,11 @@ function ResendConfirmation({ email }: { email: string }) {
 
 type AccountType = 'learner' | 'institution' | 'teacher' | 'student'
 
-const ACCOUNT_TYPES: { value: AccountType; icon: string; label: string; desc: string }[] = [
-  { value: 'learner', icon: '🧑‍🎓', label: 'Learner', desc: 'Self-study Sanskrit at your own pace' },
-  { value: 'institution', icon: '🏫', label: 'Institution', desc: 'Manage a school — also preview teacher & student views' },
-  { value: 'teacher', icon: '👨‍🏫', label: 'Teacher', desc: 'Run classes, rosters, and assessments' },
-  { value: 'student', icon: '📖', label: 'Student', desc: 'Follow lessons and track progress' },
+const ACCOUNT_TYPES: { value: AccountType; icon: typeof User; label: string; desc: string }[] = [
+  { value: 'learner', icon: User, label: 'Learner', desc: 'Self-study Sanskrit at your own pace' },
+  { value: 'institution', icon: School, label: 'Institution', desc: 'Manage a school — also preview teacher & student views' },
+  { value: 'teacher', icon: GraduationCap, label: 'Teacher', desc: 'Run classes, rosters, and assessments' },
+  { value: 'student', icon: BookOpen, label: 'Student', desc: 'Follow lessons and track progress' },
 ]
 
 export default function SignupPage() {
@@ -62,9 +66,9 @@ export default function SignupPage() {
   const [schoolType, setSchoolType] = useState('')
   const [teacherUsername, setTeacherUsername] = useState('')
   const [schoolQuery, setSchoolQuery] = useState('')
-  const [schoolResults, setSchoolResults] = useState<School[]>([])
+  const [schoolResults, setSchoolResults] = useState<SchoolType[]>([])
   const [schoolSearching, setSchoolSearching] = useState(false)
-  const [selectedSchool, setSelectedSchool] = useState<School | null>(null)
+  const [selectedSchool, setSelectedSchool] = useState<SchoolType | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [needsConfirmation, setNeedsConfirmation] = useState(false)
@@ -98,62 +102,89 @@ export default function SignupPage() {
     e.preventDefault()
     setError(null)
     if (accountType === 'institution' && !schoolName.trim()) {
-      setError(t('School name is required for institution accounts'))
+      setError(t('Please provide a school name'))
       return
     }
     setLoading(true)
     try {
-      const username = teacherUsername.trim().toLowerCase() || undefined
-      await signUp(email, password, name, { accountType, schoolId: selectedSchool?.id, username })
-      const session = supabase.auth.getSession() as unknown as { data?: { session?: unknown } } | null
-      const hasSession = !!session?.data?.session
+      const meta: Record<string, unknown> = {
+        name,
+        account_type: accountType,
+      }
       if (accountType === 'institution') {
-        const schoolBody = {
-          name: schoolName.trim(),
-          city: schoolCity.trim() || null,
-          state: schoolState.trim() || null,
-          school_type: schoolType || null,
-          board: 'CBSE',
-          affiliation_status: 'pending',
-          source: 'self-registered',
-        }
-        if (hasSession) {
-          const school = await schoolsApi.create(schoolBody)
-          try {
-            await updateAccountMeta({ school_id: school.id })
-          } catch {
-            /* school created; metadata link best-effort */
-          }
-        } else {
-          localStorage.setItem(PENDING_SCHOOL_KEY, JSON.stringify(schoolBody))
-          setNeedsConfirmation(true)
-        }
+        meta.institution_name = schoolName
+        meta.institution_city = schoolCity
+        meta.institution_state = schoolState
+        meta.institution_type = schoolType
       }
-      if (accountType === 'teacher' && selectedSchool) {
-        const link = {
-          school_id: selectedSchool.id,
-          school_name: selectedSchool.name,
-          username,
-        }
-        if (hasSession) {
-          try {
-            await schoolsApi.teacherRegister(selectedSchool.id, { name, auth_username: username })
-          } catch {
-            /* roster row best-effort */
-          }
-          try {
-            await updateAccountMeta({ school_id: selectedSchool.id, ...(username ? { username } : {}) })
-          } catch {
-            /* metadata link best-effort */
-          }
-        } else {
-          localStorage.setItem(PENDING_TEACHER_KEY, JSON.stringify(link))
-          setNeedsConfirmation(true)
-        }
+      if (accountType === 'teacher') {
+        if (teacherUsername.trim()) meta.teacher_username = teacherUsername.trim().toLowerCase()
+        if (selectedSchool) meta.school_id = selectedSchool.id
       }
-      if (hasSession) navigate('/')
+      const user = await signUp(email, password, name, {
+        accountType,
+        schoolId: selectedSchool?.id,
+        username: teacherUsername.trim() || undefined,
+      })
+      if (accountType === 'institution' && schoolName.trim()) {
+        try {
+          localStorage.setItem(
+            PENDING_SCHOOL_KEY,
+            JSON.stringify({ name: schoolName, city: schoolCity, state: schoolState, school_type: schoolType, email }),
+          )
+        } catch { /* ignore */ }
+      }
+      if (accountType === 'teacher' && (teacherUsername.trim() || selectedSchool)) {
+        try {
+          localStorage.setItem(
+            PENDING_TEACHER_KEY,
+            JSON.stringify({
+              email,
+              name,
+              auth_username: teacherUsername.trim() || undefined,
+              school_id: selectedSchool?.id,
+            }),
+          )
+        } catch { /* ignore */ }
+      }
+      if (accountType === 'institution' && schoolName.trim()) {
+        try {
+          await schoolsApi.create({
+            name: schoolName,
+            city: schoolCity,
+            state: schoolState,
+            school_type: schoolType || 'Senior Secondary School',
+          })
+          localStorage.removeItem(PENDING_SCHOOL_KEY)
+        } catch { /* ignore */ }
+      }
+      if (accountType === 'teacher' && (teacherUsername.trim() || selectedSchool)) {
+        try {
+          await updateAccountMeta({
+            account_type: 'teacher',
+            teacher_username: teacherUsername.trim() || undefined,
+            school_id: selectedSchool?.id,
+          })
+          if (selectedSchool && user) {
+            await supabase.from('teachers').insert({
+              school_id: selectedSchool.id,
+              name,
+              email,
+              auth_username: teacherUsername.trim() || null,
+              user_id: user.id,
+              status: 'active',
+            })
+          }
+          localStorage.removeItem(PENDING_TEACHER_KEY)
+        } catch { /* ignore */ }
+      }
+      navigate('/')
     } catch (err: any) {
-      setError(err.message)
+      if (err.message?.toLowerCase().includes('confirm')) {
+        setNeedsConfirmation(true)
+      } else {
+        setError(err.message)
+      }
     } finally {
       setLoading(false)
     }
@@ -163,7 +194,7 @@ export default function SignupPage() {
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
+      <div className="auth-card" style={{ maxWidth: 520 }}>
         <div className="auth-brand">
           <span className="auth-om">ॐ</span>
           <h2>{t('Create Account')}</h2>
@@ -172,9 +203,11 @@ export default function SignupPage() {
 
         {needsConfirmation ? (
           <div className="card" style={{ textAlign: 'center', padding: 32 }}>
-            <p style={{ fontSize: 40, margin: '0 0 12px' }}>📬</p>
+            <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
+              <Mail size={44} color="var(--vt-orange)" />
+            </div>
             <h3 style={{ marginBottom: 12 }}>{t('Check your email')}</h3>
-            <p style={{ color: '#aaa', marginBottom: 16 }}>
+            <p style={{ color: 'var(--vt-muted)', marginBottom: 16 }}>
               {t('We sent a confirmation link to ')}<strong>{email}</strong>.<br />
               {t('After you confirm and sign in, your school')} <strong>{selectedSchool?.name || schoolName}</strong> {t('will be linked to your account automatically.')}
             </p>
@@ -195,18 +228,22 @@ export default function SignupPage() {
             <div className="form-group">
               <label>{t('I am a...')}</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                {ACCOUNT_TYPES.map((a) => (
-                  <button
-                    type="button"
-                    key={a.value}
-                    onClick={() => setAccountType(a.value)}
-                    title={t(a.desc)}
-                    className={`btn btn-sm ${accountType === a.value ? 'btn-primary' : 'btn-secondary'}`}
-                    style={{ padding: '6px 12px' }}
-                  >
-                    {a.icon} {t(a.label)}
-                  </button>
-                ))}
+                {ACCOUNT_TYPES.map((a) => {
+                  const Icon = a.icon
+                  return (
+                    <button
+                      type="button"
+                      key={a.value}
+                      onClick={() => setAccountType(a.value)}
+                      title={t(a.desc)}
+                      className={`btn btn-sm ${accountType === a.value ? 'btn-primary' : 'btn-secondary'}`}
+                      style={{ padding: '6px 12px', display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    >
+                      <Icon size={14} />
+                      <span>{t(a.label)}</span>
+                    </button>
+                  )
+                })}
               </div>
             </div>
 
@@ -234,8 +271,9 @@ export default function SignupPage() {
                     <option>{t('Senior Secondary School')}</option>
                   </select>
                 </div>
-                <p style={{ fontSize: 12, color: '#888', margin: 0 }}>
-                  🏫 {t('Your school is registered instantly. As an institution you can switch between School, Teacher and Student views.')}
+                <p style={{ fontSize: 12, color: 'var(--vt-muted)', margin: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <School size={14} />
+                  <span>{t('Your school is registered instantly. As an institution you can switch between School, Teacher and Student views.')}</span>
                 </p>
               </div>
             )}
@@ -250,17 +288,19 @@ export default function SignupPage() {
                     onChange={(e) => setTeacherUsername(e.target.value)}
                     placeholder={t('e.g. acharya.ram')}
                   />
-                  <p style={{ fontSize: 12, color: '#888', margin: '4px 0 0' }}>
-                    👤 {t('Sign in with this username — it is created by you, along with your password above.')}
+                  <p style={{ fontSize: 12, color: 'var(--vt-muted)', margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <User size={13} />
+                    <span>{t('Sign in with this username — it is created by you, along with your password above.')}</span>
                   </p>
                 </div>
                 <div className="form-group">
                   <label>{t('Connect a School')}</label>
                   {selectedSchool ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span style={{ flex: 1, background: 'rgba(255,140,0,0.1)', border: '1px solid rgba(255,140,0,0.4)', borderRadius: 6, padding: '8px 10px', fontSize: 14 }}>
-                        🏫 {selectedSchool.name}
-                        {selectedSchool.short_code ? <span style={{ fontFamily: 'monospace', color: '#ff8c00', marginLeft: 8 }}>{selectedSchool.short_code}</span> : null}
+                      <span style={{ flex: 1, background: 'rgba(255,140,0,0.1)', border: '1px solid rgba(255,140,0,0.4)', borderRadius: 6, padding: '8px 10px', fontSize: 14, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <School size={14} />
+                        <span>{selectedSchool.name}</span>
+                        {selectedSchool.short_code ? <span style={{ fontFamily: 'monospace', color: 'var(--vt-orange)', marginLeft: 8 }}>{selectedSchool.short_code}</span> : null}
                       </span>
                       <button type="button" className="btn btn-sm btn-secondary" onClick={() => { setSelectedSchool(null); setSchoolQuery('') }}>
                         {t('Change')}
@@ -274,7 +314,7 @@ export default function SignupPage() {
                         onChange={(e) => setSchoolQuery(e.target.value)}
                         placeholder={t('Search school name or code...')}
                       />
-                      {schoolSearching && <p style={{ fontSize: 12, color: '#888', margin: '4px 0 0' }}>⏳ {t('Searching...')}</p>}
+                      {schoolSearching && <p style={{ fontSize: 12, color: 'var(--vt-muted)', margin: '4px 0 0' }}>{t('Searching...')}</p>}
                       {!schoolSearching && !!schoolResults.length && (
                         <div className="text-list" style={{ marginTop: 6, maxHeight: 180, overflow: 'auto' }}>
                           {schoolResults.map((sc) => (
@@ -297,12 +337,14 @@ export default function SignupPage() {
                       )}
                     </>
                   )}
-                  <p style={{ fontSize: 12, color: '#888', margin: '4px 0 0' }}>
-                    🔗 {t('Your students join the same school with its code, and appear in your real Teacher Dashboard roster.')}
+                  <p style={{ fontSize: 12, color: 'var(--vt-muted)', margin: '4px 0 0', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Link2 size={13} />
+                    <span>{t('Your students join the same school with its code, and appear in your real Teacher Dashboard roster.')}</span>
                   </p>
                 </div>
-                <p style={{ fontSize: 12, color: '#888', margin: 0 }}>
-                  👨‍🏫 {t('Teacher accounts can be linked now or later — the dashboard always shows your real school data, never demo numbers.')}
+                <p style={{ fontSize: 12, color: 'var(--vt-muted)', margin: 0, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <GraduationCap size={14} />
+                  <span>{t('Teacher accounts can be linked now or later — the dashboard always shows your real school data, never demo numbers.')}</span>
                 </p>
               </div>
             )}

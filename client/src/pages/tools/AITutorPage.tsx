@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { Bot, User, Send, Keyboard, Lightbulb } from 'lucide-react'
 import { useKeyboard } from '../../context/KeyboardContext'
 import { useLanguage } from '../../context/LanguageContext'
 import { api } from '../../services/api'
@@ -108,9 +109,9 @@ Would you like me to break this down further?`
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('🤖 AI Sanskrit Tutor')}</h2>
+        <h2>{t('AI Sanskrit Tutor')}</h2>
         <p>{t('Ask anything about Sanskrit — grammar, texts, philosophy, or culture')}</p>
         {aiMode !== 'checking' && (
           <span
@@ -134,7 +135,9 @@ Would you like me to break this down further?`
           <div className="tutor-messages">
             {messages.map((msg, i) => (
               <div key={i} className={`tutor-msg ${msg.role}`}>
-                <div className="tutor-msg-avatar">{msg.role === 'assistant' ? '🤖' : '👤'}</div>
+                <div className="tutor-msg-avatar" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {msg.role === 'assistant' ? <Bot size={18} color="var(--vt-orange)" /> : <User size={18} />}
+                </div>
                 <div className="tutor-msg-bubble">
                   <div className="tutor-msg-content">{msg.content}</div>
                   <div className="tutor-msg-time">
@@ -145,7 +148,9 @@ Would you like me to break this down further?`
             ))}
             {isTyping && (
               <div className="tutor-msg assistant">
-                <div className="tutor-msg-avatar">🤖</div>
+                <div className="tutor-msg-avatar" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Bot size={18} color="var(--vt-orange)" />
+                </div>
                 <div className="tutor-msg-bubble typing">
                   <span className="typing-dot" /><span className="typing-dot" /><span className="typing-dot" />
                 </div>
@@ -168,11 +173,12 @@ Would you like me to break this down further?`
               className="btn btn-secondary"
               onClick={() => toggleKeyboard(inputRef as any)}
               title={t('Devanagari Keyboard')}
+              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              ⌨️
+              <Keyboard size={16} />
             </button>
-            <button type="submit" className="btn btn-primary" disabled={!input.trim() || isTyping}>
-              {t('Send')}
+            <button type="submit" className="btn btn-primary" disabled={!input.trim() || isTyping} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Send size={14} /> <span>{t('Send')}</span>
             </button>
           </form>
         </div>
@@ -195,7 +201,9 @@ Would you like me to break this down further?`
           </div>
 
           <div className="card" style={{ marginTop: 16 }}>
-            <h4>{t('💡 Tips')}</h4>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Lightbulb size={16} color="#ffd54f" /> <span>{t('Tips')}</span>
+            </h4>
             <ul className="tutor-tips">
               <li>{t('Ask about grammar rules with examples')}</li>
               <li>{t('Request word-by-word breakdowns of verses')}</li>

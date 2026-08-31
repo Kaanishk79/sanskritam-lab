@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Pencil, Play, Trash2, Plus, Save } from 'lucide-react'
 import type { JeopardyCategory, JeopardyClue, FinalJeopardyClue } from '../../data/jeopardy'
 import { loadCustomQuizzes, persistCustomQuizzes, makeCustomQuizId, validateQuiz, type CustomQuiz } from '../../services/customQuizzes'
 import { syncCustomQuizzesFromDb, persistCustomQuizzesToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 import JeopardyHeader from '../../components/jeopardy/JeopardyHeader'
+import { DynamicIcon } from '../../components/icons'
 import '../tools/jeopardy.css'
 
 const VALUES = [200, 400, 600, 800, 1000]
-const ICON_CHOICES = ['📚', '🧠', '✍️', '📜', '🕉️', '🎭', '🔤', '🔢', '🏛️', '🧘', '⚔️', '🔥', '📐', '🧩', '🎵', '🌺']
+const ICON_CHOICES = ['book', 'philosophy', 'feathers', 'manuscript', 'temple', 'shloka', 'alphabet', 'declensions', 'teacher', 'yoga', 'sword', 'sandhi', 'grammar', 'puzzle', 'music', 'flower']
 
 const emptyClue = (i: number): JeopardyClue => ({ id: '', value: VALUES[i] ?? 0, clue: '', answer: '' })
 
@@ -16,7 +18,7 @@ const emptyCategory = (): JeopardyCategory => ({
   id: '',
   name: '',
   nameSanskrit: '',
-  icon: '📚',
+  icon: 'book',
   clues: [0, 1, 2, 3, 4].map(emptyClue),
 })
 
@@ -24,7 +26,7 @@ const emptyDraft = (): CustomQuiz => ({
   id: makeCustomQuizId(),
   name: '',
   nameSanskrit: '',
-  icon: '📚',
+  icon: 'book',
   description: '',
   categories: [emptyCategory(), emptyCategory(), emptyCategory()],
   createdAt: Date.now(),
@@ -136,10 +138,10 @@ export default function JeopardyBuilderPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <JeopardyHeader />
       <div className="page-header">
-        <h2>{t('✏️ Quiz Builder')}</h2>
+        <h2>{t('Quiz Builder')}</h2>
         <p>{t('Create your own Jeopardy boards — custom categories and clues, saved on your device')}</p>
       </div>
 
@@ -153,7 +155,9 @@ export default function JeopardyBuilderPage() {
           <div className="j-builder-cards">
             {quizzes.map((q) => (
               <div className="j-builder-card" key={q.id}>
-                <div className="j-builder-card-icon">{q.icon}</div>
+                <div className="j-builder-card-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <DynamicIcon name={q.icon || 'book'} size={24} />
+                </div>
                 <div className="j-builder-card-body">
                   <h3>{q.name}</h3>
                   {q.nameSanskrit && <div className="j-builder-card-sa">{q.nameSanskrit}</div>}
@@ -164,14 +168,22 @@ export default function JeopardyBuilderPage() {
                   </div>
                 </div>
                 <div className="j-builder-card-actions">
-                  <button className="btn btn-sm btn-primary" onClick={() => playQuiz(q)}>{t('▶ Play')}</button>
-                  <button className="btn btn-sm btn-secondary" onClick={() => editQuiz(q)}>{t('✏️ Edit')}</button>
-                  <button className="btn btn-sm btn-danger" onClick={() => remove(q.id)}>{t('🗑 Delete')}</button>
+                  <button className="btn btn-sm btn-primary" onClick={() => playQuiz(q)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <Play size={13} fill="currentColor" /> <span>{t('Play')}</span>
+                  </button>
+                  <button className="btn btn-sm btn-secondary" onClick={() => editQuiz(q)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <Pencil size={13} /> <span>{t('Edit')}</span>
+                  </button>
+                  <button className="btn btn-sm btn-danger" onClick={() => remove(q.id)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    <Trash2 size={13} /> <span>{t('Delete')}</span>
+                  </button>
                 </div>
               </div>
             ))}
           </div>
-          <button className="btn btn-primary btn-lg" onClick={startNew}>+ {t('Create New Quiz')}</button>
+          <button className="btn btn-primary btn-lg" onClick={startNew} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Plus size={16} /> <span>{t('Create New Quiz')}</span>
+          </button>
         </div>
       ) : (
         <div className="j-builder-editor">
@@ -201,8 +213,9 @@ export default function JeopardyBuilderPage() {
                       type="button"
                       className={`j-builder-icon${draft.icon === ic ? ' active' : ''}`}
                       onClick={() => updateDraft({ icon: ic })}
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
                     >
-                      {ic}
+                      <DynamicIcon name={ic} size={16} />
                     </button>
                   ))}
                 </div>
@@ -277,7 +290,9 @@ export default function JeopardyBuilderPage() {
           {error && <div className="j-builder-error">{error}</div>}
 
           <div className="j-builder-actions">
-            <button className="btn btn-primary" onClick={save}>{t('💾 Save Quiz')}</button>
+            <button className="btn btn-primary" onClick={save} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Save size={14} /> <span>{t('Save Quiz')}</span>
+            </button>
             <button className="btn btn-secondary" onClick={() => setDraft(null)}>{t('Cancel')}</button>
           </div>
         </div>

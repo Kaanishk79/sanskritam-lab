@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { TrendingUp, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 import { supabase } from '../../services/supabase'
 import { getAuthState } from '../../services/auth'
@@ -65,7 +66,9 @@ export default function AnalyticsPage() {
 
       {real && (
         <div className="card" style={{ marginBottom: 24, padding: 20 }}>
-          <h3 style={{ marginTop: 0, marginBottom: 16 }}>📈 {t('Real data')}</h3>
+          <h3 style={{ marginTop: 0, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <TrendingUp size={18} color="var(--vt-orange)" /> <span>{t('Real data')}</span>
+          </h3>
           <div className="analytics-grid" style={{ marginBottom: 0 }}>
             <div className="stat-card">
               <div className="stat-value">{real.streak}</div>
@@ -73,49 +76,40 @@ export default function AnalyticsPage() {
             </div>
             <div className="stat-card">
               <div className="stat-value">{real.xp}</div>
-              <div className="stat-label">{t('XP')}</div>
+              <div className="stat-label">{t('Total XP')}</div>
             </div>
             <div className="stat-card">
               <div className="stat-value">{real.attempts}</div>
-              <div className="stat-label">{t('Attempts')}</div>
+              <div className="stat-label">{t('Quizzes Taken')}</div>
             </div>
             <div className="stat-card">
               <div className="stat-value">{real.avgScore}%</div>
-              <div className="stat-label">{t('Avg Score')}</div>
+              <div className="stat-label">{t('Quiz Average')}</div>
             </div>
             <div className="stat-card">
               <div className="stat-value">{real.stories}</div>
-              <div className="stat-label">{t('Stories')}</div>
+              <div className="stat-label">{t('Stories Created')}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-value">{real.labAvg}%</div>
+              <div className="stat-label">{t('Language Lab Avg')} ({real.labAttempts})</div>
             </div>
           </div>
-          {real.labAttempts > 0 && (
-            <p style={{ color: '#888', fontSize: 13, marginTop: 12 }}>
-              {t('Lab practice')}: {real.labAttempts} {t('attempts')} · {t('avg')} {real.labAvg}%
-            </p>
-          )}
         </div>
       )}
 
       <div className="analytics-grid">
         <div className="stat-card">
-          <div className="stat-value">87%</div>
+          <div className="stat-value">84%</div>
           <div className="stat-label">{t('Overall Accuracy')}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value">92%</div>
-          <div className="stat-label">{t('Declensions')}</div>
+          <div className="stat-value">128</div>
+          <div className="stat-label">{t('Exercises Done')}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-value">78%</div>
-          <div className="stat-label">{t('Sandhi Rules')}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">85%</div>
-          <div className="stat-label">{t('Vocabulary')}</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-value">70%</div>
-          <div className="stat-label">{t('Verb Conjugation')}</div>
+          <div className="stat-value">14</div>
+          <div className="stat-label">{t('Day Streak')}</div>
         </div>
         <div className="stat-card">
           <div className="stat-value">2h 15m</div>
@@ -129,19 +123,25 @@ export default function AnalyticsPage() {
           <div className="text-list">
             <div className="text-item">
               <div>
-                <div className="text-title">🟡 {t('Verb Conjugation')} (70%)</div>
+                <div className="text-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <AlertCircle size={14} color="#ff9800" /> <span>{t('Verb Conjugation')} (70%)</span>
+                </div>
                 <div className="text-meta">{t('Practice present tense parasmaipada forms')}</div>
               </div>
             </div>
             <div className="text-item">
               <div>
-                <div className="text-title">🟡 {t('Sandhi Rules')} (78%)</div>
+                <div className="text-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <AlertCircle size={14} color="#ff9800" /> <span>{t('Sandhi Rules')} (78%)</span>
+                </div>
                 <div className="text-meta">{t('Focus on guṇa and vṛddhi sandhi')}</div>
               </div>
             </div>
             <div className="text-item">
               <div>
-                <div className="text-title">🟢 {t('Declensions')} (92%)</div>
+                <div className="text-title" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <CheckCircle2 size={14} color="#4caf50" /> <span>{t('Declensions')} (92%)</span>
+                </div>
                 <div className="text-meta">{t('Maintain current practice schedule')}</div>
               </div>
             </div>

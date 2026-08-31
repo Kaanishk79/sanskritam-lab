@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Scroll, Volume2, Sparkles } from 'lucide-react'
 import { readingPassages, type ReadingPassage } from '../../data/languageLab'
 import { SHLOKAS, type Shloka } from '../../data/shlokas'
 import { loadShlokaPassages, loadShlokas } from '../../services/contentDb'
@@ -38,19 +39,23 @@ export default function ShlokaPage() {
   const dayVerse = verses[Math.floor(Date.now() / 86400000) % verses.length]
 
   return (
-    <div className="page">
+    <div className="page-container">
       <div className="page-header">
-        <h1>🪔 {t('Shloka / Verse Explorer')}</h1>
+        <h2>{t('Shloka / Verse Explorer')}</h2>
         <p>{t('Classical verses with translation alongside — click any word to see its meaning.')}</p>
       </div>
 
-      <h3>📜 {t('Classical passages')}</h3>
+      <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Scroll size={18} /> <span>{t('Classical passages')}</span>
+      </h3>
       {passages.map((p) => (
         <div key={p.id} className="card" style={{ padding: 20, marginBottom: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-            <strong>{p.titleSanskrit} <span style={{ color: '#888', fontWeight: 400 }}>· {p.title}</span></strong>
+            <strong>{p.titleSanskrit} <span style={{ color: 'var(--vt-muted)', fontWeight: 400 }}>· {p.title}</span></strong>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button className="btn btn-sm btn-outline" onClick={() => speakWithFallback(p.text)}>🔊</button>
+              <button className="btn btn-sm btn-outline" onClick={() => speakWithFallback(p.text)}>
+                <Volume2 size={13} />
+              </button>
               <button className="btn btn-sm btn-outline" onClick={() => setOpenPassage(openPassage === p.id ? null : p.id)}>
                 {openPassage === p.id ? t('Hide translation') : t('Show translation')}
               </button>
@@ -64,12 +69,12 @@ export default function ShlokaPage() {
             ))}
           </p>
           {openPassage === p.id && (
-            <div style={{ borderTop: '1px solid rgba(255,255,255,.08)', paddingTop: 12 }}>
-              <div style={{ color: '#999', fontStyle: 'italic' }}>{p.transliteration}</div>
-              <div style={{ color: '#ccc', marginTop: 6 }}>{hi ? p.translationHi ?? p.translation : p.translation}</div>
+            <div style={{ borderTop: '1px solid var(--vt-border)', paddingTop: 12 }}>
+              <div style={{ color: 'var(--vt-muted)', fontStyle: 'italic' }}>{p.transliteration}</div>
+              <div style={{ color: 'var(--vt-text)', marginTop: 6 }}>{hi ? p.translationHi ?? p.translation : p.translation}</div>
               <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {p.words.slice(0, 10).map((w) => (
-                  <span key={w.word} className="chip">{w.word} <span style={{ color: '#999' }}>= {hi ? w.meaningHi ?? w.meaning : w.meaning}</span></span>
+                  <span key={w.word} className="chip">{w.word} <span style={{ color: 'var(--vt-muted)' }}>= {hi ? w.meaningHi ?? w.meaning : w.meaning}</span></span>
                 ))}
               </div>
             </div>
@@ -77,7 +82,9 @@ export default function ShlokaPage() {
         </div>
       ))}
 
-      <h3>🪔 {t('Verse of the day')}</h3>
+      <h3 style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <Sparkles size={18} /> <span>{t('Verse of the day')}</span>
+      </h3>
       <div className="card" style={{ padding: 16, maxWidth: 640, border: '2px solid rgba(255,152,0,0.4)', background: 'rgba(255,152,0,0.06)' }}>
         <div style={{ fontSize: 18, lineHeight: 1.8 }}>
           {dayVerse.dev.split(' ').map((w, j) => (
@@ -86,10 +93,12 @@ export default function ShlokaPage() {
             </span>
           ))}
         </div>
-        <div style={{ color: '#999', fontSize: 12, fontStyle: 'italic', marginTop: 4 }}>{dayVerse.iast}</div>
-        <div style={{ color: '#ccc', fontSize: 13, marginTop: 4 }}>{lang === 'hi' && dayVerse.translationHi ? dayVerse.translationHi : dayVerse.translation}</div>
-        <div style={{ color: '#666', fontSize: 11, marginTop: 2 }}>{dayVerse.source}</div>
-        <button className="btn btn-sm btn-outline" style={{ marginTop: 10 }} onClick={() => speakWithFallback(dayVerse.dev)}>🔊 {t('Hear it')}</button>
+        <div style={{ color: 'var(--vt-muted)', fontSize: 12, fontStyle: 'italic', marginTop: 4 }}>{dayVerse.iast}</div>
+        <div style={{ color: 'var(--vt-text)', fontSize: 13, marginTop: 4 }}>{lang === 'hi' && dayVerse.translationHi ? dayVerse.translationHi : dayVerse.translation}</div>
+        <div style={{ color: 'var(--vt-muted)', fontSize: 11, marginTop: 2 }}>{dayVerse.source}</div>
+        <button className="btn btn-sm btn-outline" style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => speakWithFallback(dayVerse.dev)}>
+          <Volume2 size={13} /> <span>{t('Hear it')}</span>
+        </button>
       </div>
 
       {exploreWord && <ExplorePanel word={exploreWord} onClose={() => setExploreWord(null)} />}

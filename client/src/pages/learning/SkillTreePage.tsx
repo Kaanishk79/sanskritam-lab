@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Target, Folder, BookOpen, BookMarked, CheckCircle2, Circle, Feather } from 'lucide-react'
 import { useProgress } from '../../hooks/useProgress'
 import { tracks } from '../../data/tracks'
 import { classLevels, getGovClassFor } from '../../data/classes'
@@ -7,6 +8,7 @@ import { books, bookHi } from '../../data/books'
 import { lessons, lessonHi } from '../../data/lessons'
 import type { GovClassId, ClassInfo } from '../../types/curriculum'
 import { useLanguage } from '../../context/LanguageContext'
+import { DynamicIcon } from '../../components/icons'
 
 export default function SkillTreePage() {
   const { progress, switchTrack } = useProgress()
@@ -51,7 +53,9 @@ export default function SkillTreePage() {
 
       {/* Class Progression */}
       <div className="class-progression">
-        <h3 className="section-title">🎯 {t('Class Progression')}</h3>
+        <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Target size={18} /> <span>{t('Class Progression')}</span>
+        </h3>
         <div className="class-scroll">
           {classLevels.map((cl) => {
             const isCurrent = cl.id === currentClass
@@ -64,7 +68,9 @@ export default function SkillTreePage() {
                 onClick={() => setExpandedClass(cl.id === expandedClass ? null : cl.id)}
                 style={{ borderColor: cl.color }}
               >
-                <span className="class-step-icon">{cl.icon}</span>
+                <span className="class-step-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <DynamicIcon name={cl.icon} size={20} />
+                </span>
                 <span className="class-step-label">{cl.shortLabel}</span>
                 {isCurrent && <span className="class-step-badge">{t('You are here')}</span>}
                 {isRecommended && !isCurrent && <span className="class-step-badge recommended">{t('Recommended')}</span>}
@@ -90,16 +96,18 @@ export default function SkillTreePage() {
 
       {/* Track Filter Strip */}
       <div className="track-strip">
-        <h3 className="section-title">📂 {t('Filter by Track')}</h3>
+        <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Folder size={18} /> <span>{t('Filter by Track')}</span>
+        </h3>
         <div className="track-buttons">
-          {tracks.map((t) => (
+          {tracks.map((tr) => (
             <button
-              key={t.id}
-              className={`btn btn-sm ${progress.currentTrack === t.id ? 'btn-primary' : 'btn-secondary'}`}
-              style={progress.currentTrack === t.id ? { backgroundColor: t.color, borderColor: t.color } : {}}
-              onClick={() => switchTrack(t.id)}
+              key={tr.id}
+              className={`btn btn-sm ${progress.currentTrack === tr.id ? 'btn-primary' : 'btn-secondary'}`}
+              style={progress.currentTrack === tr.id ? { backgroundColor: tr.color, borderColor: tr.color } : {}}
+              onClick={() => switchTrack(tr.id)}
             >
-              {t.icon} {t.label}
+              <DynamicIcon name={tr.icon} size={15} /> <span>{t(tr.label)}</span>
             </button>
           ))}
         </div>
@@ -121,7 +129,9 @@ function ClassDetail({ classInfo, books: classBooks, lessons: classLessons, comp
   return (
     <div className="class-detail" style={{ borderColor: classInfo.color }}>
       <div className="class-detail-header" style={{ borderLeftColor: classInfo.color }}>
-        <span className="class-detail-icon">{classInfo.icon}</span>
+        <span className="class-detail-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <DynamicIcon name={classInfo.icon} size={24} />
+        </span>
         <div>
           <h3>{classInfo.label}</h3>
           <p className="class-detail-desc">{classInfo.description}</p>
@@ -137,9 +147,13 @@ function ClassDetail({ classInfo, books: classBooks, lessons: classLessons, comp
       {/* NCERT / Govt Book */}
       {ncertBook && (
         <div className="class-section">
-          <h4>📖 {t('Prescribed Textbook')}</h4>
+          <h4 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <BookOpen size={16} /> <span>{t('Prescribed Textbook')}</span>
+          </h4>
           <div className="class-book-card" onClick={() => onNavigate('/tools/bookshelf')}>
-            <span className="class-book-icon">{ncertBook.coverIcon}</span>
+            <span className="class-book-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DynamicIcon name={ncertBook.coverIcon} size={24} />
+            </span>
             <div>
               <div className="class-book-title">{ncertBook.title}</div>
               <div className="class-book-sanskrit">{ncertBook.titleSanskrit}</div>
@@ -153,11 +167,15 @@ function ClassDetail({ classInfo, books: classBooks, lessons: classLessons, comp
       {/* Reference Books */}
       {classBooks.filter((b) => b.id !== classInfo.ncertBookId).length > 0 && (
         <div className="class-section">
-          <h4>📚 {t('Reference Books at this Level')}</h4>
+          <h4 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <BookMarked size={16} /> <span>{t('Reference Books at this Level')}</span>
+          </h4>
           <div className="class-ref-books">
             {classBooks.filter((b) => b.id !== classInfo.ncertBookId).slice(0, 5).map((b) => (
               <div key={b.id} className="class-ref-card" onClick={() => onNavigate('/tools/bookshelf')}>
-                <span>{b.coverIcon}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <DynamicIcon name={b.coverIcon} size={18} />
+                </span>
                 <div>
                   <div className="class-ref-title">{b.title}</div>
                   <div className="class-ref-author">{lang === 'hi' ? bookHi[b.id]?.authorHi ?? b.author : b.author ?? ''}</div>
@@ -170,31 +188,35 @@ function ClassDetail({ classInfo, books: classBooks, lessons: classLessons, comp
 
       {/* Lessons */}
       <div className="class-section">
-        <h4>📝 {t('Available Lessons')} ({classLessons.length})</h4>
+        <h4 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Feather size={16} /> <span>{t('Available Lessons')} ({classLessons.length})</span>
+        </h4>
         {classLessons.length > 0 ? (
           <div className="class-lesson-list">
             {classLessons.map((lesson) => {
               const done = completedLessons.includes(lesson.id)
-              const score = done ? 100 : 0
               return (
                 <div
                   key={lesson.id}
                   className={`class-lesson-card ${done ? 'completed' : ''}`}
                   onClick={() => onNavigate(`/learning/lesson/${lesson.id}`)}
                 >
-                  <span className="lesson-status">{done ? '✅' : '○'}</span>
+                  <span className="lesson-status" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {done ? <CheckCircle2 size={16} color="var(--vt-green)" /> : <Circle size={16} opacity={0.4} />}
+                  </span>
                   <div className="lesson-info">
                     <div className="lesson-title">{lesson.title}</div>
                     <div className="lesson-subtitle">{lang === 'hi' && lessonHi[lesson.id]?.subtitleHi ? lessonHi[lesson.id].subtitleHi : lesson.subtitle}</div>
                   </div>
                   <span className="lesson-duration">{lang === 'hi' && lessonHi[lesson.id]?.durationHi ? lessonHi[lesson.id].durationHi : lesson.duration}</span>
-                  {done && <span className="lesson-score">{score}%</span>}
                 </div>
               )
             })}
           </div>
         ) : (
-          <p className="empty-state">{t('No lessons available yet for this class. Check the prescribed textbook above.')}</p>
+          <div className="empty-state">
+            <p>{t('No lessons available for this class level yet.')}</p>
+          </div>
         )}
       </div>
     </div>

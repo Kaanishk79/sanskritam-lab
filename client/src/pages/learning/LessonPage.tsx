@@ -1,5 +1,6 @@
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useState, useMemo, useRef, useEffect } from 'react'
+import { BookOpen, Check, X } from 'lucide-react'
 import { lessons, lessonHi } from '../../data/lessons'
 import { useProgress } from '../../hooks/useProgress'
 import { useKeyboard } from '../../context/KeyboardContext'
@@ -48,10 +49,12 @@ export default function LessonPage() {
 
   if (!lesson) {
     return (
-      <div className="empty-state">
-        <span className="empty-icon">📖</span>
-        <p>{t('Lesson not found')}</p>
-        <button className="btn btn-secondary" onClick={() => navigate('/learning/tree')}>{t('Back to Learning Path')}</button>
+      <div className="page-container">
+        <div className="empty-state">
+          <span className="empty-icon"><BookOpen size={44} /></span>
+          <p>{t('Lesson not found')}</p>
+          <button className="btn btn-secondary" onClick={() => navigate('/learning/tree')}>{t('Back to Learning Path')}</button>
+        </div>
       </div>
     )
   }
@@ -179,9 +182,9 @@ export default function LessonPage() {
                       onClick={() => !quizDone && handleAnswer(q.id, oi)}
                       disabled={quizDone}
                     >
-                      {opt}
-                      {quizDone && oi === q.correctIndex && ' ✓'}
-                      {quizDone && oi === answer && oi !== q.correctIndex && ' ✗'}
+                      <span>{opt}</span>
+                      {quizDone && oi === q.correctIndex && <Check size={16} color="var(--vt-green)" />}
+                      {quizDone && oi === answer && oi !== q.correctIndex && <X size={16} color="var(--vt-red)" />}
                     </button>
                   )
                 })}

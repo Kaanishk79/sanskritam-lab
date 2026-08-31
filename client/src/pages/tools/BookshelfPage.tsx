@@ -1,21 +1,23 @@
 import { useState, useEffect } from 'react'
+import { BookOpen, School, ArrowLeft, X } from 'lucide-react'
 import { books, chapters, grammarBooks, bookHi } from '../../data/books'
 import type { Book, GrammarBook, Chapter } from '../../types/curriculum'
 import { useLanguage } from '../../context/LanguageContext'
 import { fetchBookChapters, fetchChapterVerses } from '../../services/data'
+import { DynamicIcon } from '../../components/icons'
 
 const categories = [
-  { id: 'all', label: 'All Books', icon: '📚' },
-  { id: 'children', label: 'Children', icon: '🧒' },
-  { id: 'textbook', label: 'Textbook', icon: '📘' },
-  { id: 'teen', label: 'Teen', icon: '📘' },
-  { id: 'classical', label: 'Classical', icon: '📜' },
-  { id: 'grammar', label: 'Grammar', icon: '📐' },
-  { id: 'philosophy', label: 'Philosophy', icon: '🧠' },
-  { id: 'poetry', label: 'Poetry', icon: '🎭' },
-  { id: 'drama', label: 'Drama', icon: '🎭' },
-  { id: 'reference', label: 'Reference', icon: '📚' },
-  { id: 'commentary', label: 'Commentary', icon: '💬' },
+  { id: 'all', label: 'All Books', icon: 'book' },
+  { id: 'children', label: 'Children', icon: 'smile' },
+  { id: 'textbook', label: 'Textbook', icon: 'book' },
+  { id: 'teen', label: 'Teen', icon: 'student' },
+  { id: 'classical', label: 'Classical', icon: 'manuscript' },
+  { id: 'grammar', label: 'Grammar', icon: 'grammar' },
+  { id: 'philosophy', label: 'Philosophy', icon: 'philosophy' },
+  { id: 'poetry', label: 'Poetry', icon: 'feathers' },
+  { id: 'drama', label: 'Drama', icon: 'shloka' },
+  { id: 'reference', label: 'Reference', icon: 'book' },
+  { id: 'commentary', label: 'Commentary', icon: 'quote' },
 ]
 
 const levelLabels = ['Child', 'Teen', 'Undergrad', 'Adv. Undergrad', 'Graduate', 'PhD']
@@ -124,9 +126,9 @@ export default function BookshelfPage() {
   }).sort((a, b) => a.sortOrder - b.sortOrder)
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('📚 Bookshelf — Complete Curriculum')}</h2>
+        <h2>{t('Bookshelf — Complete Curriculum')}</h2>
         <p>{t('Browse all Sanskrit texts organized by class — from Class 1 NCERT to PhD government syllabus')}</p>
       </div>
 
@@ -134,11 +136,11 @@ export default function BookshelfPage() {
         <>
           <div className="bookshelf-filters">
             <div className="bookshelf-categories">
-              <button className={`btn btn-sm ${viewMode === 'govclass' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => { setViewMode('govclass'); setGovClassFilter(null) }}>
-                {t('🏫 By Class')}
+              <button className={`btn btn-sm ${viewMode === 'govclass' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => { setViewMode('govclass'); setGovClassFilter(null) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <School size={14} /> <span>{t('By Class')}</span>
               </button>
-              <button className={`btn btn-sm ${viewMode === 'category' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => { setViewMode('category'); setCategory('all'); setLevelFilter(null) }}>
-                {t('📂 By Category')}
+              <button className={`btn btn-sm ${viewMode === 'category' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => { setViewMode('category'); setCategory('all'); setLevelFilter(null) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <BookOpen size={14} /> <span>{t('By Category')}</span>
               </button>
             </div>
 
@@ -146,8 +148,8 @@ export default function BookshelfPage() {
               <>
                 <div className="bookshelf-categories">
                   {categories.map((c) => (
-                    <button key={c.id} className={`btn btn-sm ${category === c.id ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setCategory(c.id)}>
-                      {c.icon} {t(c.label)}
+                    <button key={c.id} className={`btn btn-sm ${category === c.id ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setCategory(c.id)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <DynamicIcon name={c.icon} size={14} /> <span>{t(c.label)}</span>
                     </button>
                   ))}
                 </div>
@@ -158,7 +160,7 @@ export default function BookshelfPage() {
                       {t(l)}
                     </button>
                   ))}
-                  {levelFilter !== null && <button className="btn btn-xs btn-outline" onClick={() => setLevelFilter(null)}>{t('✕ Clear')}</button>}
+                  {levelFilter !== null && <button className="btn btn-xs btn-outline" onClick={() => setLevelFilter(null)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><X size={12} /> <span>{t('Clear')}</span></button>}
                 </div>
               </>
             )}
@@ -170,7 +172,7 @@ export default function BookshelfPage() {
                     {t(g.label)}
                   </button>
                 ))}
-                {govClassFilter !== null && <button className="btn btn-xs btn-outline" onClick={() => setGovClassFilter(null)}>{t('✕ Clear')}</button>}
+                {govClassFilter !== null && <button className="btn btn-xs btn-outline" onClick={() => setGovClassFilter(null)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><X size={12} /> <span>{t('Clear')}</span></button>}
               </div>
             )}
           </div>
@@ -178,7 +180,9 @@ export default function BookshelfPage() {
           <div className="bookshelf-grid">
             {filtered.map((book) => (
               <div key={book.id} className="book-card" onClick={() => setSelectedBook(book)}>
-                <div className="book-icon">{book.coverIcon}</div>
+                <div className="book-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <DynamicIcon name={book.category || 'book'} size={24} />
+                </div>
                 <div className="book-info">
                   <div className="book-title">{book.title}</div>
                   <div className="book-sanskrit">{book.titleSanskrit}</div>
@@ -198,13 +202,15 @@ export default function BookshelfPage() {
           )}
 
           <div className="section-header" style={{ marginTop: 40 }}>
-            <h2>{t('📐 Customized Grammar Textbooks')}</h2>
+            <h2>{t('Customized Grammar Textbooks')}</h2>
             <p>{t('Grammar books tailored to each learning level')}</p>
           </div>
           <div className="bookshelf-grid">
             {grammarBooks.map((gb) => (
               <div key={gb.id} className="book-card grammar" onClick={() => setSelectedGrammar(gb)}>
-                <div className="book-icon">📐</div>
+                <div className="book-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <DynamicIcon name="grammar" size={24} />
+                </div>
                 <div className="book-info">
                   <div className="book-title">{gb.title}</div>
                   <div className="book-sanskrit">{gb.titleSanskrit}</div>
@@ -230,9 +236,13 @@ export default function BookshelfPage() {
 
       {selectedBook && (
         <div className="book-detail">
-          <button className="btn btn-sm btn-secondary" onClick={() => setSelectedBook(null)}>{t('← Back to Bookshelf')}</button>
+          <button className="btn btn-sm btn-secondary" onClick={() => setSelectedBook(null)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <ArrowLeft size={14} /> <span>{t('Back to Bookshelf')}</span>
+          </button>
           <div className="book-detail-header">
-            <span className="book-detail-icon">{selectedBook.coverIcon}</span>
+            <span className="book-detail-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DynamicIcon name={selectedBook.category || 'book'} size={32} />
+            </span>
             <div>
               <h2>{selectedBook.title}</h2>
               <div className="book-sanskrit large">{selectedBook.titleSanskrit}</div>
@@ -263,13 +273,13 @@ export default function BookshelfPage() {
                           <p className="empty-state">{t('Loading verses...')}</p>
                         ) : chapterVerses.length > 0 ? (
                           chapterVerses.map((v) => (
-                            <div key={v.id} className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: 'rgba(0,0,0,0.03)', borderRadius: 8 }}>
+                            <div key={v.id} className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
                               <div className="verse-sanskrit" style={{ fontFamily: '"Noto Serif Devanagari", serif', fontSize: '1.15em', lineHeight: 1.9 }}>{v.content}</div>
                               {v.title && <div className="verse-title" style={{ fontSize: '0.85em', opacity: 0.7, marginTop: 4 }}>{lang === 'hi' && v.title_hi ? v.title_hi : v.title}</div>}
                             </div>
                           ))
                         ) : ch.contentPreview ? (
-                          <div className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: 'rgba(0,0,0,0.03)', borderRadius: 8 }}>
+                          <div className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: 'rgba(255,255,255,0.03)', borderRadius: 8 }}>
                             <div className="verse-sanskrit" style={{ fontFamily: '"Noto Serif Devanagari", serif', fontSize: '1.15em', lineHeight: 1.9 }}>{ch.contentPreview}</div>
                           </div>
                         ) : (
@@ -290,9 +300,13 @@ export default function BookshelfPage() {
 
       {selectedGrammar && (
         <div className="book-detail">
-          <button className="btn btn-sm btn-secondary" onClick={() => setSelectedGrammar(null)}>{t('← Back to Bookshelf')}</button>
+          <button className="btn btn-sm btn-secondary" onClick={() => setSelectedGrammar(null)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <ArrowLeft size={14} /> <span>{t('Back to Bookshelf')}</span>
+          </button>
           <div className="book-detail-header">
-            <span className="book-detail-icon">📐</span>
+            <span className="book-detail-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              <DynamicIcon name="grammar" size={32} />
+            </span>
             <div>
               <h2>{selectedGrammar.title}</h2>
               <div className="book-sanskrit large">{selectedGrammar.titleSanskrit}</div>

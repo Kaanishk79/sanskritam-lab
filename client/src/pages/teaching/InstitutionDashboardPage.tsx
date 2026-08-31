@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import {
+  School, Users, GraduationCap, Search,
+  Plus, X, BookOpen, Clock
+} from 'lucide-react'
 import { useRole } from '../../context/RoleContext'
 import { schoolsApi } from '../../services/schools'
-import type { School, Student, Teacher } from '../../services/schools'
+import type { School as SchoolType, Student, Teacher } from '../../services/schools'
 import { useLanguage } from '../../context/LanguageContext'
 
 export default function InstitutionDashboardPage() {
@@ -20,7 +24,7 @@ export default function InstitutionDashboardPage() {
   const [newTeacher, setNewTeacher] = useState<Partial<Teacher>>({})
 
   const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState<School[]>([])
+  const [searchResults, setSearchResults] = useState<SchoolType[]>([])
   const [searching, setSearching] = useState(false)
   const [claiming, setClaiming] = useState('')
   const [registering, setRegistering] = useState(false)
@@ -33,7 +37,7 @@ export default function InstitutionDashboardPage() {
       const res = await schoolsApi.list({ q: searchQuery })
       setSearchResults(res.data)
     } catch (e: any) {
-      setNotice('❌ ' + e.message)
+      setNotice('Error: ' + e.message)
     } finally {
       setSearching(false)
     }
@@ -45,9 +49,9 @@ export default function InstitutionDashboardPage() {
     try {
       await schoolsApi.claim(schoolId)
       await refreshSchool()
-      setNotice('✅ ' + t('School claimed — welcome to your Institution HQ!'))
+      setNotice(t('School claimed — welcome to your Institution HQ!'))
     } catch (e: any) {
-      setNotice('❌ ' + e.message)
+      setNotice('Error: ' + e.message)
     } finally {
       setClaiming('')
     }
@@ -60,9 +64,9 @@ export default function InstitutionDashboardPage() {
     try {
       await schoolsApi.create(newSchool)
       await refreshSchool()
-      setNotice('✅ ' + t('School registered — welcome to your Institution HQ!'))
+      setNotice(t('School registered — welcome to your Institution HQ!'))
     } catch (e: any) {
-      setNotice('❌ ' + e.message)
+      setNotice('Error: ' + e.message)
     } finally {
       setRegistering(false)
     }
@@ -74,9 +78,9 @@ export default function InstitutionDashboardPage() {
     try {
       await fn()
       await refreshSchool()
-      setNotice('✅ ' + t('Saved'))
+      setNotice(t('Saved'))
     } catch (e: any) {
-      setNotice('❌ ' + e.message)
+      setNotice('Error: ' + e.message)
     } finally {
       setBusy('')
     }
@@ -85,7 +89,10 @@ export default function InstitutionDashboardPage() {
   if (!user) {
     return (
       <div className="card" style={{ padding: 32, textAlign: 'center', maxWidth: 480, margin: '40px auto' }}>
-        <h3>🏫 {t('Institution Portal')}</h3>
+        <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
+          <School size={44} color="var(--vt-orange)" />
+        </div>
+        <h3>{t('Institution Portal')}</h3>
         <p>{t('Sign in with an institution account to manage your school.')}</p>
         <button className="btn btn-primary" onClick={() => navigate('/auth/login')}>{t('Sign In')}</button>
         <button className="btn btn-secondary" style={{ marginLeft: 8 }} onClick={() => navigate('/auth/signup')}>{t('Create Institution Account')}</button>
@@ -96,7 +103,10 @@ export default function InstitutionDashboardPage() {
   if (user.accountType !== 'institution') {
     return (
       <div className="card" style={{ padding: 32, textAlign: 'center', maxWidth: 480, margin: '40px auto' }}>
-        <h3>🏫 {t('Institution Portal')}</h3>
+        <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
+          <School size={44} color="var(--vt-orange)" />
+        </div>
+        <h3>{t('Institution Portal')}</h3>
         <p>{t('This account is a learner account. Create a new account as an Institution to manage a school.')}</p>
         <button className="btn btn-primary" onClick={() => navigate('/auth/signup')}>{t('Sign Up as Institution')}</button>
       </div>
@@ -104,20 +114,22 @@ export default function InstitutionDashboardPage() {
   }
 
   if (schoolLoading && !school) {
-    return <div className="card" style={{ padding: 32, textAlign: 'center' }}>⏳ {t('Loading your school...')}</div>
+    return <div className="card" style={{ padding: 32, textAlign: 'center' }}>{t('Loading your school...')}</div>
   }
 
   if (!school) {
     return (
-      <div style={{ maxWidth: 720, margin: '0 auto' }}>
+      <div className="page-container" style={{ maxWidth: 720, margin: '0 auto' }}>
         <div className="page-header">
-          <h2>🏫 {t('Institution HQ')}</h2>
+          <h2>{t('Institution HQ')}</h2>
           <p>{t('No school is linked to your account yet. Claim your school from the directory or register a new one.')}</p>
           {notice && <p style={{ color: '#4caf50', fontWeight: 600 }}>{notice}</p>}
         </div>
 
         <div className="card">
-          <h3 style={{ marginBottom: 16 }}>🔍 {t('Find & claim your school')}</h3>
+          <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Search size={18} /> <span>{t('Find & claim your school')}</span>
+          </h3>
           <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <input
               style={{ flex: 1 }}
@@ -126,8 +138,9 @@ export default function InstitutionDashboardPage() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && doSearch()}
             />
-            <button className="btn btn-primary btn-sm" disabled={searching || !searchQuery.trim()} onClick={doSearch}>
-              {searching ? '⏳' : t('Search')}
+            <button className="btn btn-primary btn-sm" disabled={searching || !searchQuery.trim()} onClick={doSearch} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              {searching ? <Clock size={13} /> : <Search size={13} />}
+              <span>{t('Search')}</span>
             </button>
           </div>
           <div className="text-list">
@@ -145,16 +158,18 @@ export default function InstitutionDashboardPage() {
                   disabled={claiming === s.id || !!s.owner_id}
                   onClick={() => doClaim(s.id)}
                 >
-                  {claiming === s.id ? '⏳' : t('Claim')}
+                  {claiming === s.id ? '...' : t('Claim')}
                 </button>
               </div>
             ))}
-            {!searchResults.length && <p style={{ color: '#888' }}>{t('Search the CBSE school directory — your school may already be listed.')}</p>}
+            {!searchResults.length && <p style={{ color: 'var(--vt-muted)' }}>{t('Search the CBSE school directory — your school may already be listed.')}</p>}
           </div>
         </div>
 
         <div className="card" style={{ marginTop: 16 }}>
-          <h3 style={{ marginBottom: 16 }}>➕ {t('Register a new school')}</h3>
+          <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Plus size={18} /> <span>{t('Register a new school')}</span>
+          </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
             <input style={{ gridColumn: '1 / -1' }} placeholder={t('School name *')} value={newSchool.name} onChange={(e) => setNewSchool({ ...newSchool, name: e.target.value })} />
             <input placeholder={t('City')} value={newSchool.city} onChange={(e) => setNewSchool({ ...newSchool, city: e.target.value })} />
@@ -166,7 +181,7 @@ export default function InstitutionDashboardPage() {
             </select>
           </div>
           <button className="btn btn-primary btn-sm" style={{ marginTop: 12 }} disabled={registering || !newSchool.name.trim()} onClick={doRegister}>
-            {registering ? '⏳' : t('Register School')}
+            {registering ? '...' : t('Register School')}
           </button>
         </div>
       </div>
@@ -180,9 +195,9 @@ export default function InstitutionDashboardPage() {
   const activeStudents = s.classes.flatMap((c) => (c.sections || []).flatMap((sec) => sec.students || [])).filter((st) => st.is_active)
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>🏫 {t('Institution HQ')} — {s.name}</h2>
+        <h2>{t('Institution HQ')} — {s.name}</h2>
         <p>{s.city || ''}{s.city && s.state ? ', ' : ''}{s.state || ''} · {s.school_type || t('School')} · {s.board || t('CBSE')} · {t('Short code')}: {s.short_code || '—'}</p>
         {notice && <p style={{ color: '#4caf50', fontWeight: 600 }}>{notice}</p>}
       </div>
@@ -208,7 +223,9 @@ export default function InstitutionDashboardPage() {
 
       <div className="grid-2" style={{ marginTop: 16 }}>
         <div className="card">
-          <h3 style={{ marginBottom: 16 }}>📚 {t('Classes & Sections')}</h3>
+          <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <BookOpen size={18} /> <span>{t('Classes & Sections')}</span>
+          </h3>
           <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
             <input
               style={{ flex: 1 }}
@@ -225,14 +242,14 @@ export default function InstitutionDashboardPage() {
             </button>
           </div>
           {s.classes.filter((c) => c.is_active).map((c) => (
-            <div key={c.id} style={{ borderBottom: '1px solid #333', padding: '10px 0' }}>
+            <div key={c.id} style={{ borderBottom: '1px solid var(--vt-border)', padding: '10px 0' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                 <strong style={{ flex: 1 }}>{c.name}</strong>
                 <button className="btn btn-sm btn-outline" disabled={busy === 'section'} onClick={() => setSectionForClass(c.id)}>
                   {t('Add Section')}
                 </button>
                 <button className="btn btn-sm btn-outline" style={{ color: '#e55' }} disabled={busy === 'delClass'} onClick={() => run('delClass', () => schoolsApi.deactivateClass(s.id, c.id))}>
-                  ✕
+                  <X size={12} />
                 </button>
               </div>
               {sectionForClass === c.id && (
@@ -267,19 +284,21 @@ export default function InstitutionDashboardPage() {
                       disabled={busy === 'delSection'}
                       onClick={() => run('delSection', () => schoolsApi.deactivateSection(s.id, c.id, sec.id))}
                     >
-                      ✕
+                      <X size={11} />
                     </button>
                   </span>
                 ))}
-                {!(c.sections || []).length && <span style={{ color: '#888', fontSize: 13 }}>{t('No sections yet')}</span>}
+                {!(c.sections || []).length && <span style={{ color: 'var(--vt-muted)', fontSize: 13 }}>{t('No sections yet')}</span>}
               </div>
             </div>
           ))}
-          {!s.classes.filter((c) => c.is_active).length && <p style={{ color: '#888' }}>{t('No classes yet — add your first class above.')}</p>}
+          {!s.classes.filter((c) => c.is_active).length && <p style={{ color: 'var(--vt-muted)' }}>{t('No classes yet — add your first class above.')}</p>}
         </div>
 
         <div className="card">
-          <h3 style={{ marginBottom: 16 }}>👨‍🏫 {t('Teachers')}</h3>
+          <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <GraduationCap size={18} /> <span>{t('Teachers')}</span>
+          </h3>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
             <input placeholder={t('Name')} value={newTeacher.name || ''} onChange={(e) => setNewTeacher({ ...newTeacher, name: e.target.value })} />
             <input placeholder={t('Email')} value={newTeacher.email || ''} onChange={(e) => setNewTeacher({ ...newTeacher, email: e.target.value })} />
@@ -303,7 +322,7 @@ export default function InstitutionDashboardPage() {
             {s.teachers.filter((tc) => tc.status !== 'inactive').map((tc) => (
               <div className="text-item" key={tc.id}>
                 <div style={{ flex: 1 }}>
-                  <div className="text-title">{tc.name} <span style={{ color: '#ff8c00', fontFamily: 'monospace', fontSize: 12 }}>{tc.teacher_code}</span></div>
+                  <div className="text-title">{tc.name} <span style={{ color: 'var(--vt-orange)', fontFamily: 'monospace', fontSize: 12 }}>{tc.teacher_code}</span></div>
                   <div className="text-meta">
                     {Array.isArray(tc.subjects) ? tc.subjects.join(', ') : tc.subjects || ''} · {tc.designation || t('Teacher')}
                     {tc.email ? ' · ' + tc.email : ''}
@@ -315,13 +334,15 @@ export default function InstitutionDashboardPage() {
                 </button>
               </div>
             ))}
-            {!s.teachers.length && <p style={{ color: '#888' }}>{t('No teachers yet')}</p>}
+            {!s.teachers.length && <p style={{ color: 'var(--vt-muted)' }}>{t('No teachers yet')}</p>}
           </div>
         </div>
       </div>
 
       <div className="card" style={{ marginTop: 16 }}>
-        <h3 style={{ marginBottom: 16 }}>🧑‍🎓 {t('Students')} ({activeStudents.length})</h3>
+        <h3 style={{ marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Users size={18} /> <span>{t('Students')} ({activeStudents.length})</span>
+        </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 8, marginBottom: 12 }}>
           <input placeholder={t('Student name')} value={newStudent.name || ''} onChange={(e) => setNewStudent({ ...newStudent, name: e.target.value })} />
           <select value={newStudent.class_id || ''} onChange={(e) => setNewStudent({ ...newStudent, class_id: e.target.value || null, section_id: null })}>
@@ -350,7 +371,7 @@ export default function InstitutionDashboardPage() {
           {activeStudents.map((st) => (
             <div className="text-item" key={st.id}>
               <div style={{ flex: 1 }}>
-                <div className="text-title">{st.name} <span style={{ color: '#888', fontSize: 12 }}>· {t('Roll')} {st.roll_no || '—'}</span></div>
+                <div className="text-title">{st.name} <span style={{ color: 'var(--vt-muted)', fontSize: 12 }}>· {t('Roll')} {st.roll_no || '—'}</span></div>
                 <div className="text-meta">
                   {classOptions.find((c) => c.id === st.class_id)?.name || '—'}
                   {' — '}{allSections.find((x) => x.id === st.section_id)?.name || '—'}
@@ -362,7 +383,7 @@ export default function InstitutionDashboardPage() {
               </button>
             </div>
           ))}
-          {!activeStudents.length && <p style={{ color: '#888' }}>{t('No students yet — add a class and a section first.')}</p>}
+          {!activeStudents.length && <p style={{ color: 'var(--vt-muted)' }}>{t('No students yet — add a class and a section first.')}</p>}
         </div>
       </div>
     </div>

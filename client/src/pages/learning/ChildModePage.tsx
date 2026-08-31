@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import {
+  Flame, Droplets, Sun, Moon, Sparkles, Fish,
+  Languages, Image as ImageIcon, ArrowLeft, ArrowRight, Check
+} from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 
 const letters = [
@@ -32,19 +36,29 @@ const letters = [
 ]
 
 const pictureWords = [
-  { word: 'अग्नि', meaning: 'fire', emoji: '🔥' },
-  { word: 'जल', meaning: 'water', emoji: '💧' },
-  { word: 'सूर्य', meaning: 'sun', emoji: '☀️' },
-  { word: 'चन्द्र', meaning: 'moon', emoji: '🌙' },
-  { word: 'पुष्प', meaning: 'flower', emoji: '🌸' },
-  { word: 'गज', meaning: 'elephant', emoji: '🐘' },
-  { word: 'अश्व', meaning: 'horse', emoji: '🐴' },
-  { word: 'मत्स्य', meaning: 'fish', emoji: '🐟' },
+  { word: 'अग्नि', meaning: 'fire', icon: 'flame', color: '#ff5722' },
+  { word: 'जल', meaning: 'water', icon: 'water', color: '#03a9f4' },
+  { word: 'सूर्य', meaning: 'sun', icon: 'sun', color: '#ff9800' },
+  { word: 'चन्द्र', meaning: 'moon', icon: 'moon', color: '#9c27b0' },
+  { word: 'पुष्प', meaning: 'flower', icon: 'flower', color: '#e91e63' },
+  { word: 'मत्स्य', meaning: 'fish', icon: 'fish', color: '#00bcd4' },
 ]
+
+function renderWordIcon(icon: string, size = 64, color = 'var(--vt-orange)') {
+  switch (icon) {
+    case 'flame': return <Flame size={size} color={color} />
+    case 'water': return <Droplets size={size} color={color} />
+    case 'sun': return <Sun size={size} color={color} />
+    case 'moon': return <Moon size={size} color={color} />
+    case 'flower': return <Sparkles size={size} color={color} />
+    case 'fish': return <Fish size={size} color={color} />
+    default: return <Sparkles size={size} color={color} />
+  }
+}
 
 export default function ChildModePage() {
   const { t } = useLanguage()
-  const [tab, setTab] = useState<'letters' | 'words' | 'color'>('letters')
+  const [tab, setTab] = useState<'letters' | 'words'>('letters')
   const [currentLetter, setCurrentLetter] = useState(0)
   const [currentPic, setCurrentPic] = useState(0)
   const [matched, setMatched] = useState<number[]>([])
@@ -63,18 +77,18 @@ export default function ChildModePage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>🧒 {t('Fun Learning — Play Mode')}</h2>
+        <h2>{t('Fun Learning — Play Mode')}</h2>
         <p>{t('Learn Sanskrit through pictures, colors, and play. Perfect for young learners!')}</p>
       </div>
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 24, flexWrap: 'wrap' }}>
         <button className={`btn ${tab === 'letters' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab('letters')}>
-          🔤 {t('Alphabet Cards')}
+          <Languages size={16} /> <span>{t('Alphabet Cards')}</span>
         </button>
         <button className={`btn ${tab === 'words' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setTab('words')}>
-          🖼️ {t('Picture Words')}
+          <ImageIcon size={16} /> <span>{t('Picture Words')}</span>
         </button>
       </div>
 
@@ -101,10 +115,10 @@ export default function ChildModePage() {
           </div>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button className="btn btn-secondary" onClick={() => setCurrentLetter((p) => (p - 1 + letters.length) % letters.length)}>
-              ← {t('Previous')}
+              <ArrowLeft size={16} /> <span>{t('Previous')}</span>
             </button>
             <button className="btn btn-primary" onClick={() => setCurrentLetter((p) => (p + 1) % letters.length)}>
-              {t('Next')} →
+              <span>{t('Next')}</span> <ArrowRight size={16} />
             </button>
           </div>
           <div style={{ marginTop: 16, fontSize: 12, color: '#555', display: 'flex', justifyContent: 'center', gap: 4, flexWrap: 'wrap' }}>
@@ -118,15 +132,16 @@ export default function ChildModePage() {
       {tab === 'words' && (
         <div className="card" style={{ textAlign: 'center' }}>
           <div style={{
-            fontSize: 80,
-            lineHeight: 1.2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
             padding: 30,
             background: 'linear-gradient(135deg, #1a2a1e, #2a1a1e)',
             borderRadius: 16,
             marginBottom: 16,
             border: '2px solid var(--sanskrit-gold)',
           }}>
-            {cp.emoji}
+            {renderWordIcon(cp.icon, 72, cp.color)}
           </div>
           <div style={{ fontSize: 14, color: '#888', marginBottom: 4 }}>{t('What is this in Sanskrit?')}</div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginBottom: 12 }}>
@@ -137,19 +152,22 @@ export default function ChildModePage() {
               style={{ maxWidth: 280 }}
               onKeyDown={(e) => e.key === 'Enter' && checkColorGuess()}
             />
-            <button className="btn btn-primary" onClick={checkColorGuess}>{t('Check')}</button>
+            <button className="btn btn-primary" onClick={checkColorGuess}>
+              <Check size={16} /> <span>{t('Check')}</span>
+            </button>
           </div>
           <div style={{ fontSize: 18, fontFamily: "'Noto Sans Devanagari', serif", color: 'var(--sanskrit-gold)' }}>
             {cp.word} — {cp.meaning}
           </div>
-          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', gap: 6, flexWrap: 'wrap' }}>
+          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', gap: 8, flexWrap: 'wrap' }}>
             {pictureWords.map((pw, i) => (
               <span key={i} style={{
-                fontSize: 28, padding: 8, borderRadius: 8,
+                padding: 10, borderRadius: 8,
                 background: matched.includes(i) ? 'rgba(76,175,80,0.2)' : 'rgba(255,255,255,0.03)',
                 border: matched.includes(i) ? '2px solid #4caf50' : '2px solid transparent',
+                display: 'inline-flex', alignItems: 'center', justifyContent: 'center'
               }}>
-                {pw.emoji}
+                {renderWordIcon(pw.icon, 24, pw.color)}
               </span>
             ))}
           </div>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
+import { Swords, Send, Volume2, ArrowLeft } from 'lucide-react'
+import { api } from '../../services/api'
 import { DEBATE_TOPICS, type DebateTopic } from '../../data/debates'
 import { loadDebateTopics } from '../../services/contentDb'
-import { api } from '../../services/api'
 import { toIAST } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
@@ -72,9 +73,9 @@ export default function DebatePage() {
   const stance = topic ? (side === 'for' ? topic.for : topic.against) : null
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('⚔️ Debate Mode')}</h2>
+        <h2>{t('Debate Mode')}</h2>
         <p>{t('Pick a topic and a side — argue your point in Sanskrit, hear the counter-argument.')}</p>
       </div>
 
@@ -84,8 +85,11 @@ export default function DebatePage() {
             <p style={{ fontWeight: 600, margin: '0 0 12px' }}>{t('Choose a topic')}</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 10 }}>
               {topics.map((tp) => (
-                <button key={tp.id} className="card" style={{ margin: 0, textAlign: 'left' }} onClick={() => pickTopic(tp)}>
-                  <strong>{tp.emoji} {lang === 'hi' && tp.titleHi ? tp.titleHi : tp.title}</strong>
+                <button key={tp.id} className="card" style={{ margin: 0, textAlign: 'left', padding: 14 }} onClick={() => pickTopic(tp)}>
+                  <strong style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Swords size={15} color="var(--vt-orange)" />
+                    <span>{lang === 'hi' && tp.titleHi ? tp.titleHi : tp.title}</span>
+                  </strong>
                   <span style={{ display: 'block', fontSize: 13, opacity: 0.7, marginTop: 4 }}>{lang === 'hi' && tp.questionHi ? tp.questionHi : tp.question}</span>
                 </button>
               ))}
@@ -95,12 +99,14 @@ export default function DebatePage() {
 
         {topic && !side && (
           <div style={{ textAlign: 'center' }}>
-            <p style={{ fontSize: 18, margin: '0 0 4px' }}>{topic.emoji} {lang === 'hi' && topic.questionHi ? topic.questionHi : topic.question}</p>
-            <p style={{ fontSize: 13, opacity: 0.6, margin: '0 0 16px' }}>{lang === 'hi' && topic.titleHi ? topic.titleHi : topic.title}</p>
-            <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <p style={{ fontSize: 20, fontWeight: 700, margin: '0 0 4px' }}>{lang === 'hi' && topic.questionHi ? topic.questionHi : topic.question}</p>
+            <p style={{ fontSize: 14, opacity: 0.7, margin: '0 0 20px' }}>{lang === 'hi' && topic.titleHi ? topic.titleHi : topic.title}</p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
               <button className="btn btn-primary" onClick={() => pickSide('for')}>{t('I argue FOR')}</button>
               <button className="btn btn-secondary" onClick={() => pickSide('against')}>{t('I argue AGAINST')}</button>
-              <button className="btn btn-sm btn-secondary" onClick={() => setTopic(null)}>{t('← Topics')}</button>
+              <button className="btn btn-sm btn-secondary" onClick={() => setTopic(null)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <ArrowLeft size={13} /> <span>{t('Topics')}</span>
+              </button>
             </div>
           </div>
         )}
@@ -108,15 +114,19 @@ export default function DebatePage() {
         {topic && side && stance && (
           <div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap', marginBottom: 12 }}>
-              <button className="btn btn-sm btn-secondary" onClick={() => setTopic(null)}>{t('← Topics')}</button>
-              <button className="btn btn-sm btn-secondary" onClick={() => setSide(null)}>{t('← Side')}</button>
+              <button className="btn btn-sm btn-secondary" onClick={() => setTopic(null)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <ArrowLeft size={13} /> <span>{t('Topics')}</span>
+              </button>
+              <button className="btn btn-sm btn-secondary" onClick={() => setSide(null)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <ArrowLeft size={13} /> <span>{t('Side')}</span>
+              </button>
               <span style={{ flex: 1 }} />
               <span className="badge">{t('You argue')}: {side === 'for' ? t('FOR') : t('AGAINST')}</span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 10, marginBottom: 14 }}>
               {stance.points.map((pt, i) => (
-                <button key={i} className="card" style={{ margin: 0, textAlign: 'left' }} onClick={() => playTurn(pt.sa, { en: pt.en, hi: pt.hi })}>
+                <button key={i} className="card" style={{ margin: 0, textAlign: 'left', padding: 12 }} onClick={() => playTurn(pt.sa, { en: pt.en, hi: pt.hi })}>
                   <strong>{pt.sa}</strong>
                   <span style={{ display: 'block', fontSize: 12, opacity: 0.65, fontStyle: 'italic' }}>{toIAST(pt.sa)}</span>
                   <span style={{ display: 'block', fontSize: 13, opacity: 0.8, marginTop: 4 }}>{lang === 'hi' && pt.hi ? pt.hi : pt.en}</span>
@@ -132,8 +142,8 @@ export default function DebatePage() {
                 onChange={(e) => setCustom(e.target.value)}
                 style={{ flex: 1 }}
               />
-              <button className="btn btn-primary btn-sm" disabled={!custom.trim() || typing} onClick={() => { playTurn(custom.trim()); setCustom('') }}>
-                {t('Send')}
+              <button className="btn btn-primary btn-sm" disabled={!custom.trim() || typing} onClick={() => { playTurn(custom.trim()); setCustom('') }} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <Send size={14} /> <span>{t('Send')}</span>
               </button>
             </div>
 
@@ -154,7 +164,7 @@ export default function DebatePage() {
                     {(lang === 'hi' ? (tn.hi || tn.en) : tn.en) && <p style={{ margin: '4px 0 0', fontSize: 13, opacity: 0.75 }}>{lang === 'hi' ? (tn.hi || tn.en) : tn.en}</p>}
                     {tn.who === 'rival' && (
                       <button className="btn btn-sm btn-secondary" style={{ marginTop: 8, padding: '2px 8px' }} onClick={() => speakPoint(tn.sa)}>
-                        🔊
+                        <Volume2 size={13} />
                       </button>
                     )}
                   </div>

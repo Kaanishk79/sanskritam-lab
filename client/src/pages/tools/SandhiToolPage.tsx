@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Sparkles, BookOpen, FlaskConical, History } from 'lucide-react'
 import { tryJoinSandhi, SANDHI_RULES, type SandhiResult } from '../../services/sanskrit'
 import { useLanguage } from '../../context/LanguageContext'
 import { syncToolHistoryFromDb, saveToolHistoryToDb, type ToolHistoryEntry } from '../../services/userDb'
@@ -42,31 +43,35 @@ export default function SandhiToolPage() {
   const join = () => applyResult(a, b)
 
   return (
-    <div className="page">
+    <div className="page-container">
       <div className="page-header">
-        <h1>🔊 {t('Sandhi Tool')}</h1>
+        <h2>{t('Sandhi Tool')}</h2>
         <p>{t('Join two Sanskrit words and see which sandhi rule applies — with the exact rule explained.')}</p>
       </div>
 
-      <div className="card" style={{ padding: 24, maxWidth: 640 }}>
+      <div className="card" style={{ padding: 24, maxWidth: 640, margin: '0 auto 16px' }}>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           <input value={a} onChange={(e) => setA(e.target.value)} style={{ flex: 1, minWidth: 140, fontSize: 18 }} />
-          <span style={{ fontSize: 22, color: '#888' }}>+</span>
+          <span style={{ fontSize: 22, color: 'var(--vt-muted)' }}>+</span>
           <input value={b} onChange={(e) => setB(e.target.value)} style={{ flex: 1, minWidth: 140, fontSize: 18 }} />
-          <button className="btn btn-primary" onClick={join}>＝ {t('Join')}</button>
+          <button className="btn btn-primary" onClick={join} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Sparkles size={14} /> <span>{t('Join')}</span>
+          </button>
         </div>
 
         {res && (
           <div className={res.ok ? 'sandhi-ok' : ''} style={{ marginTop: 16, padding: 14, background: res.ok ? 'rgba(76,175,80,.1)' : 'rgba(255,100,100,.08)', borderRadius: 8 }}>
-            <div style={{ fontSize: 26 }}>{res.result}</div>
+            <div style={{ fontSize: 26, fontWeight: 700 }}>{res.result}</div>
             <div style={{ color: res.ok ? '#4caf50' : '#e55', marginTop: 4, fontSize: 14 }}>{res.explanation}</div>
           </div>
         )}
       </div>
 
       {history.length > 0 && (
-        <div className="card" style={{ padding: 20, marginTop: 16, maxWidth: 640 }}>
-          <h3 style={{ marginTop: 0, marginBottom: 12 }}>🕘 {t('Recent joins')}</h3>
+        <div className="card" style={{ padding: 20, margin: '0 auto 16px', maxWidth: 640 }}>
+          <h3 style={{ marginTop: 0, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <History size={16} /> <span>{t('Recent joins')}</span>
+          </h3>
           <div className="text-list">
             {history.map((h) => (
               <div key={h.id} className="text-item">
@@ -80,24 +85,28 @@ export default function SandhiToolPage() {
         </div>
       )}
 
-      <div className="card" style={{ padding: 20, marginTop: 16, maxWidth: 640 }}>
-        <h3 style={{ marginTop: 0 }}>📚 {t('The rules')}</h3>
+      <div className="card" style={{ padding: 20, margin: '0 auto 16px', maxWidth: 640 }}>
+        <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <BookOpen size={16} /> <span>{t('The rules')}</span>
+        </h3>
         {SANDHI_RULES.map((r) => (
           <div key={r.name} style={{ marginBottom: 12 }}>
             <strong>{r.devName} · {r.name}</strong>
-            <div style={{ color: '#bbb', fontSize: 14 }}>{r.rule}</div>
-            <div style={{ color: '#888', fontSize: 13 }}>{r.example}</div>
+            <div style={{ color: 'var(--vt-muted)', fontSize: 14 }}>{r.rule}</div>
+            <div style={{ color: 'var(--vt-muted)', fontSize: 13, fontStyle: 'italic' }}>{r.example}</div>
           </div>
         ))}
       </div>
 
-      <div className="card" style={{ padding: 20, marginTop: 16, maxWidth: 640 }}>
-        <h3 style={{ marginTop: 0 }}>🧪 {t('Practice')}</h3>
+      <div className="card" style={{ padding: 20, margin: '0 auto', maxWidth: 640 }}>
+        <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <FlaskConical size={16} /> <span>{t('Practice')}</span>
+        </h3>
         {PRACTICE.map(([x, y, expected]) => (
           <div key={x + y} style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
             <code style={{ background: 'rgba(255,255,255,.06)', padding: '4px 8px', borderRadius: 4 }}>{x} + {y}</code>
             <button className="btn btn-sm btn-outline" onClick={() => { setA(x); setB(y); applyResult(x, y) }}>=?</button>
-            <span style={{ color: '#666', fontSize: 13 }}>{expected}</span>
+            <span style={{ color: 'var(--vt-muted)', fontSize: 13 }}>{expected}</span>
           </div>
         ))}
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Sparkles, Volume2, RotateCcw } from 'lucide-react'
 import { METERS, VERSE_THEMES, countSyllables, type VerseLine, type Meter, type VerseTheme } from '../../data/creativeStudio'
 import { loadMeters, loadThemes } from '../../services/contentDb'
 import { api } from '../../services/api'
@@ -84,9 +85,9 @@ export default function CreativeStudioPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('🎨 Creative Studio')}</h2>
+        <h2>{t('Creative Studio')}</h2>
         <p>{t('Compose your own Sanskrit verse — pick a theme and a meter, then hear it aloud.')}</p>
       </div>
 
@@ -94,7 +95,7 @@ export default function CreativeStudioPage() {
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12, alignItems: 'center' }}>
           {themes.map((th) => (
             <button key={th.id} className={`btn btn-sm ${th.id === themeId ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setThemeId(th.id)}>
-              {th.emoji} {th.title.split('—')[0].trim()}
+              {th.title.split('—')[0].trim()}
             </button>
           ))}
         </div>
@@ -106,8 +107,8 @@ export default function CreativeStudioPage() {
             </button>
           ))}
           <span style={{ flex: 1 }} />
-          <button className="btn btn-primary" onClick={compose} disabled={busy}>
-            {busy ? t('Composing…') : t('✨ Compose verse')}
+          <button className="btn btn-primary" onClick={compose} disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Sparkles size={15} /> <span>{busy ? t('Composing…') : t('Compose verse')}</span>
           </button>
         </div>
 
@@ -132,8 +133,12 @@ export default function CreativeStudioPage() {
               ))}
             </div>
             <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-              <button className="btn btn-secondary btn-sm" onClick={speakVerse}>🔊 {t('Hear the verse')}</button>
-              <button className="btn btn-secondary btn-sm" onClick={compose} disabled={busy}>{t('🔄 Re-compose')}</button>
+              <button className="btn btn-secondary btn-sm" onClick={speakVerse} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Volume2 size={14} /> <span>{t('Hear the verse')}</span>
+              </button>
+              <button className="btn btn-secondary btn-sm" onClick={compose} disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <RotateCcw size={14} /> <span>{t('Re-compose')}</span>
+              </button>
             </div>
           </div>
         )}

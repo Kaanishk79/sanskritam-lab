@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { BookOpen, BookMarked, Scroll, FolderArchive } from 'lucide-react'
 import { searchAll, type SearchResult } from '../../services/sanskrit'
 import { useLanguage } from '../../context/LanguageContext'
 
-const KIND_ICON: Record<SearchResult['kind'], string> = {
-  dictionary: '📖',
-  lesson: '📘',
-  text: '📜',
-  corpus: '🗂️',
+const KIND_ICON: Record<SearchResult['kind'], React.ReactNode> = {
+  dictionary: <BookOpen size={20} color="var(--vt-orange)" />,
+  lesson: <BookMarked size={20} color="var(--vt-blue)" />,
+  text: <Scroll size={20} color="var(--vt-gold)" />,
+  corpus: <FolderArchive size={20} color="#2ecc71" />,
 }
 
 const KIND_LABEL: Record<SearchResult['kind'], string> = {
@@ -48,9 +49,9 @@ export default function SearchPage() {
   }
 
   return (
-    <div className="page">
+    <div className="page-container">
       <div className="page-header">
-        <h1>🔍 {t('Sanskrit Search')}</h1>
+        <h2>{t('Sanskrit Search')}</h2>
         <p>{t('Search words, lessons, texts and topics in Sanskrit or English. Suggestions appear while you type.')}</p>
       </div>
 
@@ -67,17 +68,19 @@ export default function SearchPage() {
       {q.trim() && (
         <div style={{ maxWidth: 640 }}>
           <p style={{ color: '#888', fontSize: 13, margin: '4px 0 12px' }}>
-            {loading ? '⏳…' : `${results.length} ${t('results for')} “${q.trim()}”`}
+            {loading ? t('Searching…') : `${results.length} ${t('results for')} “${q.trim()}”`}
           </p>
           {results.map((r, i) => (
             <div key={r.kind + '-' + r.id + '-' + i} className="card search-hit" style={{ padding: '12px 16px', marginBottom: 8, cursor: 'pointer' }} onClick={() => open(r)}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontSize: 22 }}>{KIND_ICON[r.kind]}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {KIND_ICON[r.kind]}
+                </span>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{r.title}{r.extra ? <span style={{ color: '#888', fontWeight: 400 }}> · {r.extra}</span> : null}</div>
                   <div style={{ color: '#999', fontSize: 13 }}>{hi ? r.subHi ?? r.sub : r.sub}</div>
                 </div>
-                <span className="chip">{t(KIND_LABEL[r.kind])}</span>
+                <span className="badge">{t(KIND_LABEL[r.kind])}</span>
               </div>
             </div>
           ))}
@@ -90,7 +93,7 @@ export default function SearchPage() {
       {!q.trim() && (
         <div className="card" style={{ padding: 24, maxWidth: 640, marginTop: 12 }}>
           <h3 style={{ marginTop: 0 }}>{t('Search tips')}</h3>
-          <ul style={{ color: '#bbb' }}>
+          <ul style={{ color: '#bbb', paddingLeft: 20 }}>
             <li>{t('Devanagari words: राम, विद्या, गीता')}</li>
             <li>{t('IAST words: rāma, vidyā, gītā')}</li>
             <li>{t('English concepts: grammar, sandhi, yoga')}</li>

@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react'
+import {
+  BookOpen, BookMarked, CheckCircle2, XCircle,
+  ChevronUp, ChevronDown
+} from 'lucide-react'
 import { books, chapters, grammarBooks, ncertChapterPdfUrl } from '../../data/books'
 import { fetchNCERTBooks, fetchChapters, fetchNCERTGrammarBooks } from '../../services/data'
 import type { Book, Chapter, GrammarBook } from '../../types/curriculum'
@@ -89,7 +93,7 @@ export default function NCERTResearchPage() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h2>📘 {t('NCERT Curriculum Library')}</h2>
+        <h2>{t('NCERT Curriculum Library')}</h2>
         <p className="page-subtitle">
           {t('NCERT Sanskrit textbooks (Class 6–12) and Shashwati grammar books for CBSE curriculum')}
           {isConnected && <span style={{ marginLeft: 8, fontSize: 11, opacity: 0.5 }}>· {t('live from Supabase')}</span>}
@@ -97,8 +101,10 @@ export default function NCERTResearchPage() {
         </p>
       </div>
 
-      <div style={{ marginBottom: 8, fontSize: 12, opacity: 0.5, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <span>{t('Connected:')} {isConnected ? '✅' : '❌'}</span>
+      <div style={{ marginBottom: 8, fontSize: 12, opacity: 0.7, display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+          {t('Connected:')} {isConnected ? <CheckCircle2 size={13} color="#2ecc71" /> : <XCircle size={13} color="#e74c3c" />}
+        </span>
         <span>{t('Chapters loaded:')} {Object.keys(ncertChapters).length} {t('books')}</span>
         {expandedBook && <span>{t('Expanded:')} {expandedBook} · {t('chapters:')} {(ncertChapters[expandedBook]?.length ?? 0)}</span>}
       </div>
@@ -106,14 +112,18 @@ export default function NCERTResearchPage() {
         <button
           className={`btn ${activeTab === 'textbooks' ? 'btn-primary' : 'btn-outline'}`}
           onClick={() => setActiveTab('textbooks')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
         >
-          📚 {t('NCERT Textbooks')}
+          <BookOpen size={14} />
+          <span>{t('NCERT Textbooks')}</span>
         </button>
         <button
           className={`btn ${activeTab === 'grammar' ? 'btn-primary' : 'btn-outline'}`}
           onClick={() => setActiveTab('grammar')}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
         >
-          📖 {t('NCERT Grammar (Shashwati)')}
+          <BookMarked size={14} />
+          <span>{t('NCERT Grammar (Shashwati)')}</span>
         </button>
       </div>
 
@@ -138,11 +148,11 @@ export default function NCERTResearchPage() {
                     marginBottom: 12,
                   }}
                 >
-                  <span style={{ fontSize: 24 }}>{group.classLabel}</span>
-                  <span style={{ fontSize: 14, opacity: 0.7 }}>{group.books.length} {t(group.books.length !== 1 ? 'books' : 'book')}</span>
+                  <span style={{ fontWeight: 700, fontSize: 16 }}>{group.classLabel}</span>
+                  <span style={{ fontSize: 12, opacity: 0.6 }}>{group.books.length} {t('textbooks')}</span>
                 </div>
 
-                <div className="ncert-book-list" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {group.books.map((book) => (
                     <div key={book.id}>
                       <div
@@ -150,32 +160,36 @@ export default function NCERTResearchPage() {
                         onClick={() => toggleBook(book.id)}
                         style={{
                           display: 'flex', alignItems: 'center', gap: 12,
-                          padding: '10px 16px', borderRadius: 8, cursor: 'pointer',
-                          background: expandedBook === book.id ? 'var(--bg-secondary)' : 'var(--bg-primary)',
+                          padding: '12px 16px', borderRadius: 8, cursor: 'pointer',
                           border: '1px solid var(--border-color)',
-                          transition: 'all 0.2s',
+                          background: expandedBook === book.id ? 'var(--bg-secondary)' : 'var(--bg-primary)',
+                          transition: 'background 0.2s',
                         }}
                       >
-                        <span style={{ fontSize: 28 }}>{(book as any).cover_icon ?? book.coverIcon}</span>
+                        <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                          <BookOpen size={24} color="var(--vt-orange)" />
+                        </div>
                         <div style={{ flex: 1 }}>
                           <div style={{ fontWeight: 600 }}>{book.title}</div>
-                          <div style={{ fontSize: 12, opacity: 0.6 }}>{(book as any).title_sanskrit ?? book.titleSanskrit}</div>
+                          <div style={{ fontSize: 12, opacity: 0.6 }}>{book.titleSanskrit} · {book.period}</div>
+                          <div style={{ fontSize: 12, marginTop: 4, opacity: 0.7 }}>{book.description}</div>
                         </div>
-                        <span style={{ fontSize: 12, opacity: 0.5 }}>{(book as any).total_chapters ?? book.totalChapters ?? '?'} {t('chapters')}</span>
-                        <span style={{ fontSize: 16 }}>{expandedBook === book.id ? '▲' : '▼'}</span>
+                        <div style={{ fontSize: 12, textAlign: 'right', opacity: 0.5 }}>
+                          <div>{(ncertChapters[book.id] ?? []).length} {t('chapters')}</div>
+                        </div>
+                        <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                          {expandedBook === book.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        </span>
                       </div>
 
                       {expandedBook === book.id && (
-                        <div className="ncert-chapter-list" style={{ marginLeft: 52, marginTop: 8, display: 'flex', flexDirection: 'column', gap: 4 }}>
-                          {(ncertChapters[book.id] || []).length === 0 && (
-                            <div style={{ padding: '8px 12px', fontSize: 12, opacity: 0.4, fontStyle: 'italic' }}>
-                              {t('No chapters found for')} {book.id} — {t('likely need to load from Supabase first')}
-                            </div>
+                        <div className="ncert-chapter-list" style={{ marginLeft: 52, marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          {(ncertChapters[book.id] ?? []).length === 0 && (
+                            <p style={{ fontSize: 13, opacity: 0.5, padding: '8px 0' }}>{t('No chapters loaded for this book.')}</p>
                           )}
-                          {(ncertChapters[book.id] || []).map((ch) => (
+                          {(ncertChapters[book.id] ?? []).map((ch) => (
                             <div key={ch.id}>
                               <div
-                                className="chapter-card-mini"
                                 onClick={() => openChapterResources(book, ch)}
                                 style={{
                                   padding: '8px 12px', borderRadius: 6,
@@ -196,7 +210,7 @@ export default function NCERTResearchPage() {
                                     {(ch as any).verse_count > 0 && (
                                       <span style={{ fontSize: 11, opacity: 0.5 }}>{(ch as any).verse_count} {t('verses')}</span>
                                     )}
-                                    <span title={t('Open resources')} style={{ fontSize: 12 }}>📚</span>
+                                    <span title={t('Open resources')} style={{ display: 'inline-flex' }}><BookOpen size={13} color="var(--vt-orange)" /></span>
                                   </div>
                                 </div>
                               </div>
@@ -242,7 +256,9 @@ export default function NCERTResearchPage() {
                     background: expandedGrammar === gb.id ? 'var(--bg-secondary)' : 'var(--bg-primary)',
                   }}
                 >
-                  <span style={{ fontSize: 28 }}>📖</span>
+                  <div style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    <BookMarked size={26} color="var(--vt-orange)" />
+                  </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontWeight: 600 }}>{gb.title}</div>
                     <div style={{ fontSize: 12, opacity: 0.6 }}>{(gb as any).title_sanskrit ?? ''}</div>
@@ -252,7 +268,9 @@ export default function NCERTResearchPage() {
                     <div>{(gb as any).rules_count ?? 0} {t('rules')}</div>
                     <div>{(gb.chapters ?? []).length} {t('chapters')}</div>
                   </div>
-                  <span>{expandedGrammar === gb.id ? '▲' : '▼'}</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center' }}>
+                    {expandedGrammar === gb.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  </span>
                 </div>
 
                 {expandedGrammar === gb.id && (
@@ -262,22 +280,13 @@ export default function NCERTResearchPage() {
                         key={ch.chapter}
                         style={{
                           padding: '8px 12px', marginBottom: 4, borderRadius: 6,
-                          border: '1px solid var(--border-color)',
-                          background: 'var(--bg-tertiary)',
+                          background: 'var(--bg-tertiary)', fontSize: 13,
                         }}
                       >
-                        <div style={{ fontWeight: 500 }}>{ch.chapter}. {ch.title}</div>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 4 }}>
-                          {(ch.sections ?? []).map((s, i) => (
-                            <span
-                              key={i}
-                              style={{
-                                fontSize: 11, padding: '2px 8px', borderRadius: 4,
-                                background: 'var(--accent)', color: '#fff',
-                              }}
-                            >
-                              {s}
-                            </span>
+                        <div style={{ fontWeight: 500 }}>{t('Chapter')} {ch.chapter}: {ch.title}</div>
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+                          {ch.sections.map((s, i) => (
+                            <span key={i} className="chip" style={{ fontSize: 11 }}>{s}</span>
                           ))}
                         </div>
                       </div>

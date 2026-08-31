@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Volume2 } from 'lucide-react'
 import { DHATUS, type Dhatu } from '../../data/dhatus'
 import { loadDhatus } from '../../services/contentDb'
 import { speakWithFallback } from '../../services/speech'
@@ -29,9 +30,9 @@ export default function DhatuPage() {
   })
 
   return (
-    <div className="page">
+    <div className="page-container">
       <div className="page-header">
-        <h1>🌱 {t('Dhātu / Verb Explorer')}</h1>
+        <h2>{t('Dhātu / Verb Explorer')}</h2>
         <p>{t('Browse common verbal roots: their gaṇa (class), meaning, and present-tense form.')}</p>
       </div>
 
@@ -45,23 +46,25 @@ export default function DhatuPage() {
         <select value={gana} onChange={(e) => setGana(e.target.value)} style={{ padding: '8px 10px' }}>
           {GANAS.map((g) => <option key={g} value={g}>{g === 'All' ? (lang === 'hi' ? 'सभी' : 'All') : g}</option>)}
         </select>
-        <span style={{ color: '#888', fontSize: 13 }}>{rows.length} {t('roots')}</span>
+        <span style={{ color: 'var(--vt-muted)', fontSize: 13 }}>{rows.length} {t('roots')}</span>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 10 }}>
         {rows.map((d) => (
-          <div key={d.root} className="card" style={{ padding: 14 }}>
+          <div key={d.root} className="card" style={{ padding: 14, margin: 0 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <strong style={{ fontSize: 22 }}>{d.root}</strong>
-              <button className="btn btn-sm btn-outline" onClick={() => speakWithFallback(d.present)}>🔊 {d.present}</button>
+              <button className="btn btn-sm btn-outline" onClick={() => speakWithFallback(d.present)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <Volume2 size={13} /> <span>{d.present}</span>
+              </button>
             </div>
-            <div style={{ color: '#999', fontSize: 13 }}>{d.iast} · {t('gaṇa')} {d.ganaNum} ({d.gana})</div>
-            <div style={{ color: '#ccc', marginTop: 4 }}>{lang === 'hi' && d.meaningHi ? d.meaningHi : d.meaning}</div>
-            <div style={{ color: '#888', fontSize: 13, marginTop: 4 }}>अद्यतन: {d.present}</div>
+            <div style={{ color: 'var(--vt-muted)', fontSize: 13 }}>{d.iast} · {t('gaṇa')} {d.ganaNum} ({d.gana})</div>
+            <div style={{ color: 'var(--vt-text)', marginTop: 4 }}>{lang === 'hi' && d.meaningHi ? d.meaningHi : d.meaning}</div>
+            <div style={{ color: 'var(--vt-muted)', fontSize: 13, marginTop: 4 }}>अद्यतन: {d.present}</div>
           </div>
         ))}
       </div>
-      {rows.length === 0 && <p style={{ color: '#888' }}>{t('No roots match.')}</p>}
+      {rows.length === 0 && <p style={{ color: 'var(--vt-muted)', textAlign: 'center', padding: 20 }}>{t('No roots match.')}</p>}
     </div>
   )
 }

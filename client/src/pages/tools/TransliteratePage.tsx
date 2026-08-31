@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Volume2, X, History } from 'lucide-react'
 import { toIAST, toDevanagari } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
@@ -50,9 +51,9 @@ export default function TransliteratePage() {
   }
 
   return (
-    <div className="page">
+    <div className="page-container">
       <div className="page-header">
-        <h1>🔤 {t('Transliteration Tool')}</h1>
+        <h2>{t('Transliteration Tool')}</h2>
         <p>{t('Type Devanagari or IAST and watch it convert live, in both directions.')}</p>
       </div>
 
@@ -80,12 +81,16 @@ export default function TransliteratePage() {
       </div>
 
       <div style={{ marginTop: 12, display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
-        <span style={{ color: '#888' }}>{t('Try:')}</span>
+        <span style={{ color: 'var(--vt-muted)' }}>{t('Try:')}</span>
         {SAMPLES.map((s) => (
           <button key={s} className="btn btn-sm btn-outline" onClick={() => (toIAST(s) === s ? fromIast(s) : fromDev(s))}>{s}</button>
         ))}
-        <button className="btn btn-sm btn-primary" onClick={() => speakWithFallback(dev)}>🔊 {t('Speak')}</button>
-        <button className="btn btn-sm btn-outline" onClick={() => { setDev(''); setIast('') }}>✕ {t('Clear')}</button>
+        <button className="btn btn-sm btn-primary" onClick={() => speakWithFallback(dev)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <Volume2 size={14} /> <span>{t('Speak')}</span>
+        </button>
+        <button className="btn btn-sm btn-outline" onClick={() => { setDev(''); setIast('') }} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+          <X size={13} /> <span>{t('Clear')}</span>
+        </button>
       </div>
 
       <div className="card" style={{ padding: 20, marginTop: 16, maxWidth: 640 }}>
@@ -93,7 +98,7 @@ export default function TransliteratePage() {
         <table style={{ width: '100%', fontSize: 14 }}>
           <tbody>
             {[['ā', 'आ'], ['ī', 'ई'], ['ū', 'ऊ'], ['ṛ', 'ऋ'], ['ś', 'श'], ['ṣ', 'ष'], ['ṃ', 'ं'], ['ḥ', 'ः'], ['ṭ', 'ट'], ['ḍ', 'ड'], ['ṇ', 'ण'], ['ñ', 'ञ']].map(([r, d]) => (
-              <tr key={r}><td style={{ padding: '2px 8px', color: '#999' }}>{r}</td><td>{d}</td></tr>
+              <tr key={r}><td style={{ padding: '2px 8px', color: 'var(--vt-muted)' }}>{r}</td><td>{d}</td></tr>
             ))}
           </tbody>
         </table>
@@ -101,7 +106,9 @@ export default function TransliteratePage() {
 
       {history.length > 0 && (
         <div className="card" style={{ padding: 20, marginTop: 16, maxWidth: 640 }}>
-          <h3 style={{ marginTop: 0, marginBottom: 12 }}>🕘 {t('Recent conversions')}</h3>
+          <h3 style={{ marginTop: 0, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <History size={16} /> <span>{t('Recent conversions')}</span>
+          </h3>
           <div className="text-list">
             {history.map((h) => (
               <div key={h.id} className="text-item">

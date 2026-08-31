@@ -1,4 +1,8 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import {
+  Target, BookOpen, Volume2,
+  Trophy, Sparkles, RotateCcw, Check, X
+} from 'lucide-react'
 import { QUOTES, type Quote } from '../../data/quotes'
 import { loadQuotes } from '../../services/contentDb'
 import { toIAST } from '../../services/sanskrit'
@@ -72,21 +76,27 @@ export default function WhoSaidItPage() {
   )
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('🗣️ Who Said It?')}</h2>
+        <h2>{t('Who Said It?')}</h2>
         <p>{t('Match famous Sanskrit verses to their speakers — from the Gītā to Kālidāsa.')}</p>
       </div>
 
       <div className="card" style={{ maxWidth: 760, margin: '0 auto', padding: 24 }}>
         <div style={{ display: 'flex', gap: 8, marginBottom: 16, alignItems: 'center' }}>
-          <button className={`btn btn-sm ${mode === 'quiz' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('quiz')}>{t('🎯 Quiz')}</button>
-          <button className={`btn btn-sm ${mode === 'learn' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('learn')}>{t('📚 Learn Quotes')}</button>
+          <button className={`btn btn-sm ${mode === 'quiz' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('quiz')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Target size={14} /> <span>{t('Quiz')}</span>
+          </button>
+          <button className={`btn btn-sm ${mode === 'learn' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('learn')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <BookOpen size={14} /> <span>{t('Learn Quotes')}</span>
+          </button>
           <span style={{ flex: 1 }} />
           {mode === 'quiz' && (
             <>
               <span className="badge">{t('Score')}: {score}/{finished ? quiz.length : qi + (answered !== null ? 1 : 0)}</span>
-              <button className="btn btn-sm btn-secondary" onClick={() => start(true)}>{t('New Quiz')}</button>
+              <button className="btn btn-sm btn-secondary" onClick={() => start(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <RotateCcw size={13} /> <span>{t('New Quiz')}</span>
+              </button>
             </>
           )}
         </div>
@@ -99,8 +109,8 @@ export default function WhoSaidItPage() {
                   <p style={{ margin: 0, fontSize: 13, opacity: 0.7 }}>{t('Question')} {qi + 1} / {quiz.length}</p>
                   <p style={{ margin: '10px 0', fontSize: 24 }}>{q.sa}</p>
                   <p style={{ margin: 0, color: '#ffd54f', fontSize: 14, fontStyle: 'italic' }}>{toIAST(q.sa)}</p>
-                  <button className="btn btn-sm btn-secondary" style={{ marginTop: 12 }} onClick={() => speak(q.sa)} disabled={speaking}>
-                    🔊 {t('Hear the quote')}
+                  <button className="btn btn-sm btn-secondary" style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => speak(q.sa)} disabled={speaking}>
+                    <Volume2 size={14} /> <span>{t('Hear the quote')}</span>
                   </button>
                 </div>
                 <p style={{ fontWeight: 600, margin: '0 0 10px' }}>{t('Who said it?')}</p>
@@ -122,20 +132,24 @@ export default function WhoSaidItPage() {
                   })}
                 </div>
                 {answered && (
-                  <p className="lab-feedback" style={{ color: answered === q.speaker ? '#2e7d32' : '#c62828', fontWeight: 600 }}>
-                    {answered === q.speaker ? t('✓ Correct!') : t('✗ It was') + ' ' + q.speaker}
-                    <span style={{ display: 'block', color: 'var(--vt-muted)', fontWeight: 400 }}>{q.source}</span>
+                  <p className="lab-feedback" style={{ color: answered === q.speaker ? '#2e7d32' : '#c62828', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {answered === q.speaker ? <><Check size={16} /> <span>{t('Correct!')}</span></> : <><X size={16} /> <span>{t('It was')} {q.speaker}</span></>}
+                    <span style={{ display: 'block', color: 'var(--vt-muted)', fontWeight: 400, marginLeft: 8 }}>{q.source}</span>
                   </p>
                 )}
               </div>
             )}
             {finished && (
               <div className="card" style={{ padding: 32, textAlign: 'center' }}>
-                <p style={{ fontSize: 44, margin: 0 }}>{score >= 8 ? '🏆' : score >= 5 ? '🎉' : '📚'}</p>
+                <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
+                  <Trophy size={48} color={score >= 8 ? '#f1c40f' : score >= 5 ? '#2ecc71' : 'var(--vt-orange)'} />
+                </div>
                 <h3>{t('Quiz complete!')}</h3>
                 <p style={{ fontSize: 22 }}>{t('You scored')} <strong>{score} / {quiz.length}</strong></p>
                 <p style={{ color: 'var(--vt-muted)' }}>{score >= 8 ? t('Śabda-jñāna at its best! You know the masters.') : score >= 5 ? t('Good! Revisit the Learn tab to meet the speakers.') : t('Keep reading — every verse teaches.')}</p>
-                <button className="btn btn-primary" onClick={() => start(true)}>{t('Play Again')}</button>
+                <button className="btn btn-primary" onClick={() => start(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <RotateCcw size={15} /> <span>{t('Play Again')}</span>
+                </button>
               </div>
             )}
           </>
@@ -144,11 +158,15 @@ export default function WhoSaidItPage() {
         {mode === 'learn' && (
           <div>
             <div className="card" style={{ padding: 16, marginBottom: 16, border: '2px solid rgba(255,152,0,0.4)', background: 'rgba(255,152,0,0.06)' }}>
-              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--vt-orange)' }}>{t('🪔 Quote of the day')}</p>
+              <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--vt-orange)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Sparkles size={14} /> <span>{t('Quote of the day')}</span>
+              </p>
               <p style={{ margin: '8px 0 0', fontSize: 22 }}>{dayQ.sa}</p>
               <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)', fontStyle: 'italic' }}>{dayQ.en}</p>
               <p style={{ margin: '4px 0 0', fontWeight: 600 }}>— {dayQ.speaker}, <span style={{ fontWeight: 400, color: 'var(--vt-muted)' }}>{dayQ.source}</span></p>
-              <button className="btn btn-sm btn-secondary" style={{ marginTop: 10 }} onClick={() => speak(dayQ.sa)}>🔊 {t('Hear it')}</button>
+              <button className="btn btn-sm btn-secondary" style={{ marginTop: 10, display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => speak(dayQ.sa)}>
+                <Volume2 size={14} /> <span>{t('Hear it')}</span>
+              </button>
             </div>
 
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 12 }}>
@@ -166,7 +184,9 @@ export default function WhoSaidItPage() {
                       <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)', fontSize: 13, fontStyle: 'italic' }}>{qq.en}</p>
                       <p style={{ margin: '6px 0 0', fontWeight: 600 }}>— {qq.speaker} <span style={{ fontWeight: 400, color: 'var(--vt-muted)' }}>· {qq.source}</span></p>
                     </div>
-                    <button className="btn btn-sm btn-secondary" onClick={() => speak(qq.sa)}>🔊</button>
+                    <button className="btn btn-sm btn-secondary" onClick={() => speak(qq.sa)}>
+                      <Volume2 size={14} />
+                    </button>
                   </div>
                 </div>
               ))}

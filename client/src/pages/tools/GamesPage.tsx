@@ -1,4 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
+import {
+  Link2, Binary, Sparkles, RotateCcw, Trophy
+} from 'lucide-react'
 import { WORD_PAIRS, DEV_NUMBERS, toDevanagariNumber, SANDHI_PAIRS, type WordPair, type DevNumber, type SandhiPair } from '../../data/games'
 import { loadWordPairs, loadDevNumbers, loadSandhiPairs } from '../../services/contentDb'
 import { tryJoinSandhi } from '../../services/sanskrit'
@@ -187,19 +190,27 @@ export default function GamesPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('🎮 Learn Through Games')}</h2>
+        <h2>{t('Learn Through Games')}</h2>
         <p>{t('Three quick games — match words, master numbers, chase sandhi.')}</p>
       </div>
 
       <div className="card" style={{ maxWidth: 860, margin: '0 auto', padding: 24 }}>
         <div style={{ display: 'flex', gap: 8, marginBottom: 18, alignItems: 'center', flexWrap: 'wrap' }}>
-          <button className={`btn btn-sm ${game === 'match' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setGame('match')}>{t('🔗 Word Match')}</button>
-          <button className={`btn btn-sm ${game === 'numbers' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setGame('numbers')}>{t('🔢 Number Blitz')}</button>
-          <button className={`btn btn-sm ${game === 'sandhi' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setGame('sandhi')}>{t('🔊 Sandhi Chase')}</button>
+          <button className={`btn btn-sm ${game === 'match' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setGame('match')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Link2 size={14} /> <span>{t('Word Match')}</span>
+          </button>
+          <button className={`btn btn-sm ${game === 'numbers' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setGame('numbers')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Binary size={14} /> <span>{t('Number Blitz')}</span>
+          </button>
+          <button className={`btn btn-sm ${game === 'sandhi' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setGame('sandhi')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Sparkles size={14} /> <span>{t('Sandhi Chase')}</span>
+          </button>
           <span style={{ flex: 1 }} />
-          <button className="btn btn-sm btn-secondary" onClick={resetAll}>{t('Restart')}</button>
+          <button className="btn btn-sm btn-secondary" onClick={resetAll} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <RotateCcw size={13} /> <span>{t('Restart')}</span>
+          </button>
         </div>
 
         {game === 'match' && (
@@ -210,7 +221,10 @@ export default function GamesPage() {
             </div>
             {matchRoundDone ? (
               <div style={{ textAlign: 'center', padding: 30 }}>
-                <p style={{ fontSize: 26, margin: '0 0 8px' }}>{t('🎉 Round complete!')}</p>
+                <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 10 }}>
+                  <Trophy size={48} color="#2ecc71" />
+                </div>
+                <p style={{ fontSize: 24, fontWeight: 700, margin: '0 0 8px' }}>{t('Round complete!')}</p>
                 <p>{errors === 0 ? t('Perfect — zero mistakes!') : t('Finished with') + ' ' + errors + ' ' + t('mistakes.')}</p>
                 <button className="btn btn-primary" onClick={() => setPairs(startWordRound(wordPairs))}>{t('Next round')}</button>
               </div>
@@ -259,9 +273,14 @@ export default function GamesPage() {
             )}
             {done && (
               <div style={{ textAlign: 'center', padding: 30 }}>
-                <p style={{ fontSize: 26, margin: '0 0 8px' }}>{t('🎯 Quiz done!')}</p>
+                <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 10 }}>
+                  <Trophy size={48} color="#f1c40f" />
+                </div>
+                <p style={{ fontSize: 24, fontWeight: 700, margin: '0 0 8px' }}>{t('Quiz done!')}</p>
                 <p>{score} / {quiz.length}</p>
-                <button className="btn btn-primary" onClick={() => { setQuiz(startNumberQuiz(devNumbers)); setQi(0); setPickedNum(null); setScore(0); setDone(false) }}>{t('Play again')}</button>
+                <button className="btn btn-primary" onClick={() => { setQuiz(startNumberQuiz(devNumbers)); setQi(0); setPickedNum(null); setScore(0); setDone(false) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <RotateCcw size={15} /> <span>{t('Play again')}</span>
+                </button>
               </div>
             )}
           </div>
@@ -299,9 +318,14 @@ export default function GamesPage() {
             )}
             {sDone && (
               <div style={{ textAlign: 'center', padding: 30 }}>
-                <p style={{ fontSize: 26, margin: '0 0 8px' }}>{t('🔊 Chase complete!')}</p>
+                <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 10 }}>
+                  <Trophy size={48} color="#2ecc71" />
+                </div>
+                <p style={{ fontSize: 24, fontWeight: 700, margin: '0 0 8px' }}>{t('Chase complete!')}</p>
                 <p>{sScore} / {sq.length}</p>
-                <button className="btn btn-primary" onClick={() => { setSq(startSandhiQuiz(sandhiPairs)); setSi(0); setPickedS(null); setSScore(0); setSDone(false) }}>{t('Play again')}</button>
+                <button className="btn btn-primary" onClick={() => { setSq(startSandhiQuiz(sandhiPairs)); setSi(0); setPickedS(null); setSScore(0); setSDone(false) }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <RotateCcw size={15} /> <span>{t('Play again')}</span>
+                </button>
               </div>
             )}
           </div>

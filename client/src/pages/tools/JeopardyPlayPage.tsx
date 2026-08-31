@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Check, X, RotateCcw, Pencil, HelpCircle } from 'lucide-react'
 import { jeopardyCategories, doubleJeopardyCategories, finalJeopardy, type JeopardyClue, type JeopardyCategory, type FinalJeopardyClue } from '../../data/jeopardy'
 import { loadCustomQuizzes, type CustomQuiz } from '../../services/customQuizzes'
 import { syncJeopardyFromDb, persistJeopardyToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
 import JeopardyHeader from '../../components/jeopardy/JeopardyHeader'
+import { DynamicIcon } from '../../components/icons'
 import '../tools/jeopardy.css'
 
 interface PlayedClue {
@@ -180,7 +182,7 @@ export default function JeopardyPlayPage() {
         {currentCats.map((cat) => (
           <div className="j-col" key={cat.id}>
             <div className="j-cat">
-              <span className="j-cat-icon">{cat.icon}</span>
+              <span className="j-cat-icon"><DynamicIcon name="vocab" size={14} /></span>
               <span>{lang === 'hi' && cat.nameHi ? cat.nameHi : cat.name}</span>
             </div>
             {cat.clues.map((clue) => {
@@ -193,7 +195,7 @@ export default function JeopardyPlayPage() {
                   onClick={() => openClue(clue)}
                   disabled={done}
                 >
-                  {done ? (prev?.result === 'correct' ? '✓' : '✗') : clue.value}
+                  {done ? (prev?.result === 'correct' ? <Check size={16} /> : <X size={16} />) : clue.value}
                 </button>
               )
             })}
@@ -204,10 +206,10 @@ export default function JeopardyPlayPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <JeopardyHeader />
       <div className="page-header">
-        <h2>{t('🎯 Play the Game')}</h2>
+        <h2>{t('Play the Game')}</h2>
         <p>{t('Play the classic 6×5 game board — reveal an answer, respond with the question, and score points')}</p>
       </div>
 
@@ -216,7 +218,9 @@ export default function JeopardyPlayPage() {
         <div className="j-stat j-score">{t('Double Jeopardy')}: <strong>{score2}</strong> / {totalValue2}</div>
         <div className="j-stat j-score">{t('Total Score')}: <strong>{total}</strong></div>
         <div className="j-stat">{t('Best Score')}: <strong>{best}</strong></div>
-        <button className="btn btn-sm btn-secondary" onClick={resetGame}>{t('🔄 New Game')}</button>
+        <button className="btn btn-sm btn-secondary" onClick={resetGame} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <RotateCcw size={13} /> <span>{t('New Game')}</span>
+        </button>
       </div>
 
       <div className="j-quiz-picker">
@@ -224,15 +228,15 @@ export default function JeopardyPlayPage() {
         <select value={quizId} onChange={(e) => setQuizId(e.target.value)}>
           <option value="">{t('Classic — Sanskrit Jeopardy')}</option>
           {loadCustomQuizzes().map((q) => (
-            <option key={q.id} value={q.id}>{q.icon} {q.name}</option>
+            <option key={q.id} value={q.id}>{q.name}</option>
           ))}
         </select>
-        <button className="btn btn-sm btn-secondary" onClick={() => navigate('/tools/jeopardy/builder')}>
-          {t('✏️ Quiz Builder')}
+        <button className="btn btn-sm btn-secondary" onClick={() => navigate('/tools/jeopardy/builder')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <Pencil size={13} /> <span>{t('Quiz Builder')}</span>
         </button>
         {customQuiz && (
           <span className="j-quiz-picker-note">
-            {t('Playing custom quiz:')} {customQuiz.icon} {customQuiz.name}
+            {t('Playing custom quiz:')} {customQuiz.name}
           </span>
         )}
       </div>
@@ -258,46 +262,42 @@ export default function JeopardyPlayPage() {
               <span>{lang === 'hi' ? currentFinal.categorySanskrit : currentFinal.category}</span>
             </div>
             <div className="j-final-wager">
-              <label>{t('Your wager (0 to {0})').replace('{0}', String(Math.max(0, total)))}</label>
+              <label>{t('Your wager (0 to {0}):').replace('{0}', String(Math.max(0, total)))}</label>
               <input
                 type="number"
-                min={0}
+                min="0"
                 max={Math.max(0, total)}
                 value={wager}
                 onChange={(e) => setWager(e.target.value)}
-                placeholder="0"
+                placeholder={t('Enter wager')}
+                disabled={final.revealed}
               />
-              <button className="btn btn-sm btn-primary" onClick={lockFinal}>{t('Lock Wager')}</button>
-            </div>
-            {final.wager > 0 && (
-              <button className="btn btn-primary" onClick={() => setFinal((f) => ({ ...f, revealed: false }))}>
-                {t('Reveal Final Clue')}
-              </button>
-            )}
-          </div>
-          {final.wager > 0 && (
-            <div className="j-final-clue">
-              <h3>{lang === 'hi' && currentFinal.clueHi ? currentFinal.clueHi : currentFinal.clue}</h3>
-              {!final.revealed ? (
-                <button className="btn btn-primary" onClick={() => setFinal((f) => ({ ...f, revealed: true }))}>
-                  {t('Reveal Answer')}
+              {!final.revealed && (
+                <button className="btn btn-primary" onClick={() => { lockFinal(); setFinal((f) => ({ ...f, revealed: true })) }}>
+                  {t('Lock In & Reveal Clue')}
                 </button>
-              ) : (
-                <>
-                  <p className="j-modal-answer">{lang === 'hi' && currentFinal.answerHi ? currentFinal.answerHi : currentFinal.answer}</p>
-                  <div className="j-modal-actions">
-                    <button className="btn btn-primary" onClick={() => markFinal('correct')}>{t('Correct (+{0})').replace('{0}', String(final.wager))}</button>
-                    <button className="btn btn-secondary" onClick={() => markFinal('miss')}>{t('Miss (−{0})').replace('{0}', String(final.wager))}</button>
-                  </div>
-                </>
               )}
             </div>
-          )}
-          {final.played.length > 0 && (
-            <div className="j-gameover">
-              {finalResult === 'correct'
-                ? `${t('Final Jeopardy! correct')} — ${t('Total Score')}: ${total}`
-                : `${t('Final Jeopardy! miss')} — ${t('Total Score')}: ${total}`}
+          </div>
+
+          {final.revealed && (
+            <div className="j-final-clue">
+              <h3>{lang === 'hi' && currentFinal.clueHi ? currentFinal.clueHi : currentFinal.clue}</h3>
+              {finalResult === null ? (
+                <div className="j-final-actions">
+                  <div className="j-final-answer-box">{lang === 'hi' && currentFinal.answerHi ? currentFinal.answerHi : currentFinal.answer}</div>
+                  <div className="j-final-btns">
+                    <button className="btn btn-primary" onClick={() => markFinal('correct')}>{t('I got it right (+{0})').replace('{0}', String(final.wager))}</button>
+                    <button className="btn btn-secondary" onClick={() => markFinal('miss')}>{t('I missed it (−{0})').replace('{0}', String(final.wager))}</button>
+                  </div>
+                </div>
+              ) : (
+                <div className={`j-final-result j-${finalResult}`}>
+                  {finalResult === 'correct'
+                    ? `${t('Final Jeopardy! correct!')} +${final.wager} — ${t('Total Score')}: ${total}`
+                    : `${t('Final Jeopardy! miss')} — ${t('Total Score')}: ${total}`}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -314,8 +314,8 @@ export default function JeopardyPlayPage() {
         <div className="j-modal-backdrop" onClick={closeClue}>
           <div className="j-modal" onClick={(e) => e.stopPropagation()}>
             <div className="j-modal-value">{active.value}</div>
-              <h3>{lang === 'hi' && active.clueHi ? active.clueHi : active.clue}</h3>
-              <div className="j-modal-answer">{clueRevealed ? (lang === 'hi' && active.answerHi ? active.answerHi : active.answer) : '🤔'}</div>
+            <h3>{lang === 'hi' && active.clueHi ? active.clueHi : active.clue}</h3>
+            <div className="j-modal-answer">{clueRevealed ? (lang === 'hi' && active.answerHi ? active.answerHi : active.answer) : <HelpCircle size={32} color="var(--vt-orange)" />}</div>
             <div className="j-modal-actions">
               {!clueRevealed ? (
                 <button className="btn btn-primary" onClick={() => setClueRevealed(true)}>{t('Reveal Answer')}</button>

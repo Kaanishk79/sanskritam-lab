@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import {
+  Search, Dices, CheckCircle2, Wrench,
+  BookOpen, Bot, ArrowRight
+} from 'lucide-react'
 import { checkSanskrit, EXAMPLE_TEXTS, type FixResult } from '../../services/sanskritFixer'
 import { api } from '../../services/api'
 import { useLanguage } from '../../context/LanguageContext'
@@ -36,7 +40,7 @@ export default function FixMySanskritPage() {
         res.fixed = aiText
         res.issues.unshift({
           rule: 'ai',
-          icon: '🤖',
+          icon: 'bot',
           message: 'AI tutor rewrote your sentence.',
           suggestion: aiText,
           fix: aiText,
@@ -51,15 +55,15 @@ export default function FixMySanskritPage() {
     }
   }
 
-  const apply = (fix: string) => {
-    setInput(fix)
+  const apply = (fixText: string) => {
+    setInput(fixText)
     setResult(null)
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('🩺 Fix My Sanskrit')}</h2>
+        <h2>{t('Fix My Sanskrit')}</h2>
         <p>{t('Type any Sanskrit sentence — get instant grammar fixes: punctuation, missing spaces, sandhi joins and unknown words. Uses the AI tutor when connected.')}</p>
       </div>
 
@@ -72,12 +76,12 @@ export default function FixMySanskritPage() {
           placeholder={t('e.g. रामः वने वसति — or type in IAST: rāmaḥ vane vasati')}
         />
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '12px 0', alignItems: 'center' }}>
-          <button className="btn btn-primary" onClick={fix} disabled={busy || !input.trim()}>
-            {busy ? t('Checking…') : t('🔍 Check My Sanskrit')}
+          <button className="btn btn-primary" onClick={fix} disabled={busy || !input.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Search size={15} /> <span>{busy ? t('Checking…') : t('Check My Sanskrit')}</span>
           </button>
           <span style={{ flex: 1 }} />
-          <button className="btn btn-sm btn-secondary" onClick={() => setInput(EXAMPLE_TEXTS[Math.floor(Math.random() * EXAMPLE_TEXTS.length)])}>
-            🎲 {t('Random example')}
+          <button className="btn btn-sm btn-secondary" onClick={() => setInput(EXAMPLE_TEXTS[Math.floor(Math.random() * EXAMPLE_TEXTS.length)].text)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Dices size={14} /> <span>{t('Random example')}</span>
           </button>
         </div>
 
@@ -86,16 +90,22 @@ export default function FixMySanskritPage() {
             {aiNote && <p className="badge" style={{ background: 'rgba(255,152,0,0.15)', color: 'var(--vt-orange)', marginBottom: 10 }}>{aiNote}</p>}
 
             <div className="card" style={{ padding: 16, marginBottom: 14, border: '2px solid #2e7d32' }}>
-              <p style={{ margin: 0, fontWeight: 600, fontSize: 13 }}>{t('✅ Corrected text')}</p>
+              <p style={{ margin: 0, fontWeight: 600, fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <CheckCircle2 size={16} color="#2e7d32" /> <span>{t('Corrected text')}</span>
+              </p>
               <p style={{ fontSize: 20, margin: '6px 0 0' }}>{result.fixed}</p>
             </div>
 
             {result.issues.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <h4 style={{ marginBottom: 4 }}>{t('🔧 Fixes applied')} ({result.issues.length})</h4>
+                <h4 style={{ marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Wrench size={16} /> <span>{t('Fixes applied')} ({result.issues.length})</span>
+                </h4>
                 {result.issues.map((iss, i) => (
                   <div key={i} className="card" style={{ padding: '12px 14px', margin: 0, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                    <span style={{ fontSize: 20 }}>{iss.icon}</span>
+                    <span style={{ display: 'inline-flex', marginTop: 2 }}>
+                      {iss.rule === 'ai' ? <Bot size={18} color="var(--vt-orange)" /> : <Wrench size={18} color="var(--vt-gold)" />}
+                    </span>
                     <div style={{ flex: 1 }}>
                       <p style={{ margin: 0 }}><strong>{lang === 'hi' && iss.messageHi ? iss.messageHi : iss.message}</strong></p>
                       <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{lang === 'hi' && iss.suggestionHi ? iss.suggestionHi : iss.suggestion}</p>
@@ -108,11 +118,16 @@ export default function FixMySanskritPage() {
 
             {result.unknownWords.length > 0 && (
               <div style={{ marginTop: 14 }}>
-                <h4>{t('📖 Words not found in dictionary')}</h4>
+                <h4 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <BookOpen size={16} /> <span>{t('Words not found in dictionary')}</span>
+                </h4>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                   {result.unknownWords.map((u) => (
-                    <span key={u.word} className="badge" style={{ background: 'rgba(198,40,40,0.1)', color: '#c62828', padding: '6px 10px' }}>
-                      {u.word} <a href={`#/explore/${encodeURIComponent(u.word)}`} style={{ color: 'inherit' }}>→ {t('lookup')}</a>
+                    <span key={u.word} className="badge" style={{ background: 'rgba(198,40,40,0.1)', color: '#c62828', padding: '6px 10px', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <span>{u.word}</span>
+                      <a href={`#/explore/${encodeURIComponent(u.word)}`} style={{ color: 'inherit', display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                        <ArrowRight size={12} /> {t('lookup')}
+                      </a>
                     </span>
                   ))}
                 </div>
@@ -120,7 +135,9 @@ export default function FixMySanskritPage() {
             )}
 
             {result.issues.length === 0 && result.unknownWords.length === 0 && (
-              <p className="lab-feedback ok">{t('🎉 No issues found — your Sanskrit is perfect!')}</p>
+              <p className="lab-feedback ok" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <CheckCircle2 size={16} /> <span>{t('No issues found — your Sanskrit is perfect!')}</span>
+              </p>
             )}
           </div>
         )}

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Volume2, Sprout, Link2 } from 'lucide-react'
 import { supabase } from '../../services/supabase'
 import { toIAST, toDevanagari } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
@@ -14,10 +15,6 @@ interface DictEntry {
   meanings: string[] | null
   meanings_hi: string[] | null
   derivations: string[] | null
-}
-
-const POS_ICON: Record<string, string> = {
-  noun: '🏷️', verb: '⚡', adjective: '🎨', adverb: '➡️', pronoun: '👤', particle: '🔗', indeclinable: '🔗',
 }
 
 const POS_HI: Record<string, string> = {
@@ -64,9 +61,9 @@ export default function DictionaryPage() {
   }, [q])
 
   return (
-    <div className="page">
+    <div className="page-container">
       <div className="page-header">
-        <h1>📖 {t('Sanskrit Dictionary')}</h1>
+        <h2>{t('Sanskrit Dictionary')}</h2>
         <p>{t('Word meaning, Devanagari, transliteration, English meaning, examples and related words.')}</p>
       </div>
 
@@ -80,29 +77,37 @@ export default function DictionaryPage() {
       </div>
       {error && <p style={{ color: '#e55' }}>{error}</p>}
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16 }}>
         {entries.map((e) => (
-          <div key={e.id} className="card" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div key={e.id} className="card" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <strong style={{ fontSize: 22 }}>{e.word}</strong>
               <div style={{ display: 'flex', gap: 6 }}>
-                <button className="btn btn-sm btn-outline" onClick={() => speakWithFallback(e.word)}>🔊</button>
-                <button className="btn btn-sm btn-primary" onClick={() => navigate(`/explore/${encodeURIComponent(e.word)}`)}>{t('Explore')}</button>
+                <button className="btn btn-sm btn-outline" onClick={() => speakWithFallback(e.word)} title={t('Hear pronunciation')}>
+                  <Volume2 size={14} />
+                </button>
+                <button className="btn btn-sm btn-primary" onClick={() => navigate(`/explore/${encodeURIComponent(e.word)}`)}>
+                  <span>{t('Explore')}</span>
+                </button>
               </div>
             </div>
-            <div style={{ color: '#999', fontSize: 13 }}>{toIAST(e.word)} {e.pos ? `· ${POS_ICON[e.pos] || ''} ${bi(lang, e.pos, POS_HI[e.pos] || e.pos)}` : ''}</div>
+            <div style={{ color: '#999', fontSize: 13 }}>
+              {toIAST(e.word)} {e.pos ? `· ${bi(lang, e.pos, POS_HI[e.pos] || e.pos)}` : ''}
+            </div>
             <ul style={{ margin: 0, paddingLeft: 18, color: '#ccc' }}>
               {(lang === 'hi' && e.meanings_hi && e.meanings_hi.length ? e.meanings_hi : e.meanings || []).map((m, i) => <li key={i}>{m}</li>)}
               {(lang === 'hi' ? (e.meanings_hi?.length || 0) : e.meanings?.length || 0) === 0 && <li style={{ color: '#888' }}>—</li>}
             </ul>
             {e.root && (
-              <div style={{ fontSize: 13, color: '#aaa' }}>
-                🌱 {t('Root')}: {toDevanagari(e.root) || e.root} ({toIAST(e.root)})
+              <div style={{ fontSize: 13, color: '#aaa', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Sprout size={14} color="var(--vt-green)" />
+                <span>{t('Root')}: {toDevanagari(e.root) || e.root} ({toIAST(e.root)})</span>
               </div>
             )}
             {e.derivations && e.derivations.length > 0 && (
-              <div style={{ fontSize: 13, color: '#aaa' }}>
-                🔗 {t('Related')}: {e.derivations.join(', ')}
+              <div style={{ fontSize: 13, color: '#aaa', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Link2 size={14} color="var(--vt-orange)" />
+                <span>{t('Related')}: {e.derivations.join(', ')}</span>
               </div>
             )}
           </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { BookOpen } from 'lucide-react'
 import { newsArticles, type NewsArticle } from '../../data/jeopardySite'
 import { loadNewsArticles } from '../../services/contentDb'
 import { useLanguage } from '../../context/LanguageContext'
@@ -26,10 +27,10 @@ export default function JeopardyNewsPage() {
   const filtered = tag === 'All' ? newsItems : newsItems.filter((a) => a.tag === tag)
 
   return (
-    <div>
+    <div className="page-container">
       <JeopardyHeader />
       <div className="page-header">
-        <h2>{t('📰 Read')}</h2>
+        <h2>{t('Read')}</h2>
         <p>{t('News & Events, Behind the Scenes, and Contestant stories from the SanskritLab community')}</p>
       </div>
 
@@ -48,7 +49,9 @@ export default function JeopardyNewsPage() {
       <div className="j-news-grid">
         {filtered.map((a) => (
           <article className="j-news-card" key={a.id}>
-            <span className="j-news-icon">{a.icon}</span>
+            <span className="j-news-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+              <BookOpen size={20} color="var(--vt-orange)" />
+            </span>
             <span className="j-news-tag">{t(a.tag)}</span>
             <h4>{lang === 'hi' ? a.titleHi ?? a.title : a.title}</h4>
             <p>{lang === 'hi' ? a.excerptHi ?? a.excerpt : a.excerpt}</p>

@@ -70,22 +70,28 @@ export async function loadFestivals(): Promise<Festival[]> {
   const rows = await loadRows('culture_festivals')
   if (!rows.length) return FESTIVALS
   return rows
-    .map((r) => ({
-      id: String(r.id),
-      name: String(r.name ?? ''),
-      emoji: String(r.emoji ?? ''),
-      month: Number(r.month ?? 1),
-      day: Number(r.day ?? 1),
-      approx: String(r.approx ?? ''),
-      tithi: String(r.tithi ?? ''),
-      meaning: String(r.meaning ?? ''),
-      how: String(r.how ?? ''),
-      phrase: String(r.phrase ?? ''),
-      phraseEn: String(r.phrase_en ?? ''),
-    }))
-    .map((f) => {
-      const loc = FESTIVALS.find((x) => x.id === f.id)
-      return loc ? { ...f, nameHi: loc.nameHi, approxHi: loc.approxHi, tithiHi: loc.tithiHi, meaningHi: loc.meaningHi, howHi: loc.howHi, phraseEnHi: loc.phraseEnHi } : f
+    .map((r) => {
+      const loc = FESTIVALS.find((x) => x.id === String(r.id))
+      return {
+        id: String(r.id),
+        name: String(r.name ?? ''),
+        emoji: String(r.emoji ?? ''),
+        icon: loc?.icon || 'sparkles',
+        month: Number(r.month ?? 1),
+        day: Number(r.day ?? 1),
+        approx: String(r.approx ?? ''),
+        tithi: String(r.tithi ?? ''),
+        meaning: String(r.meaning ?? ''),
+        how: String(r.how ?? ''),
+        phrase: String(r.phrase ?? ''),
+        phraseEn: String(r.phrase_en ?? ''),
+        nameHi: loc?.nameHi,
+        approxHi: loc?.approxHi,
+        tithiHi: loc?.tithiHi,
+        meaningHi: loc?.meaningHi,
+        howHi: loc?.howHi,
+        phraseEnHi: loc?.phraseEnHi,
+      }
     })
     .sort((a, b) => (a.month === b.month ? a.day - b.day : a.month - b.month))
 }
@@ -100,6 +106,7 @@ export async function loadRitus(): Promise<Ritu[]> {
       months: String(r.months ?? ''),
       season: String(r.season ?? ''),
       emoji: String(r.emoji ?? ''),
+      icon: loc?.icon || 'sparkles',
       verse: String(r.verse ?? ''),
       monthsHi: loc?.monthsHi,
       seasonHi: loc?.seasonHi,
@@ -392,20 +399,20 @@ export async function loadFlashcards(): Promise<Flashcard[]> {
 export async function loadStoryThemes(): Promise<StoryTheme[]> {
   const rows = await loadRows('story_themes')
   if (!rows.length) return STORY_THEMES
-  return rows.map((r) => ({
-    id: String(r.id),
-    emoji: String(r.emoji),
-    title: String(r.title),
-    titleHi: String(r.titleHi ?? ''),
-    words: (r.words as StoryTheme['words']) ?? [],
-    intro: (r.intro as string[]) ?? [],
-    patterns: (r.patterns as StoryTheme['patterns']) ?? [],
-    outro: (r.outro as string[]) ?? [],
-  }))
-    .map((s) => {
-      const loc = STORY_THEMES.find((x) => x.id === s.id)
-      return loc ? { ...s, titleHi: loc.titleHi } : s
-    })
+  return rows.map((r) => {
+    const loc = STORY_THEMES.find((x) => x.id === String(r.id))
+    return {
+      id: String(r.id),
+      emoji: String(r.emoji ?? ''),
+      icon: loc?.icon || 'book',
+      title: String(r.title ?? ''),
+      titleHi: loc?.titleHi || String((r as any).titleHi ?? ''),
+      words: (r.words as StoryTheme['words']) ?? [],
+      intro: (r.intro as string[]) ?? [],
+      patterns: (r.patterns as StoryTheme['patterns']) ?? [],
+      outro: (r.outro as string[]) ?? [],
+    }
+  })
 }
 
 export async function loadShlokaPassages(): Promise<ReadingPassage[]> {

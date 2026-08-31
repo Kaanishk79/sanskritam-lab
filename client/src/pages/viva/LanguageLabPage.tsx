@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import {
+  BookOpen, Volume2, Mic, Feather, FileText, Layers, Users,
+  Key, Plus, RotateCcw, GraduationCap, Copy, Keyboard,
+  Square, ArrowRight
+} from 'lucide-react'
 import { readingPassages, listeningItems, writingItems, comprehensionQuestions, emptyLabStats, type ReadingPassage, type LabSkillStats } from '../../data/languageLab'
-import { startListening, stopListening, isSpeechSupported, onSpeechResult, speakWithFallback } from '../../services/speech'
+import { startListening, stopListening, isSpeechSupported, onSpeechResult, speakWithFallback, type SpeakMode } from '../../services/speech'
 import type { LabProject } from '../../services/labProjects'
 import LabAssignments from './LabAssignments'
 import { useKeyboard } from '../../context/KeyboardContext'
@@ -101,21 +106,14 @@ export default function LanguageLabPage() {
   const [writingIndex, setWritingIndex] = useState(0)
   const [writingAnswer, setWritingAnswer] = useState('')
   const [writingResult, setWritingResult] = useState<boolean | null>(null)
-  const [readingPassageId, setReadingPassageId] = useState<string>('rp1')
+  const [speaking, setSpeaking] = useState(false)
+  const [ttsMode, setTtsMode] = useState<SpeakMode>('browser')
+  const [readingPassageId, setReadingPassageId] = useState<string>(readingPassages[0].id)
   const [readingAnswers, setReadingAnswers] = useState<Record<string, number>>({})
   const [readingScore, setReadingScore] = useState<number | null>(null)
   const [activeProject, setActiveProject] = useState<LabProject | null>(null)
-  const [speaking, setSpeaking] = useState(false)
-  const [ttsMode, setTtsMode] = useState<'browser' | 'online' | 'online2' | 'none'>('browser')
-  const recorder = useAudioRecorder()
 
-  const speak = (text: string) => {
-    if (!text.trim()) return
-    speakWithFallback(text, (isSpeaking, mode) => {
-      setSpeaking(isSpeaking)
-      setTtsMode(mode)
-    })
-  }
+  const recorder = useAudioRecorder()
 
   const scopedPassages = useMemo(() => {
     if (!activeProject) return readingPassages
@@ -140,7 +138,6 @@ export default function LanguageLabPage() {
         setStats((prev) => ({ ...prev, ...(map[statsKey] as Record<string, LabSkillStats>) }))
       }
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -158,25 +155,43 @@ export default function LanguageLabPage() {
     setStats((s) => {
       const prev = s[key] ?? { score: 0, attempts: 0 }
       const n = prev.attempts + 1
-      const next = { score: Math.round((prev.score * prev.attempts + score) / n), attempts: n }
-      saveStats(statsKey, { ...s, [key]: next })
-      return { ...s, [key]: next }
+      const avg = Math.round((prev.score * prev.attempts + score) / n)
+      return { ...s, [key]: { score: avg, attempts: n } }
     })
+  }
+
+  const speak = (text: string) => {
+    speakWithFallback(text, (speaking, mode) => {
+      setSpeaking(speaking)
+      if (mode) setTtsMode(mode)
+    })
+  }
+
+  const checkListening = () => {
+    const target = scopedListening[listeningIndex].text
+    const ok = normalize(listeningAnswer) === normalize(target)
+    setListeningResult(ok)
+    addStat('listening', ok ? 100 : 0)
+  }
+
+  const checkWriting = () => {
+    const target = scopedWriting[writingIndex].correct
+    const ok = normalize(writingAnswer) === normalize(target)
+    setWritingResult(ok)
+    addStat('writing', ok ? 100 : 0)
   }
 
   const doJoin = async () => {
     setJoinErr('')
-    const sc = joinSchoolCode.trim().toUpperCase()
-    const lc = joinLabCode.trim().toUpperCase()
-    if (!sc || !lc) {
-      setJoinErr(t('Enter both the school code and your student code'))
+    if (!joinSchoolCode.trim() || !joinLabCode.trim()) {
+      setJoinErr(t('Enter both school code and student code'))
       return
     }
     setJoinBusy(true)
     try {
-      const res = await schoolsApi.joinLab(sc, lc)
-      localStorage.setItem(SESSION_KEY, JSON.stringify(res))
+      const res = await schoolsApi.joinLab(joinSchoolCode.trim(), joinLabCode.trim())
       setSession(res)
+      localStorage.setItem(SESSION_KEY, JSON.stringify(res))
       setStats(loadStats(STATS_PREFIX + '-' + res.student_id))
       setJoinSchoolCode('')
       setJoinLabCode('')
@@ -205,7 +220,6 @@ export default function LanguageLabPage() {
 
   useEffect(() => {
     if (tab === 'students' && isSchool) loadRoster()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab])
 
   const addStudent = async () => {
@@ -262,7 +276,7 @@ export default function LanguageLabPage() {
   const copyCode = (code: string) => {
     try {
       navigator.clipboard?.writeText(code)
-      setCopyMsg(`${code} ✓`)
+      setCopyMsg(t('Copied!'))
       setTimeout(() => setCopyMsg(''), 1500)
     } catch { /* ignore */ }
   }
@@ -278,29 +292,16 @@ export default function LanguageLabPage() {
       return
     }
     if (speechSupported) {
-      startListening()
-      setRecognizing(true)
       setRecognitionText('')
+      setRecognizing(true)
+      startListening()
     }
-  }
-
-  const checkListening = () => {
-    const correct = normalize(listeningAnswer) === normalize(scopedListening[listeningIndex].text)
-    setListeningResult(correct)
-    addStat('listening', correct ? 100 : 0)
-  }
-
-  const checkWriting = () => {
-    const correct = normalize(writingAnswer) === normalize(scopedWriting[writingIndex].correct)
-    setWritingResult(correct)
-    addStat('writing', correct ? 100 : 0)
   }
 
   useEffect(() => {
     if (!scopedPassages.some((p) => p.id === readingPassageId)) {
       setReadingPassageId(scopedPassages[0]?.id ?? 'rp1')
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [scopedPassages])
 
   const readingQ = readingPassageId ? (comprehensionQuestions[readingPassageId] ?? []) : []
@@ -319,27 +320,29 @@ export default function LanguageLabPage() {
     return Math.round(keys.reduce((a, s) => a + s.score, 0) / keys.length)
   }, [stats])
 
-  const tabs: { id: LabTab; label: string; icon: string }[] = [
-    { id: 'library', label: 'Digital Library', icon: '📚' },
-    { id: 'assignments', label: 'Assignments & Projects', icon: '📋' },
-    { id: 'listening', label: 'Listening', icon: '👂' },
-    { id: 'speaking', label: 'Speaking', icon: '🗣️' },
-    { id: 'reading', label: 'Reading', icon: '📖' },
-    { id: 'writing', label: 'Writing', icon: '✍️' },
-    { id: 'report', label: 'Report', icon: '📊' },
-    ...(isSchool ? [{ id: 'students' as LabTab, label: 'Students', icon: '👨🏫' }] : []),
+  const tabs: { id: LabTab; label: string; icon: React.ReactNode }[] = [
+    { id: 'library', label: 'Digital Library', icon: <BookOpen size={15} /> },
+    { id: 'assignments', label: 'Assignments & Projects', icon: <Layers size={15} /> },
+    { id: 'listening', label: 'Listening', icon: <Volume2 size={15} /> },
+    { id: 'speaking', label: 'Speaking', icon: <Mic size={15} /> },
+    { id: 'reading', label: 'Reading', icon: <BookOpen size={15} /> },
+    { id: 'writing', label: 'Writing', icon: <Feather size={15} /> },
+    { id: 'report', label: 'Report', icon: <FileText size={15} /> },
+    ...(isSchool ? [{ id: 'students' as LabTab, label: 'Students', icon: <Users size={15} /> }] : []),
   ]
 
   const viewPassage = scopedPassages.find((p) => p.id === activePassage.id) ?? scopedPassages[0]
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('🗣️ Sanskrit Language Lab')}</h2>
+        <h2>{t('Sanskrit Language Lab')}</h2>
         <p>{t('Digital language lab — Listening, Speaking, Reading & Writing practice with record & playback')}</p>
         {inStudentMode && (
-          <div className="lab-entry-chip">
-            <span>🎓 {session!.name} · {session!.school_name}</span>
+          <div className="lab-entry-chip" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginTop: 8 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <GraduationCap size={15} /> {session!.name} · {session!.school_name}
+            </span>
             <button className="btn btn-sm btn-secondary" onClick={leaveLab}>{t('Leave Lab')}</button>
           </div>
         )}
@@ -347,7 +350,9 @@ export default function LanguageLabPage() {
 
       {!isSchool && !session ? (
         <div className="lab-card lab-entry">
-          <h3>{t('🔑 Student Lab Entry')}</h3>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Key size={18} /> <span>{t('Student Lab Entry')}</span>
+          </h3>
           <p>{t('Ask your Sanskrit teacher for your school code and student code, then enter them below.')}</p>
           <div className="lab-input-row">
             <input
@@ -385,15 +390,16 @@ export default function LanguageLabPage() {
             key={tb.id}
             className={`btn btn-sm ${tab === tb.id ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setTab(tb.id)}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
           >
-            {tb.icon} {t(tb.label)}
+            {tb.icon} <span>{t(tb.label)}</span>
           </button>
         ))}
       </div>
 
       {speaking && (
         <div className={`lab-speaking ${ttsMode !== 'browser' ? 'lab-speaking-online' : ''}`}>
-          🔊 {t('Speaking…')}{ttsMode !== 'browser' && ` (${t('online voice')})`}
+          <Volume2 size={16} /> <span>{t('Speaking…')}{ttsMode !== 'browser' && ` (${t('online voice')})`}</span>
         </div>
       )}
 
@@ -403,11 +409,15 @@ export default function LanguageLabPage() {
 
       {tab === 'students' && isSchool && (
         <div className="lab-card">
-          <h3>{t('👨🏫 Students & Lab Codes')}</h3>
+          <h3 style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Users size={18} /> <span>{t('Students & Lab Codes')}</span>
+          </h3>
           <p>{t('Add students and share each student code so they can enter the lab with your school code.')}</p>
           {copyMsg && <p className="lab-feedback ok">{copyMsg}</p>}
           <div className="lab-student-form">
-            <h4>{t('➕ Add Student')}</h4>
+            <h4 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Plus size={16} /> <span>{t('Add Student')}</span>
+            </h4>
             <div className="lab-input-row">
               <input className="lab-input" value={studentForm.name ?? ''} onChange={(e) => setStudentForm((f) => ({ ...f, name: e.target.value }))} placeholder={t('Full name *')} />
             </div>
@@ -443,7 +453,7 @@ export default function LanguageLabPage() {
             </div>
             {joinErr && <p className="lab-feedback no">{joinErr}</p>}
             <button className="btn btn-primary" onClick={addStudent} disabled={joinBusy || !studentForm.name?.trim()}>
-              {joinBusy ? t('Adding…') : t('➕ Add Student')}
+              <Plus size={15} /> <span>{joinBusy ? t('Adding…') : t('Add Student')}</span>
             </button>
           </div>
 
@@ -474,9 +484,13 @@ export default function LanguageLabPage() {
                       <td className="lab-code-cell">
                         <code>{code}</code>
                         {st.lab_code && (
-                          <button className="btn btn-sm btn-secondary" onClick={() => copyCode(st.lab_code!)}>📋 {t('Copy')}</button>
+                          <button className="btn btn-sm btn-secondary" onClick={() => copyCode(st.lab_code!)}>
+                            <Copy size={13} /> <span>{t('Copy')}</span>
+                          </button>
                         )}
-                        <button className="btn btn-sm btn-secondary" onClick={() => regenCode(st)} title={t('Generate new code')}>🔄</button>
+                        <button className="btn btn-sm btn-secondary" onClick={() => regenCode(st)} title={t('Generate new code')}>
+                          <RotateCcw size={13} />
+                        </button>
                       </td>
                       <td>
                         <button className="btn btn-sm btn-secondary" onClick={() => schoolsApi.deactivateStudent(school!.id, st.id).then(loadRoster)}>{t('Remove')}</button>
@@ -512,11 +526,13 @@ export default function LanguageLabPage() {
             <div className="lab-passage-text">{viewPassage.text}</div>
             <div className="lab-passage-translit">{viewPassage.transliteration}</div>
             <div className="lab-passage-actions">
-              <button className="btn btn-sm btn-primary" onClick={() => speak(viewPassage.text)}>🔊 {t('Hear Passage')}</button>
+              <button className="btn btn-sm btn-primary" onClick={() => speak(viewPassage.text)}>
+                <Volume2 size={15} /> <span>{t('Hear Passage')}</span>
+              </button>
               {recorder.supported && (
                 <>
                   <button className={`btn btn-sm ${recorder.recording ? 'btn-danger' : 'btn-secondary'}`} onClick={() => (recorder.recording ? recorder.stop() : recorder.start())}>
-                    {recorder.recording ? '⏹ ' + t('Stop Recording') : '🎙️ ' + t('Record Reading')}
+                    {recorder.recording ? <><Square size={14} /> <span>{t('Stop Recording')}</span></> : <><Mic size={14} /> <span>{t('Record Reading')}</span></>}
                   </button>
                   {recorder.audioUrl && (
                     <audio controls src={recorder.audioUrl} className="lab-audio" />
@@ -547,7 +563,7 @@ export default function LanguageLabPage() {
             <div className="lab-exercise-bar">
               <span className="lab-counter">{listeningIndex + 1} / {scopedListening.length}</span>
               <button className="btn btn-sm btn-primary" onClick={() => speak(scopedListening[listeningIndex].text)}>
-                🔊 {t('Play Phrase')}
+                <Volume2 size={15} /> <span>{t('Play Phrase')}</span>
               </button>
               <button
                 className="btn btn-sm btn-secondary"
@@ -557,7 +573,7 @@ export default function LanguageLabPage() {
                   setListeningResult(null)
                 }}
               >
-                {t('Skip →')}
+                <span>{t('Skip')}</span> <ArrowRight size={14} />
               </button>
             </div>
             <div className="lab-phrase-box">
@@ -571,7 +587,9 @@ export default function LanguageLabPage() {
                 onChange={(e) => setListeningAnswer(e.target.value)}
                 placeholder={t('Type in Devanagari…')}
               />
-              <button className="btn btn-sm btn-secondary" onClick={() => toggleKeyboard({ current: document.querySelector('.lab-textarea') } as any)} title={t('Devanagari Keyboard')}>⌨️ देव</button>
+              <button className="btn btn-sm btn-secondary" onClick={() => toggleKeyboard({ current: document.querySelector('.lab-textarea') } as any)} title={t('Devanagari Keyboard')}>
+                <Keyboard size={15} /> <span>देव</span>
+              </button>
             </div>
             <div className="lab-actions">
               <button className="btn btn-primary" onClick={checkListening} disabled={!listeningAnswer.trim()}>{t('Check')}</button>
@@ -579,7 +597,7 @@ export default function LanguageLabPage() {
             </div>
             {listeningResult !== null && (
               <p className={`lab-feedback ${listeningResult ? 'ok' : 'no'}`}>
-                {listeningResult ? t('✓ Correct! Well done.') : t('✗ Not quite — try again.')}
+                {listeningResult ? t('Correct! Well done.') : t('Not quite — try again.')}
               </p>
             )}
           </div>
@@ -594,7 +612,7 @@ export default function LanguageLabPage() {
             <div className="lab-exercise-bar">
               <span className="lab-counter">{spokenIndex + 1} / {scopedPassages.length}</span>
               <button className="btn btn-sm btn-secondary" onClick={() => setSpokenIndex((i) => (i + 1) % scopedPassages.length)}>
-                {t('Skip →')}
+                <span>{t('Skip')}</span> <ArrowRight size={14} />
               </button>
             </div>
             <div className="lab-phrase-box">
@@ -602,10 +620,12 @@ export default function LanguageLabPage() {
               <p className="lab-hint">{scopedPassages[spokenIndex].transliteration}</p>
             </div>
             <div className="lab-actions">
-              <button className="btn btn-sm btn-primary" onClick={() => speak(scopedPassages[spokenIndex].text)}>🔊 {t('Hear Passage')}</button>
+              <button className="btn btn-sm btn-primary" onClick={() => speak(scopedPassages[spokenIndex].text)}>
+                <Volume2 size={15} /> <span>{t('Hear Passage')}</span>
+              </button>
               {recorder.supported && (
                 <button className={`btn btn-sm ${recorder.recording ? 'btn-danger' : 'btn-primary'}`} onClick={() => (recorder.recording ? recorder.stop() : recorder.start())}>
-                  {recorder.recording ? '⏹ ' + t('Stop Recording') : '🎙️ ' + t('Record Yourself')}
+                  {recorder.recording ? <><Square size={14} /> <span>{t('Stop Recording')}</span></> : <><Mic size={14} /> <span>{t('Record Yourself')}</span></>}
                 </button>
               )}
               {recorder.audioUrl && <audio controls src={recorder.audioUrl} className="lab-audio" />}
@@ -613,7 +633,7 @@ export default function LanguageLabPage() {
             {speechSupported && (
               <div className="lab-recognize">
                 <button className={`btn btn-sm btn-secondary ${recognizing ? 'btn-danger' : ''}`} onClick={toggleRecognition}>
-                  {recognizing ? '⏹ ' + t('Stop Listening') : '🎙️ ' + t('Speech Check')}
+                  {recognizing ? <><Square size={14} /> <span>{t('Stop Listening')}</span></> : <><Mic size={14} /> <span>{t('Speech Check')}</span></>}
                 </button>
                 {recognitionText && (
                   <p className="lab-recognition">{recognitionText}</p>
@@ -682,7 +702,7 @@ export default function LanguageLabPage() {
             <div className="lab-exercise-bar">
               <span className="lab-counter">{writingIndex + 1} / {scopedWriting.length}</span>
               <button className="btn btn-sm btn-secondary" onClick={() => { setWritingIndex((i) => (i + 1) % scopedWriting.length); setWritingAnswer(''); setWritingResult(null) }}>
-                {t('Skip →')}
+                <span>{t('Skip')}</span> <ArrowRight size={14} />
               </button>
             </div>
             <div className="lab-phrase-box">
@@ -696,7 +716,9 @@ export default function LanguageLabPage() {
                 onChange={(e) => setWritingAnswer(e.target.value)}
                 placeholder={t('Type in Devanagari…')}
               />
-              <button className="btn btn-sm btn-secondary" onClick={() => toggleKeyboard({ current: document.querySelector('.lab-textarea') } as any)} title={t('Devanagari Keyboard')}>⌨️ देव</button>
+              <button className="btn btn-sm btn-secondary" onClick={() => toggleKeyboard({ current: document.querySelector('.lab-textarea') } as any)} title={t('Devanagari Keyboard')}>
+                <Keyboard size={15} /> <span>देव</span>
+              </button>
             </div>
             <div className="lab-actions">
               <button className="btn btn-primary" onClick={checkWriting} disabled={!writingAnswer.trim()}>{t('Check')}</button>
@@ -704,7 +726,7 @@ export default function LanguageLabPage() {
             </div>
             {writingResult !== null && (
               <p className={`lab-feedback ${writingResult ? 'ok' : 'no'}`}>
-                {writingResult ? t('✓ Correct! Well done.') : t('✗ Not quite — try again.')}
+                {writingResult ? t('Correct! Well done.') : t('Not quite — try again.')}
               </p>
             )}
           </div>
@@ -721,7 +743,10 @@ export default function LanguageLabPage() {
           <div className="lab-report-rows">
             {Object.entries(stats).map(([key, s]) => (
               <div className="lab-report-row" key={key}>
-                <span className="lab-report-label">{t(key === 'listening' ? '👂 Listening' : key === 'speaking' ? '🗣️ Speaking' : key === 'reading' ? '📖 Reading' : '✍️ Writing')}</span>
+                <span className="lab-report-label" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {key === 'listening' ? <Volume2 size={15} /> : key === 'speaking' ? <Mic size={15} /> : key === 'reading' ? <BookOpen size={15} /> : <Feather size={15} />}
+                  <span>{t(key === 'listening' ? 'Listening' : key === 'speaking' ? 'Speaking' : key === 'reading' ? 'Reading' : 'Writing')}</span>
+                </span>
                 <div className="lab-report-bar"><div style={{ width: `${s.attempts > 0 ? s.score : 0}%` }} /></div>
                 <span className="lab-report-val">{s.attempts > 0 ? `${s.score}%` : '—'}</span>
               </div>

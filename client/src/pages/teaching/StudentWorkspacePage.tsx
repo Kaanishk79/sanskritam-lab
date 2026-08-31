@@ -1,74 +1,71 @@
 import { useEffect, useState } from 'react'
+import {
+  BookOpen, FileText, Users, BookMarked,
+  BarChart3, GraduationCap
+} from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 import { useRole } from '../../context/RoleContext'
 import { supabase } from '../../services/supabase'
 import { getAuthState } from '../../services/auth'
 
 export default function StudentWorkspacePage() {
-  const [activeTool, setActiveTool] = useState('text')
   const { t } = useLanguage()
   const { role, school, canSwitch, setRole } = useRole()
+  const [activeTool, setActiveTool] = useState('text')
+  const [liveStats, setLiveStats] = useState<{ xp: number; streak: number; attempts: number; avgScore: number; labAttempts: number } | null>(null)
 
-  const inStudentView = role === 'student'
-  const allSections = school ? school.classes.flatMap((c) => (c.sections || []).map((sec) => ({ ...sec, className: c.name }))) : []
-  const classes = school ? school.classes.filter((c) => c.is_active) : []
-  const allStudents = school
-    ? school.classes.flatMap((c) => (c.sections || []).flatMap((sec) => sec.students || [])).filter((st) => st.is_active)
-    : []
-  const sampleStudent = allStudents[0] || null
-  const sampleSection = sampleStudent ? allSections.find((x) => x.id === sampleStudent.section_id) || null : null
-  const sampleClass = sampleStudent ? classes.find((c) => c.id === sampleStudent.class_id) || null : null
-  const classmates = sampleStudent
-    ? allStudents.filter((st) => st.section_id === sampleStudent.section_id && st.id !== sampleStudent.id)
-    : []
-  const [liveStats, setLiveStats] = useState<{ streak: number; xp: number; attempts: number; avgScore: number; labAttempts: number } | null>(null)
+  const isEnrolled = role === 'student' && !!school
+  const sampleClass = school?.classes?.[0]
+  const sampleSection = sampleClass?.sections?.[0]
+  const sampleStudent = sampleSection?.students?.[0]
+  const classmates = (sampleSection?.students || []).filter((s) => s.id !== sampleStudent?.id)
 
   useEffect(() => {
     let live = true
     const user = getAuthState().user
     if (!user) return
+
     Promise.all([
-      supabase.from('user_progress').select('streak, xp').eq('user_id', user.id).maybeSingle(),
-      supabase.from('lab_stats').select('stats').eq('user_id', user.id).maybeSingle(),
+      supabase.from('user_progress').select('xp, streak, lessons_completed, daily_completed').eq('user_id', user.id).maybeSingle(),
       supabase.from('assessment_attempts').select('score, max_score').eq('user_id', user.id),
+      supabase.from('lab_assignment_attempts').select('id').eq('student_id', user.id),
     ])
-      .then(([progressRes, labRes, attemptsRes]) => {
+      .then(([progressRes, attemptsRes, labRes]) => {
         if (!live) return
-        const progress = progressRes.data as { streak?: number; xp?: number } | null
-        const labMap = (labRes.data as { stats?: Record<string, { attempts?: number }> } | null)?.stats
-        const rows = (attemptsRes.data as { score: number; max_score: number }[] | null) ?? []
-        const attempts = rows.length
-        const pct = rows.reduce((s, r) => s + (r.max_score > 0 ? (r.score / r.max_score) * 100 : 0), 0)
-        const avgScore = attempts > 0 ? Math.round(pct / attempts) : 0
-        let labAttempts = 0
-        for (const v of Object.values(labMap ?? {})) labAttempts += v.attempts ?? 0
+        const p = progressRes.data as { xp?: number; streak?: number } | null
+        const attempts = (attemptsRes.data as { score: number; max_score: number }[] | null) ?? []
+        const labAttempts = (labRes.data as unknown[] | null)?.length ?? 0
+        const avgScore =
+          attempts.length > 0
+            ? Math.round(attempts.reduce((s, a) => s + (a.max_score ? (a.score / a.max_score) * 100 : 0), 0) / attempts.length)
+            : 0
+
         setLiveStats({
-          streak: progress?.streak ?? 0,
-          xp: progress?.xp ?? 0,
-          attempts,
+          xp: p?.xp ?? 0,
+          streak: p?.streak ?? 0,
+          attempts: attempts.length,
           avgScore,
           labAttempts,
         })
       })
       .catch(() => undefined)
+
     return () => {
       live = false
     }
   }, [])
 
-  if (inStudentView && school && sampleStudent) {
+  if (isEnrolled && sampleStudent) {
     return (
       <div className="page-container">
         <div className="page-header">
-          <h2>{t('Student Workspace')} — {school.name}</h2>
-          <p>
-            {t('Previewing as')} <strong>{sampleStudent.name}</strong> · {sampleClass?.name || '—'} — {sampleSection?.name || '—'} · {t('Roll')} {sampleStudent.roll_no || '—'}
-          </p>
+          <h2>{t('Student Workspace')} — {school?.name}</h2>
+          <p>{t('Enrolled in')} <strong>{sampleClass?.name || t('Class')}</strong> · {t('Section')} <strong>{sampleSection?.name || 'A'}</strong> · {t('Roll')} <strong>{sampleStudent.roll_no || '—'}</strong></p>
         </div>
 
         <div className="analytics-grid">
           <div className="stat-card">
-            <div className="stat-value">{sampleClass?.name?.replace(/[^0-9]/g, '') || '—'}</div>
+            <div className="stat-value">{sampleClass?.name || '—'}</div>
             <div className="stat-label">{t('My Class')}</div>
           </div>
           <div className="stat-card">
@@ -87,29 +84,34 @@ export default function StudentWorkspacePage() {
 
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
           {[
-            { key: 'text', label: '📖 ' + t('Current Text') },
-            { key: 'exercises', label: '📝 ' + t('Exercises') },
-            { key: 'classmates', label: '👥 ' + t('My Classmates') },
-          ].map((tool) => (
-            <button
-              key={tool.key}
-              className={`btn ${activeTool === tool.key ? 'btn-primary' : 'btn-secondary'}`}
-              onClick={() => setActiveTool(tool.key as string)}
-            >
-              {tool.label}
-            </button>
-          ))}
+            { key: 'text', label: t('Current Text'), icon: BookOpen },
+            { key: 'exercises', label: t('Exercises'), icon: FileText },
+            { key: 'classmates', label: t('My Classmates'), icon: Users },
+          ].map((tool) => {
+            const Icon = tool.icon
+            return (
+              <button
+                key={tool.key}
+                className={`btn ${activeTool === tool.key ? 'btn-primary' : 'btn-secondary'}`}
+                onClick={() => setActiveTool(tool.key as string)}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+              >
+                <Icon size={14} />
+                <span>{tool.label}</span>
+              </button>
+            )
+          })}
         </div>
 
         {activeTool === 'text' && (
           <div className="card">
-            <div style={{ fontSize: 12, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+            <div style={{ fontSize: 12, color: 'var(--vt-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
               {t('Current Assignment — Bhagavad Gītā 2.47 ·')} {sampleClass?.name || t('Class')} — {sampleSection?.name || 'A'}
             </div>
-            <div style={{ fontSize: 28, lineHeight: 1.8, fontFamily: "'Noto Sans Devanagari', serif", color: '#f0f0f0', marginBottom: 16 }}>
+            <div style={{ fontSize: 28, lineHeight: 1.8, fontFamily: "'Noto Sans Devanagari', serif", color: 'var(--vt-text)', marginBottom: 16 }}>
               मा फलेषु कदाचन । मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि ॥
             </div>
-            <div style={{ color: '#888' }}>
+            <div style={{ color: 'var(--vt-muted)' }}>
               <p><strong>{t('Word-by-word:')}</strong> {t('mā — not, phaleṣu — in fruits, kadācana — ever')}</p>
               <p><strong>{t('Translation:')}</strong> {t('Never be motivated by the fruits of action, nor be attached to inaction.')}</p>
             </div>
@@ -143,12 +145,12 @@ export default function StudentWorkspacePage() {
               {[sampleStudent, ...classmates].map((st) => (
                 <div className="text-item" key={st.id}>
                   <div>
-                    <div className="text-title">{st.name}{st.id === sampleStudent.id ? ' 👈 ' + t('you (preview)') : ''}</div>
+                    <div className="text-title">{st.name}{st.id === sampleStudent.id ? ' (' + t('you — preview') + ')' : ''}</div>
                     <div className="text-meta">{t('Roll')} {st.roll_no || '—'}{st.father_name ? ' · ' + st.father_name : ''}</div>
                   </div>
                 </div>
               ))}
-              {!classmates.length && <p style={{ color: '#888' }}>{t('Only you in this section so far.')}</p>}
+              {!classmates.length && <p style={{ color: 'var(--vt-muted)' }}>{t('Only you in this section so far.')}</p>}
             </div>
           </div>
         )}
@@ -159,7 +161,10 @@ export default function StudentWorkspacePage() {
   if (canSwitch && school) {
     return (
       <div className="card" style={{ padding: 32, textAlign: 'center', maxWidth: 520, margin: '40px auto' }}>
-        <h3>🧑‍🎓 {t('Student Workspace')}</h3>
+        <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
+          <GraduationCap size={44} color="var(--vt-orange)" />
+        </div>
+        <h3>{t('Student Workspace')}</h3>
         <p>{t('As an institution you can preview the student experience for your enrolled students.')}</p>
         <button className="btn btn-primary" onClick={() => setRole('student')}>{t('Enter Student View')}</button>
       </div>
@@ -194,7 +199,9 @@ export default function StudentWorkspacePage() {
 
       {liveStats && (
         <div className="card" style={{ marginTop: 16 }}>
-          <h3 style={{ marginTop: 0, marginBottom: 16 }}>📊 {t('Live data')}</h3>
+          <h3 style={{ marginTop: 0, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <BarChart3 size={18} /> <span>{t('Live data')}</span>
+          </h3>
           <div className="analytics-grid" style={{ marginBottom: 0 }}>
             <div className="stat-card">
               <div className="stat-value">{liveStats.streak}</div>
@@ -214,7 +221,7 @@ export default function StudentWorkspacePage() {
             </div>
           </div>
           {liveStats.labAttempts > 0 && (
-            <p style={{ color: '#888', fontSize: 13, marginTop: 12 }}>
+            <p style={{ color: 'var(--vt-muted)', fontSize: 13, marginTop: 12 }}>
               {t('Lab practice')}: {liveStats.labAttempts} {t('attempts')}
             </p>
           )}
@@ -223,29 +230,34 @@ export default function StudentWorkspacePage() {
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
         {[
-          { key: 'text', label: '📖 ' + t('Current Text') },
-          { key: 'exercises', label: '📝 ' + t('Exercises') },
-          { key: 'notes', label: '📓 ' + t('My Notes') },
-        ].map((t) => (
-          <button
-            key={t.key}
-            className={`btn ${activeTool === t.key ? 'btn-primary' : 'btn-secondary'}`}
-            onClick={() => setActiveTool(t.key)}
-          >
-            {t.label}
-          </button>
-        ))}
+          { key: 'text', label: t('Current Text'), icon: BookOpen },
+          { key: 'exercises', label: t('Exercises'), icon: FileText },
+          { key: 'notes', label: t('My Notes'), icon: BookMarked },
+        ].map((item) => {
+          const Icon = item.icon
+          return (
+            <button
+              key={item.key}
+              className={`btn ${activeTool === item.key ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => setActiveTool(item.key)}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              <Icon size={14} />
+              <span>{item.label}</span>
+            </button>
+          )
+        })}
       </div>
 
       {activeTool === 'text' && (
         <div className="card">
-          <div style={{ fontSize: 12, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+          <div style={{ fontSize: 12, color: 'var(--vt-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
             {t('Current Assignment — Bhagavad Gītā 2.47')}
           </div>
-          <div style={{ fontSize: 28, lineHeight: 1.8, fontFamily: "'Noto Sans Devanagari', serif", color: '#f0f0f0', marginBottom: 16 }}>
+          <div style={{ fontSize: 28, lineHeight: 1.8, fontFamily: "'Noto Sans Devanagari', serif", color: 'var(--vt-text)', marginBottom: 16 }}>
             मा फलेषु कदाचन । मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि ॥
           </div>
-          <div style={{ color: '#888' }}>
+          <div style={{ color: 'var(--vt-muted)' }}>
             <p><strong>{t('Word-by-word:')}</strong> {t('mā — not, phaleṣu — in fruits, kadācana — ever')}</p>
             <p><strong>{t('Translation:')}</strong> {t('Never be motivated by the fruits of action, nor be attached to inaction.')}</p>
           </div>
@@ -276,7 +288,7 @@ export default function StudentWorkspacePage() {
         <div className="card">
           <textarea
             placeholder={t('Write your notes here...')}
-            style={{ width: '100%', minHeight: 200, background: '#1e1e3a', color: '#e0e0e0', border: '1px solid #333', borderRadius: 6, padding: 12, resize: 'vertical' }}
+            style={{ width: '100%', minHeight: 200, background: 'rgba(255,255,255,0.03)', color: 'var(--vt-text)', border: '1px solid var(--vt-border)', borderRadius: 6, padding: 12, resize: 'vertical' }}
           />
         </div>
       )}

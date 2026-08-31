@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Check, X, RotateCcw, ArrowRight, BookOpen } from 'lucide-react'
 import { SENTENCES, type Sentence } from '../../data/sentenceBuilder'
 import { loadSentences } from '../../services/contentDb'
 import { toDevanagari } from '../../services/sanskrit'
@@ -13,10 +14,10 @@ const shuffle = <T,>(arr: T[]): T[] => {
   return a
 }
 
-const LEVELS: { id: Sentence['level']; label: string }[] = [
-  { id: 'easy', label: '🟢 Easy' },
-  { id: 'medium', label: '🟡 Medium' },
-  { id: 'hard', label: '🔴 Hard' },
+const LEVELS: { id: Sentence['level']; label: string; color: string }[] = [
+  { id: 'easy', label: 'Easy', color: '#2ecc71' },
+  { id: 'medium', label: 'Medium', color: '#f39c12' },
+  { id: 'hard', label: 'Hard', color: '#e74c3c' },
 ]
 
 export default function SentenceBuilderPage() {
@@ -82,9 +83,9 @@ export default function SentenceBuilderPage() {
   }
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('🧩 Sentence Builder')}</h2>
+        <h2>{t('Sentence Builder')}</h2>
         <p>{t('Tap the word cards in the right order to build the Sanskrit sentence. Learn word order through play.')}</p>
       </div>
 
@@ -92,8 +93,14 @@ export default function SentenceBuilderPage() {
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16, alignItems: 'center' }}>
           <button className={`btn btn-sm ${level === 'all' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => { setLevel('all'); resetAll() }}>{t('All')}</button>
           {LEVELS.map((l) => (
-            <button key={l.id} className={`btn btn-sm ${level === l.id ? 'btn-primary' : 'btn-secondary'}`} onClick={() => { setLevel(l.id); resetAll() }}>
-              {l.label}
+            <button
+              key={l.id}
+              className={`btn btn-sm ${level === l.id ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={() => { setLevel(l.id); resetAll() }}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+            >
+              <span style={{ width: 8, height: 8, borderRadius: '50%', background: l.color }} />
+              <span>{t(l.label)}</span>
             </button>
           ))}
           <span style={{ flex: 1 }} />
@@ -104,29 +111,37 @@ export default function SentenceBuilderPage() {
         </div>
 
         {done && (
-          <div className={`card ${checking && picked.join(' ') === target ? '' : ''}`} style={{ padding: 16, marginBottom: 16, border: picked.join(' ') === target ? '2px solid #2e7d32' : '2px solid #c62828' }}>
-            <p style={{ margin: 0, fontWeight: 600 }}>
-              {picked.join(' ') === target ? t('✓ Correct! The sentence was:') : t('✗ Not quite — the sentence is:')}
+          <div className="card" style={{ padding: 16, marginBottom: 16, border: picked.join(' ') === target ? '2px solid #2e7d32' : '2px solid #c62828' }}>
+            <p style={{ margin: 0, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6 }}>
+              {picked.join(' ') === target ? (
+                <><Check size={18} color="#2e7d32" /> <span>{t('Correct! The sentence was:')}</span></>
+              ) : (
+                <><X size={18} color="#c62828" /> <span>{t('Not quite — the sentence is:')}</span></>
+              )}
             </p>
             <p style={{ fontSize: 22, margin: '8px 0 0' }}>{sentence.sa}</p>
             <p style={{ margin: 0, color: 'var(--vt-muted)' }}>{iastMode ? sentence.iast : toDevanagari(sentence.iast)} — {t(sentence.en)}</p>
             <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-              <button className="btn btn-sm btn-primary" onClick={() => next(1)}>{t('Next →')}</button>
-              <button className="btn btn-sm btn-secondary" onClick={() => { setPicked([]); setDone(false); setChecking(false) }}>{t('Try Again')}</button>
+              <button className="btn btn-sm btn-primary" onClick={() => next(1)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <span>{t('Next')}</span> <ArrowRight size={14} />
+              </button>
+              <button className="btn btn-sm btn-secondary" onClick={() => { setPicked([]); setDone(false); setChecking(false) }}>
+                <RotateCcw size={14} /> <span>{t('Try Again')}</span>
+              </button>
             </div>
           </div>
         )}
 
         <div className="card" style={{ padding: 20, textAlign: 'center', background: 'linear-gradient(135deg,#16213e,#1a1a3e)', color: '#fff' }}>
           <p style={{ margin: 0, fontSize: 13, opacity: 0.8 }}>{t('Build this sentence')} — {t(sentence.en)}</p>
-          <p style={{ margin: '8px 0 0', fontSize: 15, opacity: 0.75 }}>{iastMode ? sentence.iast : sentence.sa.split(' ').map(() => '⬜').join(' ')}</p>
+          <p style={{ margin: '8px 0 0', fontSize: 15, opacity: 0.75 }}>{iastMode ? sentence.iast : sentence.sa.split(' ').map(() => '—').join(' ')}</p>
         </div>
 
         <div style={{ minHeight: 56, border: '2px dashed var(--vt-border)', borderRadius: 10, padding: 10, marginTop: 14, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-start' }}>
           {picked.length === 0 && <span style={{ color: 'var(--vt-muted)' }}>{t('Your sentence appears here…')}</span>}
           {picked.map((w, i) => (
-            <button key={w + i} className="btn btn-sm btn-primary" onClick={() => remove(i)} title={t('Tap to remove')}>
-              {w} ✕
+            <button key={w + i} className="btn btn-sm btn-primary" onClick={() => remove(i)} title={t('Tap to remove')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <span>{w}</span> <X size={12} />
             </button>
           ))}
         </div>
@@ -141,16 +156,24 @@ export default function SentenceBuilderPage() {
             ))}
         </div>
 
-        <div style={{ display: 'flex', gap: 8, marginTop: 18, alignItems: 'center' }}>
-          <button className="btn btn-primary" onClick={check} disabled={picked.length !== sentence.words.length || done}>{t('Check Sentence')}</button>
-          <button className="btn btn-sm btn-secondary" onClick={() => next(1)}>{t('Skip →')}</button>
-          <button className="btn btn-sm btn-secondary" onClick={resetAll}>{t('Restart')}</button>
+        <div style={{ display: 'flex', gap: 8, marginTop: 18, alignItems: 'center', flexWrap: 'wrap' }}>
+          <button className="btn btn-primary" onClick={check} disabled={picked.length !== sentence.words.length || done}>
+            <Check size={15} /> <span>{t('Check Sentence')}</span>
+          </button>
+          <button className="btn btn-sm btn-secondary" onClick={() => next(1)}>
+            <span>{t('Skip')}</span> <ArrowRight size={14} />
+          </button>
+          <button className="btn btn-sm btn-secondary" onClick={resetAll}>
+            <RotateCcw size={14} /> <span>{t('Restart')}</span>
+          </button>
           <span style={{ flex: 1 }} />
           <span className="badge">{t('Word order matters — verbs come last in Sanskrit!')}</span>
         </div>
 
         <div style={{ marginTop: 20 }}>
-          <h4>{t('📖 Word bank for this sentence')}</h4>
+          <h4 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <BookOpen size={16} /> <span>{t('Word bank for this sentence')}</span>
+          </h4>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(160px,1fr))', gap: 8 }}>
             {sentence.words.map((w) => (
               <div key={w.sa} className="card" style={{ padding: '8px 12px', margin: 0 }}>

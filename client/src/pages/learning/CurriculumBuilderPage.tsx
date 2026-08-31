@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Download, Save, Eye, EyeOff, Check } from 'lucide-react'
 import { lessons, lessonHi } from '../../data/lessons'
 import { useLanguage } from '../../context/LanguageContext'
 
@@ -77,11 +78,11 @@ export default function CurriculumBuilderPage() {
                   <div className="text-title">{l.title}</div>
                   <div className="text-meta">{l.track} · {lang === 'hi' && lessonHi[l.id]?.durationHi ? lessonHi[l.id].durationHi : l.duration} · {l.quiz.length}{t(' questions')}</div>
                 </div>
-                <span style={{ fontSize: 12, color: '#888' }}>{l.content.sections.length}{t(' sections')}</span>
+                <span style={{ fontSize: 12, color: 'var(--vt-muted)' }}>{l.content.sections.length}{t(' sections')}</span>
               </div>
             ))}
             {filtered.length === 0 && (
-              <div style={{ fontSize: 14, color: '#666', padding: 16, textAlign: 'center' }}>
+              <div style={{ fontSize: 14, color: 'var(--vt-muted)', padding: 16, textAlign: 'center' }}>
                 {t('No lessons at this level')}
               </div>
             )}
@@ -117,23 +118,31 @@ export default function CurriculumBuilderPage() {
               }}
             />
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-              <button className="btn btn-primary" onClick={handleExport} disabled={!customTitle.trim()}>
-                {t('Export Lesson')}
+              <button className="btn btn-primary" onClick={handleExport} disabled={!customTitle.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Download size={14} />
+                <span>{t('Export Lesson')}</span>
               </button>
-              <button className="btn btn-secondary" onClick={handleSaveCustom} disabled={!customTitle.trim()}>
-                {t('Save to Library')}
+              <button className="btn btn-secondary" onClick={handleSaveCustom} disabled={!customTitle.trim()} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Save size={14} />
+                <span>{t('Save to Library')}</span>
               </button>
-              <button className="btn btn-secondary" onClick={() => setShowPreview(!showPreview)}>
-                {showPreview ? t('Hide Preview') : t('Preview')}
+              <button className="btn btn-secondary" onClick={() => setShowPreview(!showPreview)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                {showPreview ? <EyeOff size={14} /> : <Eye size={14} />}
+                <span>{showPreview ? t('Hide Preview') : t('Preview')}</span>
               </button>
-              {saveMessage && <span style={{ color: 'var(--vt-green)', fontSize: 13, fontWeight: 500 }}>✓ {saveMessage}</span>}
+              {saveMessage && (
+                <span style={{ color: 'var(--vt-green)', fontSize: 13, fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <Check size={14} />
+                  <span>{saveMessage}</span>
+                </span>
+              )}
             </div>
 
             {showPreview && (
               <div style={{ marginTop: 16, padding: 16, background: 'var(--vt-bg)', borderRadius: 8, border: '1px solid var(--vt-border)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                   <span style={{ fontSize: 12, color: 'var(--vt-orange)', fontWeight: 600 }}>{t('Level')} {selectedLevel}</span>
-                  <span style={{ fontSize: 11, color: 'var(--vt-text-lighter)' }}>{t('Preview Mode')}</span>
+                  <span style={{ fontSize: 11, color: 'var(--vt-muted)' }}>{t('Preview Mode')}</span>
                 </div>
                 <h4 style={{ margin: '0 0 8px 0', fontSize: 18 }}>{customTitle || t('Untitled Lesson')}</h4>
                 <div style={{ fontSize: 14, lineHeight: 1.7, whiteSpace: 'pre-wrap', color: 'var(--vt-text-light)', fontFamily: "'Noto Sans Devanagari', sans-serif" }}>

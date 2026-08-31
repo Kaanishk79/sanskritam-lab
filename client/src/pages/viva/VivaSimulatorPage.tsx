@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { Volume2, Mic, Square, Keyboard, ArrowRight, Sparkles, Star, CheckCircle2 } from 'lucide-react'
 import { startListening, stopListening, isSpeechSupported, onSpeechResult, speakWithFallback } from '../../services/speech'
 import { useKeyboard } from '../../context/KeyboardContext'
 import { useLanguage } from '../../context/LanguageContext'
@@ -111,10 +112,10 @@ export default function VivaSimulatorPage() {
           <h3>{t('Ready for your Viva?')}</h3>
           <p>{t('The AI examiner will ask questions on Sanskrit grammar, philosophy, and texts. Respond via text or speech.')}</p>
           <div className="viva-start-features">
-            <span>{t('Speech recognition')}</span>
-            <span>{t('Auto-evaluation')}</span>
-            <span>{t('Scoring & history')}</span>
-            <span>{t('Text-to-speech questions')}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Mic size={14} /> {t('Speech recognition')}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Sparkles size={14} /> {t('Auto-evaluation')}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><CheckCircle2 size={14} /> {t('Scoring & history')}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Volume2 size={14} /> {t('Text-to-speech questions')}</span>
           </div>
           <button className="btn btn-primary" onClick={() => setStarted(true)}>{t('Start Viva Session')}</button>
         </div>
@@ -146,8 +147,15 @@ export default function VivaSimulatorPage() {
 
       <div className="viva-question-card">
         <div className="viva-question">{lang === 'hi' && questions[currentQ].questionHi ? questions[currentQ].questionHi : questions[currentQ].question}</div>
-        <div className="viva-difficulty">{t('Difficulty:')} {'★'.repeat(questions[currentQ].difficulty)}</div>
-        <button className="btn btn-sm btn-outline" onClick={speakQuestion}>🔊 {t('Hear Question')}</button>
+        <div className="viva-difficulty" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <span>{t('Difficulty:')}</span>
+          {Array.from({ length: questions[currentQ].difficulty }).map((_, i) => (
+            <Star key={i} size={13} fill="#ff9800" color="#ff9800" />
+          ))}
+        </div>
+        <button className="btn btn-sm btn-outline" onClick={speakQuestion} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <Volume2 size={14} /> <span>{t('Hear Question')}</span>
+        </button>
       </div>
 
       <div className="card">
@@ -167,15 +175,17 @@ export default function VivaSimulatorPage() {
             className="btn btn-secondary"
             onClick={() => toggleKeyboard(textRef as any)}
             title={t('Devanagari Keyboard')}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
           >
-            ⌨️ देव
+            <Keyboard size={15} /> <span>देव</span>
           </button>
           {speechSupported && (
             <button
               className={`btn ${isListening ? 'btn-danger' : 'btn-secondary'}`}
               onClick={toggleRecording}
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
             >
-              {isListening ? '⏹ ' + t('Stop Recording') : '🎤 ' + t('Start Speaking')}
+              {isListening ? <><Square size={14} /> <span>{t('Stop Recording')}</span></> : <><Mic size={14} /> <span>{t('Start Speaking')}</span></>}
             </button>
           )}
           {!speechSupported && (
@@ -185,7 +195,9 @@ export default function VivaSimulatorPage() {
             {t('Submit Response')}
           </button>
           {currentQ < questions.length - 1 && (
-            <button className="btn btn-secondary" onClick={nextQuestion}>{t('Skip →')}</button>
+            <button className="btn btn-secondary" onClick={nextQuestion} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <span>{t('Skip')}</span> <ArrowRight size={14} />
+            </button>
           )}
         </div>
 

@@ -1,44 +1,46 @@
 import { useNavigate } from 'react-router-dom'
+import { Sparkles, ArrowRight, BookMarked, Award, Star } from 'lucide-react'
 import { tracks } from '../../data/tracks'
+import { DynamicIcon } from '../../components/icons'
 import { useLanguage } from '../../context/LanguageContext'
 import { useRole } from '../../context/RoleContext'
 
 const features = [
-  { icon: '🔍', title: 'Sanskrit Search', desc: 'Search words, lessons, texts and topics in Sanskrit or English with live suggestions.', link: '/search' },
-  { icon: '✨', title: 'Explore Mode', desc: 'Click any word — राम — and see meaning, grammar, pronunciation, related words and text references.', link: '/explore' },
-  { icon: '📖', title: 'Sanskrit Dictionary', desc: 'Word meaning, Devanagari, transliteration, English meanings, examples and related words.', link: '/dictionary' },
-  { icon: '🌅', title: 'Daily Sanskrit', desc: 'Word, phrase and verse of the day plus a 5-minute challenge — every day.', link: '/daily' },
-  { icon: '📜', title: 'Manuscript Digitization', desc: 'Convert scanned Devanāgarī & Grantha manuscripts into searchable Unicode with OCR.', link: '/research/ocr' },
-  { icon: '🏛️', title: 'Smart Corpus & Search', desc: 'Explore texts by time period with semantic search and dictionary integration.', link: '/research/corpus' },
-  { icon: '🏛️', title: 'Layered Annotation', desc: 'Add grammar breakdowns, commentaries, and translations to any text.', link: '/research/annotate' },
-  { icon: '🪔', title: 'Shloka Explorer', desc: 'Classical verses with translation alongside — click any word to see its meaning.', link: '/tools/shloka' },
-  { icon: '🔤', title: 'Transliteration Tool', desc: 'Live Devanagari ⇄ IAST conversion in both directions.', link: '/tools/transliterate' },
-  { icon: '🔊', title: 'Sandhi Tool', desc: 'Join words and see the exact sandhi rule — Guṇa, Vṛddhi, Yaṇ, Visarga — explained.', link: '/tools/sandhi' },
-  { icon: '🌱', title: 'Dhātu Explorer', desc: 'Browse verbal roots: gaṇa, meaning and present-tense forms.', link: '/tools/dhatu' },
-  { icon: '🎨', title: '3D Manuscript Viewer', desc: 'Interactive 3D palm-leaf models with digitized text overlays.', link: '/visualization/3d' },
-  { icon: '🌳', title: 'Grammar & Mind Maps', desc: 'Pāṇini\'s rules as branching diagrams. Philosophy networks visualized.', link: '/visualization/grammar' },
-  { icon: '📈', title: 'Evolutionary Timeline', desc: '3000 years of Sanskrit evolution on an interactive timeline.', link: '/visualization/timeline' },
-  { icon: '🎓', title: 'Teacher Dashboard', desc: 'Lesson plans, exercises, manuscript annotations for your class.', link: '/teaching/dashboard' },
-  { icon: '🧑‍🎓', title: 'Student Workspace', desc: 'Guided learning with interactive texts and collaboration tools.', link: '/teaching/workspace' },
-  { icon: '📝', title: 'Assessment Engine', desc: 'Auto-generated drills for declensions, sandhi, and grammar.', link: '/teaching/assessment' },
-  { icon: '🎙️', title: 'AI Viva Simulator', desc: 'Oral exams with audio evaluation and real-time pronunciation feedback.', link: '/viva/simulator' },
-  { icon: '📊', title: 'Analytics Engine', desc: 'Track performance, find weak areas, get customized study paths.', link: '/viva/analytics' },
-  { icon: '🧒', title: 'Fun Learning Mode', desc: 'Kid-friendly flashcards, picture-word games, and colorful activities.', link: '/learning/child' },
-  { icon: '🤖', title: 'AI Sanskrit Tutor', desc: 'Chat with an AI tutor about Sanskrit grammar, texts, and philosophy.', link: '/tools/tutor' },
-  { icon: '🎤', title: 'Voice Mode', desc: 'Speak in Sanskrit or Hindi — hear the word, its meaning, and a spoken reply. Works offline.', link: '/tools/voice' },
-  { icon: '🧩', title: 'Sentence Builder', desc: 'Tap word cards in order to build Sanskrit sentences — learn word order through play.', link: '/tools/sentence' },
-  { icon: '🩺', title: 'Fix My Sanskrit', desc: 'Paste any sentence and get instant grammar fixes: punctuation, sandhi, missing spaces and more.', link: '/tools/fix' },
-  { icon: '📖', title: 'Story Generator', desc: 'Pick a theme and two words — get a Sanskrit story with translation, ready to hear aloud.', link: '/tools/story' },
-  { icon: '🌍', title: 'Sanskrit → Real World', desc: 'Ancient ideas alive today: karma, yoga, zero, dharma — the word behind daily life.', link: '/tools/realworld' },
-  { icon: '🪔', title: 'Culture Calendar', desc: 'Festivals, tithis and the six seasons — the Sanskrit year on your calendar.', link: '/tools/calendar' },
-  { icon: '🗣️', title: 'Who Said It?', desc: 'Match famous Sanskrit verses to their speakers — from the Gītā to Kālidāsa.', link: '/tools/whosaid' },
-  { icon: '🌱', title: 'Etymology Tree', desc: 'One verbal root, many words — watch Sanskrit words grow from their roots.', link: '/tools/etymology' },
-  { icon: '🔎', title: 'Concept Explorer', desc: 'Grammar, philosophy, values and texts — big Sanskrit ideas, plainly explained.', link: '/tools/concepts' },
-  { icon: '🎮', title: 'Learn Through Games', desc: 'Word match, number blitz and sandhi chase — three quick games to keep Sanskrit sharp.', link: '/tools/games' },
-  { icon: '⚔️', title: 'Debate Mode', desc: 'Pick a topic and a side — argue in Sanskrit and hear the counter-argument.', link: '/tools/debate' },
-  { icon: '🎨', title: 'Creative Studio', desc: 'Compose your own verse — pick a theme and meter, hear it come alive.', link: '/tools/studio' },
-  { icon: '📇', title: 'SRS Flashcards', desc: 'Anki-style spaced repetition for vocabulary, grammar, and more.', link: '/tools/flashcards' },
-  { icon: '🔐', title: 'Account & Auth', desc: 'Sign up or sign in to track your progress across devices.', link: '/auth' },
+  { icon: 'search', title: 'Sanskrit Search', desc: 'Search words, lessons, texts and topics in Sanskrit or English with live suggestions.', link: '/search' },
+  { icon: 'sparkles', title: 'Explore Mode', desc: 'Click any word — राम — and see meaning, grammar, pronunciation, related words and text references.', link: '/explore' },
+  { icon: 'book', title: 'Sanskrit Dictionary', desc: 'Word meaning, Devanagari, transliteration, English meanings, examples and related words.', link: '/dictionary' },
+  { icon: 'sun', title: 'Daily Sanskrit', desc: 'Word, phrase and verse of the day plus a 5-minute challenge — every day.', link: '/daily' },
+  { icon: 'manuscript', title: 'Manuscript Digitization', desc: 'Convert scanned Devanāgarī & Grantha manuscripts into searchable Unicode with OCR.', link: '/research/ocr' },
+  { icon: 'temple', title: 'Smart Corpus & Search', desc: 'Explore texts by time period with semantic search and dictionary integration.', link: '/research/corpus' },
+  { icon: 'temple', title: 'Layered Annotation', desc: 'Add grammar breakdowns, commentaries, and translations to any text.', link: '/research/annotate' },
+  { icon: 'shloka', title: 'Shloka Explorer', desc: 'Classical verses with translation alongside — click any word to see its meaning.', link: '/tools/shloka' },
+  { icon: 'alphabet', title: 'Transliteration Tool', desc: 'Live Devanagari ⇄ IAST conversion in both directions.', link: '/tools/transliterate' },
+  { icon: 'audio', title: 'Sandhi Tool', desc: 'Join words and see the exact sandhi rule — Guṇa, Vṛddhi, Yaṇ, Visarga — explained.', link: '/tools/sandhi' },
+  { icon: 'plant', title: 'Dhātu Explorer', desc: 'Browse verbal roots: gaṇa, meaning and present-tense forms.', link: '/tools/dhatu' },
+  { icon: 'palette', title: '3D Manuscript Viewer', desc: 'Interactive 3D palm-leaf models with digitized text overlays.', link: '/visualization/3d' },
+  { icon: 'grammar', title: 'Grammar & Mind Maps', desc: 'Pāṇini\'s rules as branching diagrams. Philosophy networks visualized.', link: '/visualization/grammar' },
+  { icon: 'chart', title: 'Evolutionary Timeline', desc: '3000 years of Sanskrit evolution on an interactive timeline.', link: '/visualization/timeline' },
+  { icon: 'teacher', title: 'Teacher Dashboard', desc: 'Lesson plans, exercises, manuscript annotations for your class.', link: '/teaching/dashboard' },
+  { icon: 'student', title: 'Student Workspace', desc: 'Guided learning with interactive texts and collaboration tools.', link: '/teaching/workspace' },
+  { icon: 'feather', title: 'Assessment Engine', desc: 'Auto-generated drills for declensions, sandhi, and grammar.', link: '/teaching/assessment' },
+  { icon: 'mic', title: 'AI Viva Simulator', desc: 'Oral exams with audio evaluation and real-time pronunciation feedback.', link: '/viva/simulator' },
+  { icon: 'analytics', title: 'Analytics Engine', desc: 'Track performance, find weak areas, get customized study paths.', link: '/viva/analytics' },
+  { icon: 'smile', title: 'Fun Learning Mode', desc: 'Kid-friendly flashcards, picture-word games, and colorful activities.', link: '/learning/child' },
+  { icon: 'bot', title: 'AI Sanskrit Tutor', desc: 'Chat with an AI tutor about Sanskrit grammar, texts, and philosophy.', link: '/tools/tutor' },
+  { icon: 'mic', title: 'Voice Mode', desc: 'Speak in Sanskrit or Hindi — hear the word, its meaning, and a spoken reply. Works offline.', link: '/tools/voice' },
+  { icon: 'puzzle', title: 'Sentence Builder', desc: 'Tap word cards in order to build Sanskrit sentences — learn word order through play.', link: '/tools/sentence' },
+  { icon: 'health', title: 'Fix My Sanskrit', desc: 'Paste any sentence and get instant grammar fixes: punctuation, sandhi, missing spaces and more.', link: '/tools/fix' },
+  { icon: 'book', title: 'Story Generator', desc: 'Pick a theme and two words — get a Sanskrit story with translation, ready to hear aloud.', link: '/tools/story' },
+  { icon: 'globe', title: 'Sanskrit → Real World', desc: 'Ancient ideas alive today: karma, yoga, zero, dharma — the word behind daily life.', link: '/tools/realworld' },
+  { icon: 'calendar', title: 'Culture Calendar', desc: 'Festivals, tithis and the six seasons — the Sanskrit year on your calendar.', link: '/tools/calendar' },
+  { icon: 'quote', title: 'Who Said It?', desc: 'Match famous Sanskrit verses to their speakers — from the Gītā to Kālidāsa.', link: '/tools/whosaid' },
+  { icon: 'plant', title: 'Etymology Tree', desc: 'One verbal root, many words — watch Sanskrit words grow from their roots.', link: '/tools/etymology' },
+  { icon: 'search', title: 'Concept Explorer', desc: 'Grammar, philosophy, values and texts — big Sanskrit ideas, plainly explained.', link: '/tools/concepts' },
+  { icon: 'game', title: 'Learn Through Games', desc: 'Word match, number blitz and sandhi chase — three quick games to keep Sanskrit sharp.', link: '/tools/games' },
+  { icon: 'sword', title: 'Debate Mode', desc: 'Pick a topic and a side — argue in Sanskrit and hear the counter-argument.', link: '/tools/debate' },
+  { icon: 'palette', title: 'Creative Studio', desc: 'Compose your own verse — pick a theme and meter, hear it come alive.', link: '/tools/studio' },
+  { icon: 'cards', title: 'SRS Flashcards', desc: 'Anki-style spaced repetition for vocabulary, grammar, and more.', link: '/tools/flashcards' },
+  { icon: 'user', title: 'Account & Auth', desc: 'Sign up or sign in to track your progress across devices.', link: '/auth' },
 ]
 
 const testimonials = [
@@ -62,7 +64,9 @@ export default function Dashboard() {
           padding: '10px 16px', margin: '12px 0', borderRadius: 10,
           background: 'rgba(255,140,0,0.1)', border: '1px solid rgba(255,140,0,0.35)',
         }}>
-          <span style={{ fontSize: 13, color: '#fff' }}>🆓 {t('You are in Guest mode — progress is kept on this device only.')}</span>
+          <span style={{ fontSize: 13, color: '#fff', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Award size={15} /> {t('You are in Guest mode — progress is kept on this device only.')}
+          </span>
           <button className="btn btn-sm btn-primary" onClick={() => navigate('/auth')}>{t('Create Free Account')}</button>
           <button className="btn btn-sm btn-outline" onClick={() => navigate('/auth/login')}>{t('Sign In')}</button>
         </div>
@@ -70,7 +74,9 @@ export default function Dashboard() {
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-content">
-            <div className="hero-tag">🌟 {t("India's Most Advanced Sanskrit Platform")}</div>
+            <div className="hero-tag">
+              <Sparkles size={14} /> <span>{t("India's Most Advanced Sanskrit Platform")}</span>
+            </div>
             <h1>
               {t('Bridge ')}<span className="highlight">{t('Ancient Wisdom')}</span><br />{t('with Modern Technology')}
             </h1>
@@ -79,7 +85,7 @@ export default function Dashboard() {
             </p>
             <div className="hero-actions">
               <button className="btn btn-primary" onClick={() => navigate('/learning/tree')}>
-                {t('Start Learning Free →')}
+                {t('Start Learning Free')} <ArrowRight size={16} />
               </button>
               <button className="btn btn-outline" onClick={() => navigate('/research/corpus')}>
                 {t('Explore Corpus')}
@@ -147,14 +153,16 @@ export default function Dashboard() {
             marginBottom: 8,
           }}
         >
-          <span style={{ fontSize: 48 }}>📘</span>
+          <BookMarked size={44} />
           <div style={{ flex: 1 }}>
             <h3 style={{ margin: 0, fontSize: 22, color: '#fff' }}>{t('NCERT Sanskrit Curriculum')}</h3>
             <p style={{ margin: '4px 0 0', opacity: 0.9, fontSize: 14 }}>
               {t('Class 6–12 textbooks (Deepakam, Shemushi, Bhaswati & Shashwati) — all NCERT content in one place')}
             </p>
           </div>
-          <span style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>{t('Browse Library →')}</span>
+          <span style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            {t('Browse Library')} <ArrowRight size={16} />
+          </span>
         </div>
       </section>
 
@@ -167,7 +175,9 @@ export default function Dashboard() {
         <div className="track-row">
           {tracks.map((track) => (
             <div key={track.id} className="track-card" onClick={() => navigate('/learning/tree')}>
-              <span className="track-icon">{track.icon}</span>
+              <span className="track-icon" style={{ display: 'inline-flex', justifyContent: 'center', width: '100%', color: track.color }}>
+                <DynamicIcon name={track.icon} size={32} />
+              </span>
               <h3>{t(track.label)}</h3>
               <div className="track-desc">{t(track.description)}</div>
               <div className="track-age">{t(track.classRange)}</div>
@@ -185,10 +195,14 @@ export default function Dashboard() {
         <div className="card-grid">
           {features.map((f) => (
             <div key={f.title} className="vt-card" onClick={() => navigate(f.link)}>
-              <div className="card-icon">{f.icon}</div>
+              <div className="card-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--vt-orange)' }}>
+                <DynamicIcon name={f.icon} size={28} />
+              </div>
               <h3>{t(f.title)}</h3>
               <p>{t(f.desc)}</p>
-              <span className="card-link">{t('Explore →')}</span>
+              <span className="card-link" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                {t('Explore')} <ArrowRight size={14} />
+              </span>
             </div>
           ))}
         </div>
@@ -203,7 +217,13 @@ export default function Dashboard() {
         <div className="testimonial-row">
           {testimonials.map((tm) => (
             <div key={tm.author} className="testimonial-card">
-              <div className="stars">★★★★★</div>
+              <div className="stars" style={{ display: 'flex', gap: 2, color: '#ff9800' }}>
+                <Star size={14} fill="#ff9800" />
+                <Star size={14} fill="#ff9800" />
+                <Star size={14} fill="#ff9800" />
+                <Star size={14} fill="#ff9800" />
+                <Star size={14} fill="#ff9800" />
+              </div>
               <div className="quote">"{t(tm.text)}"</div>
               <div className="author">
                 <div className="avatar">{tm.initial}</div>
@@ -221,8 +241,8 @@ export default function Dashboard() {
       <div className="cta-bar">
         <h2>{t('Ready to Begin Your Journey?')}</h2>
         <p>{t('Join thousands of learners exploring Sanskrit through cutting-edge technology. Free forever.')}</p>
-        <button className="btn" onClick={() => navigate('/learning/tree')}>
-          {t('Start Learning Now 🚀')}
+        <button className="btn btn-primary" onClick={() => navigate('/learning/tree')}>
+          {t('Start Learning Now')} <ArrowRight size={16} />
         </button>
       </div>
     </>

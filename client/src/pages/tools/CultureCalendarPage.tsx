@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Volume2, Clock } from 'lucide-react'
 import { FESTIVALS, RITUS, type Festival, type Ritu } from '../../data/cultureCalendar'
 import { loadFestivals, loadRitus } from '../../services/contentDb'
 import { toIAST } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
+import { DynamicIcon } from '../../components/icons'
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 const MONTHS_HI = ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर']
@@ -65,20 +67,26 @@ export default function CultureCalendarPage() {
   }, [festivals])
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('🪔 Culture Calendar')}</h2>
+        <h2>{t('Culture Calendar')}</h2>
         <p>{t('Festivals, tithis and seasons — the Sanskrit year, mapped to your calendar.')}</p>
       </div>
 
       <div className="card" style={{ maxWidth: 760, margin: '0 auto', padding: 24 }}>
         <div className="card" style={{ padding: 18, marginBottom: 16, border: '2px solid rgba(255,152,0,0.4)', background: 'rgba(255,152,0,0.06)' }}>
-          <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--vt-orange)' }}>
-            {next.days === 0 ? t('🎉 Today is') : t(`⏳ Coming in ${next.days} day${next.days === 1 ? '' : 's'}:`)}
+          <p style={{ margin: 0, fontSize: 13, fontWeight: 600, color: 'var(--vt-orange)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <Clock size={14} />
+            <span>{next.days === 0 ? t('Today is') : t(`Coming in ${next.days} day${next.days === 1 ? '' : 's'}:`)}</span>
           </p>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-            <h3 style={{ margin: '4px 0 0', fontSize: 24 }}>{next.f.emoji} {pick(next.f.nameHi, next.f.name)}</h3>
-            <button className="btn btn-sm btn-secondary" onClick={() => speak(next.f.phrase)} disabled={speaking}>🔊 {t('Say the greeting')}</button>
+            <h3 style={{ margin: '4px 0 0', fontSize: 24, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <DynamicIcon name={next.f.icon} size={22} />
+              <span>{pick(next.f.nameHi, next.f.name)}</span>
+            </h3>
+            <button className="btn btn-sm btn-secondary" onClick={() => speak(next.f.phrase)} disabled={speaking} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <Volume2 size={14} /> <span>{t('Say the greeting')}</span>
+            </button>
           </div>
           <p style={{ margin: '6px 0 0', color: 'var(--vt-muted)' }}>{pick(next.f.approxHi, next.f.approx)} · {pick(next.f.tithiHi, next.f.tithi)}</p>
           <p style={{ margin: '10px 0 0', fontSize: 18 }}>{next.f.phrase}</p>
@@ -88,7 +96,11 @@ export default function CultureCalendarPage() {
 
         <div className="card" style={{ padding: 16, marginBottom: 18, textAlign: 'center' }}>
           <p style={{ margin: 0, fontSize: 13, color: 'var(--vt-muted)' }}>{t('Current season in the Sanskrit year')}</p>
-          <p style={{ margin: '4px 0 0', fontSize: 24 }}>{ritu.emoji} {ritu.name} <span style={{ color: 'var(--vt-muted)', fontSize: 16 }}>({pick(ritu.seasonHi, ritu.season)}, {pick(ritu.monthsHi, ritu.months)})</span></p>
+          <p style={{ margin: '4px 0 0', fontSize: 24, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+            <DynamicIcon name={ritu.icon} size={22} />
+            <span>{ritu.name}</span>
+            <span style={{ color: 'var(--vt-muted)', fontSize: 16 }}>({pick(ritu.seasonHi, ritu.season)}, {pick(ritu.monthsHi, ritu.months)})</span>
+          </p>
           <p style={{ margin: '6px 0 0', fontStyle: 'italic', color: 'var(--vt-muted)' }}>{ritu.verse}</p>
         </div>
 
@@ -101,10 +113,11 @@ export default function CultureCalendarPage() {
                   <button
                     key={f.id}
                     className="btn btn-sm btn-secondary"
-                    style={{ textAlign: 'left', justifyContent: 'flex-start' }}
+                    style={{ textAlign: 'left', justifyContent: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 6 }}
                     onClick={() => setSelId(f.id)}
                   >
-                    {f.emoji} {pick(f.nameHi, f.name)}
+                    <DynamicIcon name={f.icon} size={14} />
+                    <span>{pick(f.nameHi, f.name)}</span>
                   </button>
                 ))}
               </div>
@@ -113,17 +126,20 @@ export default function CultureCalendarPage() {
         </div>
 
         <div className="card" style={{ marginTop: 18, padding: 18 }}>
-          <h3 style={{ margin: '0 0 6px' }}>{sel.emoji} {pick(sel.nameHi, sel.name)}</h3>
+          <h3 style={{ margin: '0 0 6px', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <DynamicIcon name={sel.icon} size={20} />
+            <span>{pick(sel.nameHi, sel.name)}</span>
+          </h3>
           <p style={{ margin: 0, color: 'var(--vt-muted)' }}>{pick(sel.approxHi, sel.approx)} · {pick(sel.tithiHi, sel.tithi)}</p>
           <p style={{ margin: '12px 0 0' }}><strong>{t('Meaning')}:</strong> {pick(sel.meaningHi, sel.meaning)}</p>
           <p style={{ margin: '8px 0 0' }}><strong>{t('How it is celebrated')}:</strong> {pick(sel.howHi, sel.how)}</p>
-          <div className="card" style={{ marginTop: 12, padding: '10px 14px', background: 'var(--vt-white)' }}>
+          <div className="card" style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(255,255,255,0.03)' }}>
             <p style={{ margin: 0, fontSize: 18 }}>{sel.phrase}</p>
             <p style={{ margin: '4px 0 0', color: 'var(--vt-muted)' }}>{pick(sel.phraseEnHi, sel.phraseEn)}</p>
             <p style={{ margin: '2px 0 0', color: 'var(--vt-muted)', fontSize: 13, fontStyle: 'italic' }}>{toIAST(sel.phrase)}</p>
           </div>
-          <button className="btn btn-sm btn-secondary" style={{ marginTop: 12 }} onClick={() => speak(sel.phrase)} disabled={speaking}>
-            🔊 {t('Hear the phrase')}
+          <button className="btn btn-sm btn-secondary" style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => speak(sel.phrase)} disabled={speaking}>
+            <Volume2 size={14} /> <span>{t('Hear the phrase')}</span>
           </button>
         </div>
       </div>

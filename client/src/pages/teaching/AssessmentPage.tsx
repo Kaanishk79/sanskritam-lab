@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { History, RotateCcw, Check, X, ArrowRight, Trophy } from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 import { supabase } from '../../services/supabase'
 import { getAuthState } from '../../services/auth'
@@ -112,7 +113,9 @@ export default function AssessmentPage() {
 
   const pastAttempts = attempts.length > 0 && (
     <div className="card" style={{ marginTop: 16 }}>
-      <h3 style={{ marginTop: 0, marginBottom: 12 }}>🕘 {t('Past attempts')}</h3>
+      <h3 style={{ marginTop: 0, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <History size={18} /> <span>{t('Past attempts')}</span>
+      </h3>
       <div className="text-list">
         {attempts.map((a) => (
           <div key={a.id} className="text-item">
@@ -136,19 +139,22 @@ export default function AssessmentPage() {
           <p>{t('Auto-generated drills for declensions, sandhi exercises, and timed practice quizzes')}</p>
         </div>
         <div className="card" style={{ textAlign: 'center', padding: 40 }}>
+          <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
+            <Trophy size={48} color={score === sampleQuestions.length ? '#2ecc71' : 'var(--vt-orange)'} />
+          </div>
           <h3 style={{ fontSize: 24, marginBottom: 8 }}>{t('Assessment Complete!')}</h3>
           <div style={{ fontSize: 48, fontWeight: 700, color: 'var(--sanskrit-gold)', margin: '16px 0' }}>
             {score}/{sampleQuestions.length}
           </div>
-          <p style={{ color: '#888' }}>
+          <p style={{ color: 'var(--vt-muted)' }}>
             {score === sampleQuestions.length ? t('Perfect score! Excellent Sanskrit knowledge!') : t('Review the explanations and try again.')}
           </p>
           <button
             className="btn btn-primary"
-            style={{ marginTop: 20 }}
+            style={{ marginTop: 20, display: 'inline-flex', alignItems: 'center', gap: 6 }}
             onClick={() => { setCurrentQ(0); setSelected(null); setScore(0); setFinished(false); setAnswers([]) }}
           >
-            {t('Retry')}
+            <RotateCcw size={14} /> <span>{t('Retry')}</span>
           </button>
         </div>
         {pastAttempts}
@@ -165,7 +171,7 @@ export default function AssessmentPage() {
 
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-          <span style={{ color: '#888', fontSize: 13 }}>
+          <span style={{ color: 'var(--vt-muted)', fontSize: 13 }}>
             {t('Question')} {currentQ + 1} {t('of')} {sampleQuestions.length}
           </span>
           <span className="badge" style={{ background: 'var(--sanskrit-card)', color: 'var(--sanskrit-gold)' }}>
@@ -192,16 +198,17 @@ export default function AssessmentPage() {
 
         {selected !== null && (
           <div style={{ padding: 16, background: 'rgba(0,0,0,0.2)', borderRadius: 8, marginBottom: 20 }}>
-            <div style={{ color: selected === q.correctIdx ? '#4caf50' : '#f44336', fontWeight: 600, marginBottom: 8 }}>
-              {selected === q.correctIdx ? '✓ ' + t('Correct!') : '✗ ' + t('Incorrect')}
+            <div style={{ color: selected === q.correctIdx ? '#4caf50' : '#f44336', fontWeight: 600, marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              {selected === q.correctIdx ? <><Check size={16} /> <span>{t('Correct!')}</span></> : <><X size={16} /> <span>{t('Incorrect')}</span></>}
             </div>
-            <div style={{ color: '#aaa', fontSize: 14 }}>{lang === 'hi' && q.explanationHi ? q.explanationHi : q.explanation}</div>
+            <div style={{ color: 'var(--vt-muted)', fontSize: 14 }}>{lang === 'hi' && q.explanationHi ? q.explanationHi : q.explanation}</div>
           </div>
         )}
 
         {selected !== null && (
-          <button className="btn btn-primary" onClick={next}>
-            {currentQ < sampleQuestions.length - 1 ? t('Next Question →') : t('See Results')}
+          <button className="btn btn-primary" onClick={next} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <span>{currentQ < sampleQuestions.length - 1 ? t('Next Question') : t('See Results')}</span>
+            <ArrowRight size={14} />
           </button>
         )}
       </div>

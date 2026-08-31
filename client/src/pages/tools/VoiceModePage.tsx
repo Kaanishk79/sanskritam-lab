@@ -1,4 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
+import {
+  Mic, Square, Volume2, VolumeX, Bot, MessageSquare,
+  History
+} from 'lucide-react'
 import { startListening, stopListening, isSpeechSupported, onSpeechResult, speakWithFallback, hasTTS } from '../../services/speech'
 import { toIAST } from '../../services/sanskrit'
 import { api } from '../../services/api'
@@ -98,85 +102,95 @@ export default function VoiceModePage() {
     const dev = /[\u0900-\u097F]/.test(word) ? word : EN_MAP[word.toLowerCase()] || null
     const candidates = dev ? [dev, stripEnding(dev)] : []
     for (const c of candidates) {
-      const hit = await api.dictionary.lookup(c)
-      if (hit && hit.meanings?.length) {
-        return { word: c, meanings: hit.meanings.slice(0, 5), meanings_hi: hit.meanings_hi?.slice(0, 5), iast: toIAST(c), pos: hit.pos || null, suggestions: [] }
-      }
-    }
-    const sug = await api.dictionary.lookup(dev || word).catch(() => null)
-    if (sug && sug.meanings?.length) {
-      return { word: dev || word, meanings: sug.meanings.slice(0, 5), meanings_hi: sug.meanings_hi?.slice(0, 5), iast: toIAST(dev || word), pos: sug.pos || null, suggestions: [] }
+      try {
+        const res = await api.dictionary.lookup(c)
+        if (res) {
+          return {
+            word: res.word,
+            meanings: res.meanings || [],
+            meanings_hi: res.meanings_hi || [],
+            iast: res.iast || toIAST(res.word),
+            pos: res.pos,
+            suggestions: [],
+          }
+        }
+      } catch { /* fallback */ }
     }
     return null
   }
 
-  const localReply = (phrase: string, found: VoiceEntry[]): string => {
-    const p = phrase.toLowerCase()
-    if (/नमस्ते|नमस्कार|hello|namaste/.test(p)) {
-      return 'नमस्ते! 🙏 अहम् संस्कृतम् अध्यापयामि। किम् इच्छसि भोः? — I teach Sanskrit. What would you like to learn?'
+  const askAi = async (phrase: string): Promise<string | null> => {
+    try {
+      const res = await api.tutor.chat([
+        { role: 'user', content: `User spoke this in Sanskrit/Hindi: "${phrase}". Reply in 1-2 concise Sanskrit or Hindi sentences with meaning. Keep it conversational.` }
+      ])
+      return res.reply || null
+    } catch {
+      return null
     }
-    if (found.length > 0) {
-      const parts = found.slice(0, 3).map((e) => `${e.word} — ${(hi && e.meanings_hi?.length ? e.meanings_hi : e.meanings).slice(0, 2).join(', ')}`)
-      return parts.join(' । ')
-    }
-    return 'क्षम्यताम् — क्षमा करें, यह शब्द मेरे शब्दकोश में नहीं मिला। नीचे के सुझाव देखें।'
   }
 
-  const processPhrase = async (phrase: string) => {
-    const clean = phrase.trim()
-    if (!clean) return
+  const processPhrase = async (raw: string) => {
+    if (!raw.trim()) return
     setBusy(true)
-    setLastHeard(clean)
-    const words = tokens(clean)
-    const found: VoiceEntry[] = []
-    const suggestions: VoiceEntry[] = []
-    for (const w of words.slice(0, 5)) {
-      const e = await lookup(w)
-      if (e) found.push(e)
+    setLastHeard(raw)
+    setListening(false)
+    stopListening()
+
+    const words = tokens(raw)
+    const hits: VoiceEntry[] = []
+    const suggs: VoiceEntry[] = []
+
+    for (const w of words.slice(0, 4)) {
+      const hit = await lookup(w)
+      if (hit?.word) hits.push(hit)
+      else if (hit?.suggestions?.length) suggs.push(hit)
     }
-    let text = ''
-    let ai = false
-    try {
-      const res = await api.tutor.chat([{ role: 'user', content: clean }], { mode: 'voice' })
-      text = res.reply
-      ai = true
-    } catch {
-      text = localReply(clean, found)
+
+    setEntries(hits)
+    setSuggestionsState(suggs)
+
+    let spokenReply = ''
+    const aiAnswer = await askAi(raw)
+    if (aiAnswer) {
+      spokenReply = aiAnswer
+      setAiActive(true)
+    } else if (hits.length > 0) {
+      setAiActive(false)
+      const first = hits[0]
+      const meaning = (hi && first.meanings_hi?.length ? first.meanings_hi[0] : first.meanings[0]) || ''
+      spokenReply = `${first.word} — ${meaning}`
+    } else {
+      setAiActive(false)
+      spokenReply = hi ? `सुना: ${raw}। शब्दकोश में नहीं मिला।` : `Heard: ${raw}. Not found in local dictionary.`
     }
-    if (found.length === 0) {
-      const res = await api.dictionary.lookup(clean).catch(() => null)
-      if (!res) {
-        const { searchAll } = await import('../../services/sanskrit')
-        const sres = await searchAll(clean, 4)
-        suggestions.push({ word: null, meanings: [], iast: null, pos: null, suggestions: sres.map((s) => ({ title: s.title, sub: hi ? s.subHi ?? s.sub : s.sub })) })
-      }
-    }
-    setEntries(found)
-    setSuggestionsState(suggestions)
-    setReply(text)
-    setAiActive(ai)
-    setHistory((h) => [{ heard: clean, reply: text, entries: found, at: Date.now() }, ...h].slice(0, 12))
-    if (!muted && text) speakWithFallback(text)
+
+    setReply(spokenReply)
     setBusy(false)
+
+    if (!muted && spokenReply) {
+      speak(spokenReply)
+    }
+
+    setHistory((h) => [{ heard: raw, reply: spokenReply, entries: hits, at: Date.now() }, ...h.slice(0, 9)])
   }
 
   const speak = (text: string) => {
-    if (text) speakWithFallback(text)
+    speakWithFallback(text)
+  }
+
+  const stopSpeaking = () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel()
   }
 
   const useSample = (s: string) => {
     processPhrase(s)
   }
 
-  const stopSpeaking = () => {
-    const synth = typeof window !== 'undefined' && 'speechSynthesis' in window ? window.speechSynthesis : null
-    try { synth?.cancel() } catch { /* ignore */ }
-  }
-
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('🎤 Voice Mode')}</h2>
+        <h2>{t('Voice Mode')}</h2>
         <p>{t('Speak in Sanskrit or Hindi — hear the word, its meaning, and a spoken reply. Works fully offline, and uses the AI tutor when it is connected.')}</p>
       </div>
 
@@ -188,13 +202,15 @@ export default function VoiceModePage() {
             onChange={(e) => setLang(e.target.value as 'hi-IN' | 'en-IN')}
             style={{ height: 36 }}
           >
-            <option value="hi-IN">🇮🇳 हिन्दी / संस्कृत</option>
-            <option value="en-IN">🇬🇧 English (namaste → नमस्ते)</option>
+            <option value="hi-IN">हिन्दी / संस्कृत</option>
+            <option value="en-IN">English (namaste → नमस्ते)</option>
           </select>
-          <button className={`btn btn-sm ${muted ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMuted((m) => !m)}>
-            {muted ? '🔇 ' + t('Muted') : '🔊 ' + t('Voice replies on')}
+          <button className={`btn btn-sm ${muted ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMuted((m) => !m)} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            {muted ? <><VolumeX size={14} /> <span>{t('Muted')}</span></> : <><Volume2 size={14} /> <span>{t('Voice replies on')}</span></>}
           </button>
-          <button className="btn btn-sm btn-secondary" onClick={stopSpeaking}>{t('⏹ Stop audio')}</button>
+          <button className="btn btn-sm btn-secondary" onClick={stopSpeaking} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <Square size={14} /> <span>{t('Stop audio')}</span>
+          </button>
         </div>
 
         {!supported && (
@@ -207,16 +223,16 @@ export default function VoiceModePage() {
           onClick={toggleMic}
           className="btn"
           style={{
-            width: 120, height: 120, borderRadius: 60, fontSize: 44, lineHeight: 1,
+            width: 120, height: 120, borderRadius: 60, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
             background: listening ? 'var(--vt-orange)' : 'var(--vt-primary)',
             color: '#fff', border: 'none', boxShadow: listening ? '0 0 0 12px rgba(255,152,0,0.25)' : 'var(--vt-shadow)',
-            transition: 'all .2s', cursor: 'pointer',
+            transition: 'all .2s', cursor: 'pointer', margin: '0 auto'
           }}
           title={listening ? t('Stop listening') : t('Start listening')}
         >
-          {listening ? '⏹' : '🎤'}
+          {listening ? <Square size={40} /> : <Mic size={40} />}
         </button>
-        <p style={{ marginTop: 10, fontWeight: 600 }}>
+        <p style={{ marginTop: 12, fontWeight: 600 }}>
           {listening ? t('Listening… speak now') : t('Tap the mic and speak')}
         </p>
         {interim && <p style={{ color: 'var(--vt-muted)', fontStyle: 'italic' }}>“{interim}”</p>}
@@ -253,14 +269,16 @@ export default function VoiceModePage() {
             {entries.length > 0 && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
                 {entries.map((e) => (
-                  <div key={e.word} style={{ border: '1px solid var(--vt-border)', borderRadius: 10, padding: '12px 16px', background: 'var(--vt-white)' }}>
+                  <div key={e.word} style={{ border: '1px solid var(--vt-border)', borderRadius: 10, padding: '12px 16px', background: 'rgba(255,255,255,0.03)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
                       <div>
                         <span style={{ fontSize: 22, fontWeight: 700 }}>{e.word}</span>
                         {e.iast && <span style={{ color: 'var(--vt-muted)', marginLeft: 8 }}>{e.iast}</span>}
                         {e.pos && <span className="badge" style={{ marginLeft: 8 }}>{hi ? POS_HI[e.pos] || e.pos : e.pos}</span>}
                       </div>
-                      <button className="btn btn-sm btn-secondary" onClick={() => speak(e.word!)}>🔊 {t('Hear')}</button>
+                      <button className="btn btn-sm btn-secondary" onClick={() => speak(e.word!)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <Volume2 size={13} /> <span>{t('Hear')}</span>
+                      </button>
                     </div>
                     <p style={{ margin: '6px 0 0', color: 'var(--vt-muted)' }}>{(hi && e.meanings_hi?.length ? e.meanings_hi : e.meanings).join(' · ')}</p>
                   </div>
@@ -281,14 +299,18 @@ export default function VoiceModePage() {
             )}
             {reply && (
               <div style={{ marginTop: 14, padding: '12px 16px', borderRadius: 10, background: 'rgba(255,152,0,0.08)', border: '1px solid rgba(255,152,0,0.3)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                <span style={{ fontSize: 20 }}>{aiActive ? '🤖' : '💬'}</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
+                  {aiActive ? <Bot size={20} color="var(--vt-orange)" /> : <MessageSquare size={20} color="var(--vt-gold)" />}
+                </span>
                 <div style={{ flex: 1 }}>
                   <p style={{ margin: 0 }}>{reply}</p>
                   <p style={{ margin: '6px 0 0', fontSize: 12, color: 'var(--vt-muted)' }}>
                     {aiActive ? t('AI tutor reply') : t('Offline reply — AI tutor will answer when connected')}
                   </p>
                 </div>
-                <button className="btn btn-sm btn-secondary" onClick={() => speak(reply)}>🔊</button>
+                <button className="btn btn-sm btn-secondary" onClick={() => speak(reply)}>
+                  <Volume2 size={14} />
+                </button>
               </div>
             )}
           </div>
@@ -296,7 +318,9 @@ export default function VoiceModePage() {
 
         {history.length > 0 && (
           <div style={{ marginTop: 24, textAlign: 'left' }}>
-            <h4 style={{ marginBottom: 8 }}>{t('🕘 Conversation History')}</h4>
+            <h4 style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <History size={16} /> <span>{t('Conversation History')}</span>
+            </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {history.slice(1).map((h, i) => (
                 <div key={h.at + '-' + i} style={{ border: '1px solid var(--vt-border)', borderRadius: 8, padding: '10px 14px' }}>

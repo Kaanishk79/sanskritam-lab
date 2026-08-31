@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
+  User, School, GraduationCap, Plus, Play, X, Eye,
+  Save, Send, Check, RotateCcw, BookOpen, Volume2, Feather
+} from 'lucide-react'
+import {
   loadProjects, saveProjects, loadProfile, saveProfile, loadSubmissions, saveSubmissions,
   makeProject, labClasses, type LabProject, type LabProfile, type LabSubmission, type LabProjectContent
 } from '../../services/labProjects'
@@ -25,11 +29,13 @@ const clearAll = (setContent: (c: LabProjectContent) => void) =>
   setContent({ passageIds: [], listeningIds: [], writingIds: [], readingIds: [] })
 
 function ContentPicker({ content, setContent }: { content: LabProjectContent; setContent: (c: LabProjectContent) => void }) {
-  const { t, lang } = useLanguage()
+  const { t } = useLanguage()
   return (
     <div className="lab-picker">
       <div className="lab-picker-group">
-        <h5>{t('📖 Reading Passages')}</h5>
+        <h5 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <BookOpen size={16} /> <span>{t('Reading Passages')}</span>
+        </h5>
         {readingPassages.map((p) => (
           <label className="lab-picker-row" key={p.id}>
             <input
@@ -47,7 +53,9 @@ function ContentPicker({ content, setContent }: { content: LabProjectContent; se
         ))}
       </div>
       <div className="lab-picker-group">
-        <h5>{t('👂 Listening Items')}</h5>
+        <h5 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Volume2 size={16} /> <span>{t('Listening Items')}</span>
+        </h5>
         {listeningItems.map((l) => (
           <label className="lab-picker-row" key={l.id}>
             <input
@@ -65,7 +73,9 @@ function ContentPicker({ content, setContent }: { content: LabProjectContent; se
         ))}
       </div>
       <div className="lab-picker-group">
-        <h5>{t('✍️ Writing Items')}</h5>
+        <h5 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Feather size={16} /> <span>{t('Writing Items')}</span>
+        </h5>
         {writingItems.map((w) => (
           <label className="lab-picker-row" key={w.id}>
             <input
@@ -78,7 +88,7 @@ function ContentPicker({ content, setContent }: { content: LabProjectContent; se
                 })
               }
             />
-            {lang === 'hi' ? w.promptHi ?? w.prompt : w.prompt}
+            {w.prompt}
           </label>
         ))}
       </div>
@@ -88,62 +98,51 @@ function ContentPicker({ content, setContent }: { content: LabProjectContent; se
 
 export default function LabAssignments({ activeProject, onOpenProject }: Props) {
   const { t } = useLanguage()
-  const { user, school } = useRole()
-  const [profile, setProfile] = useState<LabProfile>(loadProfile)
-  const [projects, setProjects] = useState<LabProject[]>(loadProjects)
-  const [submissions, setSubmissions] = useState<LabSubmission[]>(loadSubmissions)
+  const { user, school, role } = useRole()
+
+  const [profile, setProfile] = useState<LabProfile>(() => loadProfile())
+  const [projects, setProjects] = useState<LabProject[]>(() => loadProjects())
+  const [submissions, setSubmissions] = useState<LabSubmission[]>(() => loadSubmissions())
+
   const [designing, setDesigning] = useState(false)
   const [adminAssigning, setAdminAssigning] = useState(false)
 
-  const accountType = user?.accountType || 'learner'
+  const ownerName = user?.email?.split('@')[0] || profile.ownerName || 'Learner'
 
-  const schoolClasses = useMemo(() => {
-    if (!school) return [] as string[]
-    const out: string[] = []
-    for (const c of school.classes.filter((x) => x.is_active)) {
-      const secs = (c.sections || []).filter((x) => x.is_active)
-      if (secs.length) secs.forEach((sec) => out.push(`${c.name} — ${sec.name}`))
-      else out.push(c.name)
+  useEffect(() => {
+    saveProfile(profile)
+  }, [profile])
+
+  useEffect(() => {
+    saveProjects(projects)
+  }, [projects])
+
+  useEffect(() => {
+    saveSubmissions(submissions)
+  }, [submissions])
+
+  useEffect(() => {
+    if (role === 'institution' || role === 'teacher') {
+      setProfile((p) => ({ ...p, mode: 'institution', role: 'admin' }))
     }
-    return out
+  }, [role])
+
+  const classOptions = useMemo(() => {
+    if (!school || !school.classes || school.classes.length === 0) return labClasses
+    const out: string[] = []
+    for (const c of school.classes) {
+      if (c.sections && c.sections.length > 0) {
+        for (const s of c.sections) out.push(`${c.name} — ${s.name}`)
+      } else {
+        out.push(c.name)
+      }
+    }
+    return out.length > 0 ? out : labClasses
   }, [school])
 
-  const classOptions = useMemo(() => [...schoolClasses, ...labClasses], [schoolClasses])
-
-  useEffect(() => {
-    if (accountType === 'institution' || accountType === 'teacher') {
-      setProfile((p) => (p.mode === 'institution' && p.role === 'admin' && p.ownerName === (user?.displayName || p.ownerName)
-        ? p
-        : { ...p, mode: 'institution', role: 'admin', ownerName: user?.displayName || p.ownerName }))
-    } else if (accountType === 'student') {
-      setProfile((p) => (p.mode === 'institution' && p.role === 'student'
-        ? p
-        : { ...p, mode: 'institution', role: 'student' }))
-    }
-  }, [user?.id, user?.displayName, accountType])
-
-  useEffect(() => {
-    if (profile.mode === 'institution' && schoolClasses.length && !classOptions.includes(profile.className)) {
-      setProfile((p) => ({ ...p, className: schoolClasses[0] }))
-    }
-  }, [schoolClasses.join('|'), classOptions.join('|'), profile.mode])
-
-  const ownerName = user?.displayName || profile.ownerName || 'Admin'
-
-  useEffect(() => saveProfile(profile), [profile])
-  useEffect(() => saveProjects(projects), [projects])
-  useEffect(() => saveSubmissions(submissions), [submissions])
-
-  const setMode = (mode: 'individual' | 'institution') => setProfile((p) => ({ ...p, mode }))
-
-  const myProjects = useMemo(
-    () => projects.filter((p) => (p.mode === 'individual' ? p.owner === ownerName : false)),
-    [projects, ownerName]
-  )
-  const assignedProjects = useMemo(
-    () => projects.filter((p) => p.mode === 'institution' && p.targetClass === profile.className),
-    [projects, profile.className]
-  )
+  const setMode = (mode: 'individual' | 'institution') => {
+    setProfile((p) => ({ ...p, mode }))
+  }
 
   const deleteProject = (id: string) => {
     setProjects((ps) => ps.filter((p) => p.id !== id))
@@ -151,11 +150,18 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
   }
 
   const submitAssignment = (p: LabProject, score: number) => {
-    setSubmissions((s) => [
-      ...s.filter((x) => !(x.projectId === p.id && x.userName === ownerName)),
-      { projectId: p.id, userName: ownerName, className: profile.className, score, submittedAt: new Date().toISOString() },
-    ])
+    const sub: LabSubmission = {
+      projectId: p.id,
+      userName: ownerName,
+      className: profile.className,
+      score,
+      submittedAt: new Date().toISOString(),
+    }
+    setSubmissions((ss) => [sub, ...ss.filter((s) => !(s.projectId === p.id && s.userName === ownerName))])
   }
+
+  const myProjects = projects.filter((p) => p.mode === 'individual' && p.owner === ownerName)
+  const assignedProjects = projects.filter((p) => p.mode === 'institution' && p.targetClass === profile.className)
 
   const mineSubmitted = (p: LabProject) => submissions.some((s) => s.projectId === p.id && s.userName === ownerName)
 
@@ -167,33 +173,35 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
           className={`btn btn-sm ${profile.mode === 'individual' ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setMode('individual')}
         >
-          {t('👤 Individual')}
+          <User size={14} /> <span>{t('Individual')}</span>
         </button>
         <button
           className={`btn btn-sm ${profile.mode === 'institution' ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setMode('institution')}
         >
-          {t('🏫 Institution')}
+          <School size={14} /> <span>{t('Institution')}</span>
         </button>
       </div>
 
       {profile.mode === 'institution' && (
         <div className="lab-institution-bar">
-          <span className="lab-mode-label">🏫 {school?.name || t('My Institution')} · 👤 {ownerName}</span>
-          {accountType !== 'institution' && accountType !== 'teacher' && (
+          <span className="lab-mode-label" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+            <School size={14} /> {school?.name || t('My Institution')} · <User size={14} /> {ownerName}
+          </span>
+          {role !== 'institution' && role !== 'teacher' && (
             <>
               <span>{t('I am:')}</span>
               <button
                 className={`btn btn-sm ${profile.role === 'admin' ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => setProfile((p) => ({ ...p, role: 'admin' }))}
               >
-                {t('👩‍🏫 Admin')}
+                <GraduationCap size={14} /> <span>{t('Admin')}</span>
               </button>
               <button
                 className={`btn btn-sm ${profile.role === 'student' ? 'btn-primary' : 'btn-secondary'}`}
                 onClick={() => setProfile((p) => ({ ...p, role: 'student' }))}
               >
-                {t('🎓 Student')}
+                <User size={14} /> <span>{t('Student')}</span>
               </button>
             </>
           )}
@@ -214,7 +222,9 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
         <div className="lab-individual">
           <div className="lab-section-head">
             <h4>{t('My Custom Projects')}</h4>
-            <button className="btn btn-sm btn-primary" onClick={() => setDesigning(true)}>{t('➕ Design New Project')}</button>
+            <button className="btn btn-sm btn-primary" onClick={() => setDesigning(true)}>
+              <Plus size={14} /> <span>{t('Design New Project')}</span>
+            </button>
           </div>
           <p className="lab-section-note">{t('Design your own lab project — pick passages, listening and writing items — then practice with it.')}</p>
           {myProjects.length === 0 && <p className="lab-empty">{t('No custom projects yet — design one to get started.')}</p>}
@@ -229,7 +239,7 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
                 </div>
                 <div className="lab-project-actions">
                   <button className="btn btn-sm btn-primary" onClick={() => onOpenProject(activeProject?.id === p.id ? null : p)}>
-                    {activeProject?.id === p.id ? t('✕ Close Project') : t('▶ Practice')}
+                    {activeProject?.id === p.id ? <><X size={14} /> <span>{t('Close Project')}</span></> : <><Play size={14} /> <span>{t('Practice')}</span></>}
                   </button>
                   <button className="btn btn-sm btn-secondary" onClick={() => deleteProject(p.id)}>{t('Delete')}</button>
                 </div>
@@ -259,7 +269,9 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
         <div className="lab-admin">
           <div className="lab-section-head">
             <h4>{t('Admin — Class-wise Assignments')}</h4>
-            <button className="btn btn-sm btn-primary" onClick={() => setAdminAssigning(true)}>{t('➕ Assign Project')}</button>
+            <button className="btn btn-sm btn-primary" onClick={() => setAdminAssigning(true)}>
+              <Plus size={14} /> <span>{t('Assign Project')}</span>
+            </button>
           </div>
           <p className="lab-section-note">{t('Assign lab projects to a class or grade. Students in that class will see them instantly.')}</p>
           {projects.filter((p) => p.mode === 'institution').length === 0 && (
@@ -278,7 +290,7 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
                   <div className="lab-project-meta">{subs.length} {t('submissions')} {subs.length > 0 && `· avg ${Math.round(subs.reduce((a, s) => a + s.score, 0) / subs.length)}%`}</div>
                   <div className="lab-project-actions">
                     <button className="btn btn-sm btn-primary" onClick={() => onOpenProject(activeProject?.id === p.id ? null : p)}>
-                      {activeProject?.id === p.id ? t('✕ Close') : t('👁 View')}
+                      {activeProject?.id === p.id ? <><X size={14} /> <span>{t('Close')}</span></> : <><Eye size={14} /> <span>{t('View')}</span></>}
                     </button>
                     <button className="btn btn-sm btn-secondary" onClick={() => deleteProject(p.id)}>{t('Delete')}</button>
                   </div>
@@ -334,11 +346,19 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
                   </div>
                   <div className="lab-project-actions">
                     <button className="btn btn-sm btn-primary" onClick={() => onOpenProject(activeProject?.id === p.id ? null : p)}>
-                      {activeProject?.id === p.id ? t('✕ Close') : t('▶ Start')}
+                      {activeProject?.id === p.id ? <><X size={14} /> <span>{t('Close')}</span></> : <><Play size={14} /> <span>{t('Start')}</span></>}
                     </button>
-                    {done && <button className="btn btn-sm btn-secondary" onClick={() => submitAssignment(p, 100)}>{t('↻ Resubmit')}</button>}
+                    {done && (
+                      <button className="btn btn-sm btn-secondary" onClick={() => submitAssignment(p, 100)}>
+                        <RotateCcw size={14} /> <span>{t('Resubmit')}</span>
+                      </button>
+                    )}
                   </div>
-                  {done && <div className="lab-done-badge">✓ {t('Submitted')}</div>}
+                  {done && (
+                    <div className="lab-done-badge" style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <Check size={13} /> <span>{t('Submitted')}</span>
+                    </div>
+                  )}
                 </div>
               )
             })}
@@ -347,7 +367,7 @@ export default function LabAssignments({ activeProject, onOpenProject }: Props) 
             <h5>{t('Submit Current Project Score')}</h5>
             {activeProject && profile.className === activeProject.targetClass ? (
               <button className="btn btn-sm btn-primary" onClick={() => submitAssignment(activeProject, 100)}>
-                {t('📤 Submit my score for')} «{activeProject.title}»
+                <Send size={14} /> <span>{t('Submit my score for')} «{activeProject.title}»</span>
               </button>
             ) : (
               <p className="lab-empty">{t('Open an assigned project from above to submit your score.')}</p>
@@ -373,7 +393,9 @@ function IndividualDesigner({ ownerName, onSave, onCancel }: { ownerName: string
     <div className="lab-designer">
       <div className="lab-section-head">
         <h4>{t('Design Your Own Project')}</h4>
-        <button className="btn btn-sm btn-secondary" onClick={onCancel}>{t('✕ Cancel')}</button>
+        <button className="btn btn-sm btn-secondary" onClick={onCancel}>
+          <X size={14} /> <span>{t('Cancel')}</span>
+        </button>
       </div>
       <label className="lab-title-field">
         <span>{t('Project title:')}</span>
@@ -386,7 +408,7 @@ function IndividualDesigner({ ownerName, onSave, onCancel }: { ownerName: string
       <ContentPicker content={content} setContent={setContent} />
       <div className="lab-actions">
         <button className="btn btn-primary" onClick={save} disabled={!title.trim() || (content.passageIds.length === 0 && content.listeningIds.length === 0 && content.writingIds.length === 0)}>
-          {t('💾 Save My Project')}
+          <Save size={15} /> <span>{t('Save My Project')}</span>
         </button>
       </div>
     </div>
@@ -411,7 +433,9 @@ function AdminAssigner({ ownerName, classOptions, onSave, onCancel }: { ownerNam
     <div className="lab-designer">
       <div className="lab-section-head">
         <h4>{t('Assign Project to Class')}</h4>
-        <button className="btn btn-sm btn-secondary" onClick={onCancel}>{t('✕ Cancel')}</button>
+        <button className="btn btn-sm btn-secondary" onClick={onCancel}>
+          <X size={14} /> <span>{t('Cancel')}</span>
+        </button>
       </div>
       <label className="lab-title-field">
         <span>{t('Project title:')}</span>
@@ -437,7 +461,7 @@ function AdminAssigner({ ownerName, classOptions, onSave, onCancel }: { ownerNam
       <div className="lab-actions">
         {!hasContent && <p className="lab-empty">{t('Pick at least one passage, listening or writing item above.')}</p>}
         <button className="btn btn-primary" onClick={save} disabled={!hasContent}>
-          {t('📤 Assign to Class')}
+          <Send size={15} /> <span>{t('Assign to Class')}</span>
         </button>
       </div>
     </div>

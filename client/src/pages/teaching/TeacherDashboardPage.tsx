@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  GraduationCap, BarChart3, FlaskConical,
+  FileText, MessageSquare, BookOpen
+} from 'lucide-react'
 import { useLanguage } from '../../context/LanguageContext'
 import { useRole } from '../../context/RoleContext'
-import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../services/supabase'
 import { getAuthState } from '../../services/auth'
 
@@ -44,7 +48,9 @@ export default function TeacherDashboardPage() {
 
   const liveCard = liveStats && (
     <div className="card" style={{ marginTop: 16 }}>
-      <h3 style={{ marginTop: 0, marginBottom: 16 }}>📊 {t('Live data')}</h3>
+      <h3 style={{ marginTop: 0, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <BarChart3 size={18} /> <span>{t('Live data')}</span>
+      </h3>
       <div className="analytics-grid" style={{ marginBottom: 0 }}>
         <div className="stat-card">
           <div className="stat-value">{liveStats.learners}</div>
@@ -105,7 +111,7 @@ export default function TeacherDashboardPage() {
                   </div>
                 </div>
               ))}
-              {!classes.length && <p style={{ color: '#888' }}>{t('No classes yet — add them in Institution HQ.')}</p>}
+              {!classes.length && <p style={{ color: 'var(--vt-muted)' }}>{t('No classes yet — add them in Institution HQ.')}</p>}
             </div>
           </div>
 
@@ -122,7 +128,7 @@ export default function TeacherDashboardPage() {
                   </div>
                 </div>
               ))}
-              {!school.teachers.length && <p style={{ color: '#888' }}>{t('No teachers yet — add them in Institution HQ.')}</p>}
+              {!school.teachers.length && <p style={{ color: 'var(--vt-muted)' }}>{t('No teachers yet — add them in Institution HQ.')}</p>}
             </div>
           </div>
         </div>
@@ -133,14 +139,14 @@ export default function TeacherDashboardPage() {
             {activeStudents.slice(0, 30).map((st) => (
               <div className="text-item" key={st.id}>
                 <div>
-                  <div className="text-title">{st.name} <span style={{ color: '#888', fontSize: 12 }}>· {t('Roll')} {st.roll_no || '—'}</span></div>
+                  <div className="text-title">{st.name} <span style={{ color: 'var(--vt-muted)', fontSize: 12 }}>· {t('Roll')} {st.roll_no || '—'}</span></div>
                   <div className="text-meta">
                     {classes.find((c) => c.id === st.class_id)?.name || '—'} — {allSections.find((x) => x.id === st.section_id)?.name || '—'}
                   </div>
                 </div>
               </div>
             ))}
-            {!activeStudents.length && <p style={{ color: '#888' }}>{t('No students yet — add them in Institution HQ.')}</p>}
+            {!activeStudents.length && <p style={{ color: 'var(--vt-muted)' }}>{t('No students yet — add them in Institution HQ.')}</p>}
           </div>
           {canSwitch && role !== 'teacher' && (
             <button className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => setRole('teacher')}>{t('Switch to Teacher View')}</button>
@@ -153,7 +159,10 @@ export default function TeacherDashboardPage() {
   if (live && !school && user) {
     return (
       <div className="card" style={{ padding: 32, textAlign: 'center', maxWidth: 480, margin: '40px auto' }}>
-        <h3>👨‍🏫 {t('Teacher Dashboard')}</h3>
+        <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
+          <GraduationCap size={44} color="var(--vt-orange)" />
+        </div>
+        <h3>{t('Teacher Dashboard')}</h3>
         <p>{t('No school linked to this account yet.')}</p>
         {canSwitch ? (
           <button className="btn btn-primary" onClick={() => navigate('/teaching/school')}>{t('Go to Institution HQ')}</button>
@@ -172,8 +181,9 @@ export default function TeacherDashboardPage() {
       </div>
 
       <div className="card" style={{ padding: 12, marginBottom: 16, borderColor: 'rgba(255,140,0,0.4)', background: 'rgba(255,140,0,0.05)' }}>
-        <span style={{ fontSize: 13, color: '#ffb26b' }}>
-          🧪 {t('Preview — sample data below. Create a teacher account and connect your school to see your real students here.')}{' '}
+        <span style={{ fontSize: 13, color: '#ffb26b', display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          <FlaskConical size={14} />
+          <span>{t('Preview — sample data below. Create a teacher account and connect your school to see your real students here.')}</span>
           <button className="btn btn-sm btn-primary" style={{ marginLeft: 8 }} onClick={() => navigate('/auth/signup')}>{t('Create Teacher Account')}</button>
         </span>
       </div>
@@ -226,11 +236,11 @@ export default function TeacherDashboardPage() {
 
         <div className="card">
           <h3 style={{ marginBottom: 16 }}>{t('Recent Activity')}</h3>
-          <div style={{ color: '#888', fontSize: 14, lineHeight: 2 }}>
-            <div>📝 {t('Ravi submitted declension exercise — 85%')}</div>
-            <div>📝 {t('Priya submitted sandhi quiz — 92%')}</div>
-            <div>💬 {t('Ananya asked about compound splitting')}</div>
-            <div>📚 {t('Class 5 completed Ṛgveda 1.1')}</div>
+          <div style={{ color: 'var(--vt-muted)', fontSize: 14, lineHeight: 2 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={14} /> <span>{t('Ravi submitted declension exercise — 85%')}</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={14} /> <span>{t('Priya submitted sandhi quiz — 92%')}</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><MessageSquare size={14} /> <span>{t('Ananya asked about compound splitting')}</span></div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}><BookOpen size={14} /> <span>{t('Class 5 completed Ṛgveda 1.1')}</span></div>
           </div>
         </div>
       </div>
@@ -241,7 +251,7 @@ export default function TeacherDashboardPage() {
           <input placeholder={t('Lesson title...')} />
           <textarea
             placeholder={t('Lesson content, objectives, and exercises...')}
-            style={{ minHeight: 120, resize: 'vertical', background: '#1e1e3a', color: '#e0e0e0', border: '1px solid #333', borderRadius: 6, padding: 12 }}
+            style={{ minHeight: 120, resize: 'vertical', background: 'rgba(255,255,255,0.03)', color: 'var(--vt-text)', border: '1px solid var(--vt-border)', borderRadius: 6, padding: 12 }}
           />
           <div style={{ display: 'flex', gap: 12 }}>
             <button className="btn btn-primary">{t('Save Lesson')}</button>

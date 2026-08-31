@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { BookOpen, Search } from 'lucide-react'
 import { supabase } from '../../services/supabase'
 import { useLanguage } from '../../context/LanguageContext'
 import Pdf3DViewer from '../../components/Pdf3DViewer'
@@ -88,7 +89,10 @@ export default function CorpusPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        <button className="btn btn-primary">{loading ? t('Loading…') : t('Search')}</button>
+        <button className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <Search size={14} />
+          <span>{loading ? t('Loading…') : t('Search')}</span>
+        </button>
       </div>
 
       {loading && <p style={{ opacity: 0.6 }}>{t('Loading corpus from database...')}</p>}
@@ -125,7 +129,7 @@ export default function CorpusPage() {
             {selected ? (
               <>
                 <h3 style={{ marginBottom: 8 }}>{selected ? displayTitle(selected) : ''}</h3>
-                <p style={{ color: '#888', fontSize: 13, marginBottom: 16 }}>
+                <p style={{ color: 'var(--vt-muted)', fontSize: 13, marginBottom: 16 }}>
                   {selected.author && `${selected.author} · `}
                   {selected.period ?? ''} {selected.language ? ` (${selected.language})` : ''}
                 </p>
@@ -135,7 +139,7 @@ export default function CorpusPage() {
                     fontSize: 28,
                     lineHeight: 1.8,
                     fontFamily: "'Noto Sans Devanagari', serif",
-                    color: '#f0f0f0',
+                    color: 'var(--vt-text)',
                     padding: 20,
                     background: 'rgba(0,0,0,0.2)',
                     borderRadius: 8,
@@ -148,9 +152,11 @@ export default function CorpusPage() {
                 </div>
               </>
             ) : (
-              <div className="empty-state">
-                <span className="empty-icon">📖</span>
-                <p>{t('Select a text to view its content')}</p>
+              <div className="empty-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 40 }}>
+                <span className="empty-icon" style={{ display: 'inline-flex', marginBottom: 12 }}>
+                  <BookOpen size={48} color="var(--vt-orange)" />
+                </span>
+                <p style={{ color: 'var(--vt-muted)' }}>{t('Select a text to view its content')}</p>
               </div>
             )}
           </div>

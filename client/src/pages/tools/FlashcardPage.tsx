@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { BarChart3, BookOpen, Target, Lightbulb, Trophy } from 'lucide-react'
 import { flashcards, flashcardDecks } from '../../data/flashcards'
 import type { Flashcard, SM2Card, SRSState } from '../../services/srs'
 import { loadSRS, saveSRS, initCards, getDueCards, getNewCards, getStats, gradeCard } from '../../services/srs'
 import { loadFlashcards, loadFlashcardDecks } from '../../services/contentDb'
 import { syncSRSFromDb, persistSRSToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
+import { DynamicIcon } from '../../components/icons'
 
 const TAG_HI: Record<string, string> = {
   vowel: 'स्वर', consonant: 'व्यंजन', noun: 'संज्ञा', family: 'परिवार', nature: 'प्रकृति',
@@ -100,17 +102,21 @@ export default function FlashcardPage() {
   const currentDeckName = deck === 'all' ? t('All Decks') : (lang === 'hi' ? decks.find((d) => d.id === deck)?.nameHi || decks.find((d) => d.id === deck)?.name || t('All Decks') : decks.find((d) => d.id === deck)?.name || t('All Decks'))
 
   return (
-    <div>
+    <div className="page-container">
       <div className="page-header">
-        <h2>{t('📇 Spaced Repetition Flashcards')}</h2>
+        <h2>{t('Spaced Repetition Flashcards')}</h2>
         <p>{t('Anki-style SM-2 algorithm — master Sanskrit vocabulary, grammar, and more')}</p>
       </div>
 
       <div className="flashcard-mode-bar">
-        <button className={`btn btn-sm ${mode === 'stats' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('stats')}>{t('📊 Stats')}</button>
-        <button className={`btn btn-sm ${mode === 'browse' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('browse')}>{t('📚 Browse')}</button>
-        <button className={`btn btn-sm ${mode === 'review' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => { if (mode !== 'review') startReview() }}>
-          {t('🎯 Review')}
+        <button className={`btn btn-sm ${mode === 'stats' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('stats')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <BarChart3 size={14} /> <span>{t('Stats')}</span>
+        </button>
+        <button className={`btn btn-sm ${mode === 'browse' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => setMode('browse')} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <BookOpen size={14} /> <span>{t('Browse')}</span>
+        </button>
+        <button className={`btn btn-sm ${mode === 'review' ? 'btn-primary' : 'btn-secondary'}`} onClick={() => { if (mode !== 'review') startReview() }} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+          <Target size={14} /> <span>{t('Review')}</span>
         </button>
       </div>
 
@@ -120,7 +126,7 @@ export default function FlashcardPage() {
             <span>{t('Deck:')}</span>
             <select value={deck} onChange={(e) => setDeck(e.target.value)}>
               <option value="all">{t('All Decks')}</option>
-              {decks.map((d) => <option key={d.id} value={d.id}>{d.icon} {lang === 'hi' ? d.nameHi || d.name : d.name}</option>)}
+              {decks.map((d) => <option key={d.id} value={d.id}>{lang === 'hi' ? d.nameHi || d.name : d.name}</option>)}
             </select>
             <button className="btn btn-primary btn-sm" onClick={startReview}>{t('Start Review')}</button>
           </div>
@@ -158,7 +164,9 @@ export default function FlashcardPage() {
               const due = getDueCards(srsState.cards, d.id).length
               return (
                 <div key={d.id} className="card deck-card" onClick={() => { setDeck(d.id); startReview() }}>
-                  <div className="deck-icon">{d.icon}</div>
+                  <div className="deck-icon" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <DynamicIcon name={d.icon} size={28} />
+                  </div>
                   <div className="deck-name">{lang === 'hi' ? d.nameHi || d.name : d.name}</div>
                   <div className="deck-count">{c.length} {t('cards')} · {due} {t('due')}</div>
                 </div>
@@ -180,9 +188,14 @@ export default function FlashcardPage() {
               </div>
               <div className="flashcard-back">
                 <div className="flashcard-text">{lang === 'hi' && currentCard.card.backHi ? currentCard.card.backHi : currentCard.card.back}</div>
-                {(lang === 'hi' ? (currentCard.card.hintHi || currentCard.card.hint) : currentCard.card.hint) && <div className="flashcard-hint">💡 {lang === 'hi' && currentCard.card.hintHi ? currentCard.card.hintHi : currentCard.card.hint}</div>}
+                {(lang === 'hi' ? (currentCard.card.hintHi || currentCard.card.hint) : currentCard.card.hint) && (
+                  <div className="flashcard-hint" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <Lightbulb size={14} color="#ffd54f" />
+                    <span>{lang === 'hi' && currentCard.card.hintHi ? currentCard.card.hintHi : currentCard.card.hint}</span>
+                  </div>
+                )}
                 <div className="flashcard-tags">
-                  {currentCard.card.tags.map((t) => <span key={t} className="tag">{lang === 'hi' ? TAG_HI[t] || t : t}</span>)}
+                  {currentCard.card.tags.map((tg) => <span key={tg} className="tag">{lang === 'hi' ? TAG_HI[tg] || tg : tg}</span>)}
                 </div>
               </div>
             </div>
@@ -204,7 +217,9 @@ export default function FlashcardPage() {
 
       {mode === 'review' && !currentCard && (
         <div className="card" style={{ textAlign: 'center', padding: 48 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
+          <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 16 }}>
+            <Trophy size={48} color="#2ecc71" />
+          </div>
           <h3>{t('All caught up!')}</h3>
           <p>{t('No due cards in {0}. Come back later.').replace('{0}', currentDeckName)}</p>
           <button className="btn btn-primary" onClick={() => setMode('stats')}>{t('Back to Stats')}</button>
@@ -217,7 +232,7 @@ export default function FlashcardPage() {
             <span>{t('Deck:')}</span>
             <select value={deck} onChange={(e) => setDeck(e.target.value)}>
               <option value="all">{t('All Decks')}</option>
-              {decks.map((d) => <option key={d.id} value={d.id}>{d.icon} {lang === 'hi' ? d.nameHi || d.name : d.name}</option>)}
+              {decks.map((d) => <option key={d.id} value={d.id}>{lang === 'hi' ? d.nameHi || d.name : d.name}</option>)}
             </select>
             <span className="browse-count">{deckCards.length} {t('cards')}</span>
           </div>
@@ -232,7 +247,7 @@ export default function FlashcardPage() {
                   <div className="browse-front">{fc.front}</div>
                   <div className="browse-back">{lang === 'hi' && fc.backHi ? fc.backHi : fc.back}</div>
                   <div className="browse-meta">
-                    {fc.tags.map((t) => <span key={t} className="tag">{lang === 'hi' ? TAG_HI[t] || t : t}</span>)}
+                    {fc.tags.map((tg) => <span key={tg} className="tag">{lang === 'hi' ? TAG_HI[tg] || tg : tg}</span>)}
                     {isNew && <span className="badge badge-new">{t('New')}</span>}
                     {due && <span className="badge badge-due">{t('Due')}</span>}
                     {sc && sc.repetitions > 0 && <span className="badge badge-learned">{t('Ease:')} {sc.ease}</span>}

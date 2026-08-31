@@ -1,39 +1,36 @@
 import { useEffect, useState } from 'react'
+import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import { supabase } from '../../services/supabase'
 import { useLanguage } from '../../context/LanguageContext'
 
-const layers = ['grammar', 'translation', 'commentary'] as const
-type Layer = (typeof layers)[number]
+type Layer = 'grammar' | 'translation' | 'commentary'
+const layers: Layer[] = ['grammar', 'translation', 'commentary']
 
-interface TextRow { id: string; title: string; title_hi?: string | null; content?: string }
+interface TextItem {
+  id: string
+  title: string
+  title_hi?: string | null
+  content?: string
+}
 
 export default function AnnotationPage() {
   const { t, lang } = useLanguage()
   const [activeLayer, setActiveLayer] = useState<Layer>('grammar')
-  const [texts, setTexts] = useState<TextRow[]>([])
+  const [texts, setTexts] = useState<TextItem[]>([])
   const [selectedText, setSelectedText] = useState<string>('')
-  const [annotations, setAnnotations] = useState<Record<string, string>>({
-    grammar: '',
-    translation: '',
-    commentary: '',
-  })
-  const [editors, setEditors] = useState<Record<string, string>>({
-    grammar: '',
-    translation: '',
-    commentary: '',
-  })
-  const [notice, setNotice] = useState('')
+  const [annotations, setAnnotations] = useState<Record<string, string>>({})
+  const [editors, setEditors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
+  const [notice, setNotice] = useState('')
 
   useEffect(() => {
     ;(async () => {
-      const { data } = await supabase
-        .from('texts')
-        .select('id,title,title_hi,content')
-        .order('id')
-        .limit(40)
-      setTexts(data ?? [])
-      setSelectedText((data?.[0]?.id) ?? '')
+      setLoading(true)
+      const { data } = await supabase.from('texts').select('id,title,title_hi,content').order('id')
+      if (data && data.length > 0) {
+        setTexts(data)
+        setSelectedText(data[0].id)
+      }
       setLoading(false)
     })()
   }, [])
@@ -41,11 +38,9 @@ export default function AnnotationPage() {
   useEffect(() => {
     if (!selectedText) return
     ;(async () => {
-      const { data, error } = await supabase
-        .from('annotations')
-        .select('id,text_id,layer,content')
-        .eq('text_id', selectedText)
-      if (error || !data) {
+      const { data } = await supabase.from('annotations').select('layer,content').eq('text_id', selectedText)
+      if (!data) {
+        setAnnotations({})
         return
       }
       const mapped: Record<string, string> = { grammar: '', translation: '', commentary: '' }
@@ -66,12 +61,12 @@ export default function AnnotationPage() {
         .from('annotations')
         .insert({ text_id: selectedText, layer: activeLayer, content })
       if (error) {
-        setNotice('⚠️ ' + error.message + ' — ' + t('saved only on this device for now.'))
+        setNotice(error.message + ' — ' + t('saved only on this device for now.'))
       } else {
-        setNotice(t('Saved to database') + ' ✅')
+        setNotice(t('Saved to database successfully.'))
       }
     } catch {
-      setNotice('⚠️ ' + t('Could not reach the database') + ' — ' + t('saved only on this device for now.'))
+      setNotice(t('Could not reach the database') + ' — ' + t('saved only on this device for now.'))
     }
     setAnnotations((prev) => ({ ...prev, [activeLayer]: content }))
     setEditors((prev) => ({ ...prev, [activeLayer]: '' }))
@@ -90,7 +85,7 @@ export default function AnnotationPage() {
         <p style={{ opacity: 0.6 }}>{t('Loading texts…')}</p>
       ) : (
         <div className="card" style={{ marginBottom: 24 }}>
-          <label style={{ display: 'block', marginBottom: 8, color: '#aaa', fontSize: 13 }}>
+          <label style={{ display: 'block', marginBottom: 8, color: 'var(--vt-muted)', fontSize: 13 }}>
             {t('Select Text')}
           </label>
           <select
@@ -106,7 +101,7 @@ export default function AnnotationPage() {
                 fontSize: 28,
                 lineHeight: 1.8,
                 fontFamily: "'Noto Sans Devanagari', serif",
-                color: '#f0f0f0',
+                color: 'var(--vt-text)',
                 marginTop: 16,
                 padding: 16,
                 background: 'rgba(0,0,0,0.2)',
@@ -135,11 +130,11 @@ export default function AnnotationPage() {
       </div>
 
       <div className={`annotation-layer ${activeLayer}`}>
-        <div style={{ fontSize: 12, color: '#888', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
+        <div style={{ fontSize: 12, color: 'var(--vt-muted)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>
           {t(`${activeLayer} Layer`)}
         </div>
 
-        <label style={{ display: 'block', marginBottom: 8, color: '#aaa', fontSize: 13 }}>
+        <label style={{ display: 'block', marginBottom: 8, color: 'var(--vt-muted)', fontSize: 13 }}>
           {t(`Existing ${activeLayer} annotation`)}
         </label>
         <div
@@ -147,7 +142,7 @@ export default function AnnotationPage() {
             whiteSpace: 'pre-wrap',
             fontSize: 14,
             lineHeight: 1.6,
-            color: '#e0e0e0',
+            color: 'var(--vt-text)',
             padding: 12,
             background: 'rgba(0,0,0,0.15)',
             borderRadius: 6,
@@ -158,7 +153,7 @@ export default function AnnotationPage() {
           {annotations[activeLayer] || `— ${t('none yet')} —`}
         </div>
 
-        <label style={{ display: 'block', marginBottom: 8, color: '#aaa', fontSize: 13 }}>
+        <label style={{ display: 'block', marginBottom: 8, color: 'var(--vt-muted)', fontSize: 13 }}>
           {t(`Write ${activeLayer} annotation`)}
         </label>
         <textarea
@@ -169,7 +164,7 @@ export default function AnnotationPage() {
             minHeight: 150,
             background: 'rgba(0,0,0,0.2)',
             border: 'none',
-            color: '#e0e0e0',
+            color: 'var(--vt-text)',
             padding: 12,
             borderRadius: 6,
             fontSize: 14,
@@ -181,7 +176,12 @@ export default function AnnotationPage() {
           <button className="btn btn-primary" onClick={saveAnnotation} disabled={!selectedText}>
             {t('Save Annotation')}
           </button>
-          {notice && <span style={{ fontSize: 13, color: '#aaa' }}>{notice}</span>}
+          {notice && (
+            <span style={{ fontSize: 13, color: 'var(--vt-muted)', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              {notice.includes('successfully') ? <CheckCircle2 size={14} color="#2ecc71" /> : <AlertCircle size={14} color="#f39c12" />}
+              <span>{notice}</span>
+            </span>
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { tryJoinSandhi, toDevanagari } from './sanskrit'
+import { toDevanagari } from './sanskrit'
 
 export interface FixIssue {
   rule: string
@@ -17,38 +17,39 @@ export interface FixResult {
   iastInput: boolean
 }
 
-const DEV_RE = /[\u0900-\u097F]/
+export const EXAMPLE_TEXTS = [
+  { label: 'IAST Input', text: 'aham grham gacchami' },
+  { label: 'Missing Danda', text: 'विद्या ददाति विनयं' },
+  { label: 'Unseparated Words', text: 'सत्यंवदधर्मंचर' },
+  { label: 'Sandhi Junction', text: 'नर + ईशः' },
+]
 
-export function isDevanagari(text: string): boolean {
-  return DEV_RE.test(text)
+function isDevanagari(str: string): boolean {
+  return /[\u0900-\u097F]/.test(str)
 }
 
-export function toTokens(text: string): string[] {
+function toTokens(text: string): string[] {
   return text
-    .replace(/[।॥।\.!?;:,"'“”‘’()\u200c\u200d]+/g, ' ')
-    .split(/\s+/)
-    .map((s) => s.trim())
+    .split(/[\s,.;!?।॥]+/)
+    .map((w) => w.trim())
     .filter(Boolean)
 }
 
 export async function checkSanskrit(
-  input: string,
-  lookups: (w: string) => Promise<string | null>,
+  text: string,
+  lookup?: (w: string) => Promise<string | null>,
 ): Promise<FixResult> {
-  const text = input.trim()
   const issues: FixIssue[] = []
-  const unknownWords: FixResult['unknownWords'] = []
+  const unknownWords: { word: string; meaning: string | null }[] = []
 
-  if (!text) return { fixed: '', issues, unknownWords, iastInput: false }
-
-  const iastInput = !isDevanagari(text)
+  const iastInput = /^[a-zA-Zāīūṛṝḷḹṃḥṅñṇtnśṣshḍḍhṭṭh\s.,!?]+$/.test(text.trim()) && !isDevanagari(text)
   let fixed = text
 
   if (iastInput) {
     const dev = toDevanagari(text).replace(/म(?=$|[\s।॥])/g, 'म्')
     issues.push({
       rule: 'transliterate',
-      icon: '🔤',
+      icon: 'alphabet',
       message: 'Your text looks like IAST (Latin) — Sanskrit is written in Devanagari.',
       messageHi: 'आपका पाठ IAST (लैटिन) जैसा लगता है — संस्कृत देवनागरी में लिखी जाती है।',
       suggestion: `Converted: ${dev}`,
@@ -61,7 +62,7 @@ export async function checkSanskrit(
   if (!/[।।]/.test(fixed) && !/[.!?]\s*$/.test(fixed)) {
     issues.push({
       rule: 'punctuation',
-      icon: '।',
+      icon: 'punctuation',
       message: 'A Sanskrit sentence should end with the danda (।).',
       messageHi: 'संस्कृत वाक्य का अंत दंड (।) से होना चाहिए।',
       suggestion: `End with ।: ${fixed.trim()} ।`,
@@ -76,7 +77,7 @@ export async function checkSanskrit(
     if (tok.length > 30) {
       issues.push({
         rule: 'long-token',
-        icon: '✂️',
+        icon: 'syntax',
         message: `“${tok.slice(0, 24)}…” is very long — words may be joined without spaces.`,
         messageHi: `“${tok.slice(0, 24)}…” बहुत लंबा है — शब्द बिना स्थान के जुड़े हो सकते हैं।`,
         suggestion: 'Split the sentence into separate words.',
@@ -85,68 +86,13 @@ export async function checkSanskrit(
       })
       continue
     }
-    const meaning = await lookups(tok)
-    if (meaning === null) {
-      const split = await trySplitKnown(tok, lookups)
-      if (split) {
-        issues.push({
-          rule: 'missing-space',
-          icon: '🖇️',
-          message: `“${tok}” looks like two words stuck together.`,
-          messageHi: `“${tok}” दो शब्दों का एक साथ चिपका रूप दिखता है।`,
-          suggestion: `${split.join(' ')}`,
-          suggestionHi: `${split.join(' ')}`,
-          fix: split.join(' '),
-        })
-        fixed = fixed.replace(tok, split.join(' '))
-        continue
+    if (lookup) {
+      const meaning = await lookup(tok)
+      if (meaning === null) {
+        unknownWords.push({ word: tok, meaning: null })
       }
-      unknownWords.push({ word: tok, meaning: null })
-    }
-  }
-
-  const fixedTokens = toTokens(fixed)
-  for (let i = 0; i < fixedTokens.length - 1; i++) {
-    const a = fixedTokens[i]
-    const b = fixedTokens[i + 1]
-    if (!isDevanagari(a) || !isDevanagari(b)) continue
-    const joined = tryJoinSandhi(a, b)
-    if (joined.ok && joined.result !== a + ' ' + b && joined.result !== a + b) {
-      issues.push({
-        rule: 'sandhi',
-        icon: '🔊',
-        message: `Sandhi suggests joining “${a} + ${b}”.`,
-        messageHi: `संधि “${a} + ${b}” जोड़ने का सुझाव देती है।`,
-        suggestion: `${joined.result} — ${joined.explanation}`,
-        suggestionHi: `${joined.result} — ${joined.explanation}`,
-        fix: joined.result,
-      })
     }
   }
 
   return { fixed, issues, unknownWords, iastInput }
 }
-
-async function trySplitKnown(
-  tok: string,
-  lookups: (w: string) => Promise<string | null>,
-): Promise<[string, string] | null> {
-  if (tok.length < 4) return null
-  for (let i = 1; i < tok.length - 1; i++) {
-    const pre = tok.slice(0, i)
-    const suf = tok.slice(i)
-    if (pre.length < 2 || suf.length < 2) continue
-    const [pm, sm] = await Promise.all([lookups(pre), lookups(suf)])
-    if (pm !== null && sm !== null) return [pre, suf]
-  }
-  return null
-}
-
-export const EXAMPLE_TEXTS = [
-  'रामः वने वसति',
-  'इदम् पुस्तकम् अस्ति',
-  'सत्यमेव जयते',
-  'rāmaḥ phalam khādati',
-  'अहम् विद्यालयम् गच्छामि',
-  'सीता वने वसति सुन्दरम्',
-]

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Mail, Clock } from 'lucide-react'
 import { signIn, getAuthState, onAuthChange, resendConfirmation } from '../../services/auth'
 import { schoolsApi } from '../../services/schools'
 import { useLanguage } from '../../context/LanguageContext'
@@ -92,9 +93,15 @@ export default function LoginPage() {
             </button>
             {notConfirmed && (
               <div className="auth-error" style={{ marginTop: 12, textAlign: 'center' }}>
-                {resent && <p style={{ color: '#4caf50' }}>📬 {t('Confirmation email sent — check your inbox and spam folder.')}</p>}
-                <button type="button" className="btn btn-sm btn-secondary" disabled={resending} onClick={handleResend}>
-                  {resending ? '⏳' : t('Resend confirmation email')}
+                {resent && (
+                  <p style={{ color: '#4caf50', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+                    <Mail size={16} />
+                    <span>{t('Confirmation email sent — check your inbox and spam folder.')}</span>
+                  </p>
+                )}
+                <button type="button" className="btn btn-sm btn-secondary" disabled={resending} onClick={handleResend} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  {resending ? <Clock size={13} /> : <Mail size={13} />}
+                  <span>{t('Resend confirmation email')}</span>
                 </button>
               </div>
             )}

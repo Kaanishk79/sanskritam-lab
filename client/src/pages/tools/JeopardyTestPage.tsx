@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { ArrowLeft, ArrowRight, Trophy, RotateCcw } from 'lucide-react'
 import { anytimeTestQuestions, TEST_PASS_THRESHOLD, TEST_TIME_SECONDS, CATEGORY_HI } from '../../data/jeopardyTest'
 import { syncTestBestFromDb, persistTestBestToDb } from '../../services/userDb'
 import { useLanguage } from '../../context/LanguageContext'
@@ -95,10 +96,10 @@ export default function JeopardyTestPage() {
   const progress = Math.round((answered / anytimeTestQuestions.length) * 100)
 
   return (
-    <div>
+    <div className="page-container">
       <JeopardyHeader />
       <div className="page-header">
-        <h2>{t('⏱️ Anytime Test')}</h2>
+        <h2>{t('Anytime Test')}</h2>
         <p>{t('The official-style qualifying test — 30 questions, {0} minutes, pass at {1}+').replace('{0}', String(minutesTotal)).replace('{1}', String(TEST_PASS_THRESHOLD))}</p>
       </div>
 
@@ -142,11 +143,15 @@ export default function JeopardyTestPage() {
               })}
             </div>
             <div className="j-test-nav">
-              <button className="btn btn-sm btn-secondary" onClick={prev} disabled={idx === 0}>{t('← Prev')}</button>
+              <button className="btn btn-sm btn-secondary" onClick={prev} disabled={idx === 0} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                <ArrowLeft size={13} /> <span>{t('Prev')}</span>
+              </button>
               {answeredCount === anytimeTestQuestions.length && idx === anytimeTestQuestions.length - 1 ? (
                 <button className="btn btn-primary" onClick={next}>{t('Finish')}</button>
               ) : (
-                <button className="btn btn-primary" onClick={next} disabled={!(question.id in answers)}>{t('Next →')}</button>
+                <button className="btn btn-primary" onClick={next} disabled={!(question.id in answers)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <span>{t('Next')}</span> <ArrowRight size={13} />
+                </button>
               )}
             </div>
             <p className="j-test-counter">{t('Answered')}: {answeredCount} / {anytimeTestQuestions.length}</p>
@@ -156,7 +161,10 @@ export default function JeopardyTestPage() {
 
       {phase === 'done' && (
         <div className="j-result-card">
-          <h3>{passed ? t('🎉 You passed the Anytime Test!') : t('Not yet — review and try again!')}</h3>
+          <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
+            <Trophy size={48} color={passed ? '#2ecc71' : 'var(--vt-orange)'} />
+          </div>
+          <h3>{passed ? t('You passed the Anytime Test!') : t('Not yet — review and try again!')}</h3>
           <div className={`j-result-score ${passed ? 'pass' : 'fail'}`}>
             {results.correct} / {anytimeTestQuestions.length}
           </div>
@@ -171,7 +179,9 @@ export default function JeopardyTestPage() {
           </div>
           <p className="j-best">{t('Your best score')}: <strong>{best}</strong> / 30</p>
           <div className="j-test-nav">
-            <button className="btn btn-primary" onClick={startTest}>{t('Retake Test')}</button>
+            <button className="btn btn-primary" onClick={startTest} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+              <RotateCcw size={15} /> <span>{t('Retake Test')}</span>
+            </button>
           </div>
         </div>
       )}

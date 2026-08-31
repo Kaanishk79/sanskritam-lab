@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react'
+import {
+  BookOpen, MessageSquareQuote, Flame, Zap, Volume2,
+  Trophy, RotateCcw
+} from 'lucide-react'
 import { wordOfDay, phraseOfDay, verseOfDay, DAILY_CHALLENGE_QUESTIONS, type ChallengeQuestion } from '../../services/sanskrit'
 import { speakWithFallback } from '../../services/speech'
 import { useLanguage } from '../../context/LanguageContext'
@@ -50,55 +54,73 @@ export default function DailyPage() {
   }
 
   return (
-    <div className="page">
+    <div className="page-container">
       <div className="page-header">
-        <h1>🌅 {t('Daily Sanskrit')}</h1>
+        <h2>{t('Daily Sanskrit')}</h2>
         <p>{t('A word, a phrase, a verse — and a 5-minute challenge. Every day.')}</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
         <div className="card" style={{ padding: 20 }}>
-          <h3 style={{ marginTop: 0 }}>📖 {t('Word of the Day')}</h3>
+          <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <BookOpen size={18} color="var(--vt-orange)" /> <span>{t('Word of the Day')}</span>
+          </h3>
           {wod ? (
             <>
-              <div style={{ fontSize: 34 }}>{wod.word}</div>
+              <div style={{ fontSize: 32, fontWeight: 700 }}>{wod.word}</div>
               <div style={{ color: '#999', margin: '4px 0' }}>{wod.iast}</div>
               <ul style={{ margin: 0, paddingLeft: 18 }}>
                 {(wod.meaningsHi.length && lang === 'hi' ? wod.meaningsHi : wod.meanings).map((m, i) => <li key={i}>{m}</li>)}
               </ul>
-              <button className="btn btn-sm btn-outline" style={{ marginTop: 10 }} onClick={() => speakWithFallback(wod.word)}>🔊 {t('Hear it')}</button>
+              <button className="btn btn-sm btn-outline" style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => speakWithFallback(wod.word)}>
+                <Volume2 size={14} /> <span>{t('Hear it')}</span>
+              </button>
             </>
-          ) : <p style={{ color: '#888' }}>⏳…</p>}
+          ) : <p style={{ color: '#888' }}>{t('Loading…')}</p>}
         </div>
 
         <div className="card" style={{ padding: 20 }}>
-          <h3 style={{ marginTop: 0 }}>💬 {t('Phrase of the Day')}</h3>
-          <div style={{ fontSize: 24 }}>{phrase.dev}</div>
+          <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <MessageSquareQuote size={18} color="var(--vt-gold)" /> <span>{t('Phrase of the Day')}</span>
+          </h3>
+          <div style={{ fontSize: 22, fontWeight: 600 }}>{phrase.dev}</div>
           <div style={{ color: '#999', margin: '4px 0' }}>{phrase.iast}</div>
           <div style={{ color: '#ccc' }}>{lang === 'hi' ? phrase.meaningHi || phrase.meaning : phrase.meaning}</div>
-          <button className="btn btn-sm btn-outline" style={{ marginTop: 10 }} onClick={() => speakWithFallback(phrase.dev)}>🔊 {t('Hear it')}</button>
+          <button className="btn btn-sm btn-outline" style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => speakWithFallback(phrase.dev)}>
+            <Volume2 size={14} /> <span>{t('Hear it')}</span>
+          </button>
         </div>
 
         <div className="card" style={{ padding: 20 }}>
-          <h3 style={{ marginTop: 0 }}>🪔 {t('Verse of the Day')}</h3>
-          <div style={{ fontSize: 20, lineHeight: 1.8 }}>{verse.dev}</div>
+          <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <Flame size={18} color="#e74c3c" /> <span>{t('Verse of the Day')}</span>
+          </h3>
+          <div style={{ fontSize: 18, lineHeight: 1.7 }}>{verse.dev}</div>
           <div style={{ color: '#999', margin: '4px 0', fontSize: 13 }}>{verse.iast}</div>
           <div style={{ color: '#ccc', fontSize: 14 }}>{lang === 'hi' ? verse.translationHi || verse.translation : verse.translation}</div>
           <div style={{ color: '#888', fontSize: 12, marginTop: 6 }}>{lang === 'hi' ? verse.sourceHi || verse.source : verse.source}</div>
-          <button className="btn btn-sm btn-outline" style={{ marginTop: 10 }} onClick={() => speakWithFallback(verse.dev)}>🔊 {t('Hear it')}</button>
+          <button className="btn btn-sm btn-outline" style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 6 }} onClick={() => speakWithFallback(verse.dev)}>
+            <Volume2 size={14} /> <span>{t('Hear it')}</span>
+          </button>
         </div>
       </div>
 
-      <div className="card" style={{ padding: 24, marginTop: 16, maxWidth: 640 }}>
-        <h3 style={{ marginTop: 0 }}>⚡ {t('5-Minute Daily Challenge')}</h3>
+      <div className="card" style={{ padding: 24, marginTop: 20, maxWidth: 640 }}>
+        <h3 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Zap size={18} color="#f1c40f" /> <span>{t('5-Minute Daily Challenge')}</span>
+        </h3>
         {questions.length === 0 ? (
-          <p style={{ color: '#888' }}>⏳…</p>
+          <p style={{ color: '#888' }}>{t('Loading…')}</p>
         ) : done ? (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 44 }}>{score >= 4 ? '🏆' : score >= 3 ? '🎉' : '💪'}</div>
+          <div style={{ textAlign: 'center', padding: '16px 0' }}>
+            <div style={{ display: 'inline-flex', justifyContent: 'center', marginBottom: 12 }}>
+              <Trophy size={48} color={score >= 4 ? '#f1c40f' : score >= 3 ? '#2ecc71' : 'var(--vt-orange)'} />
+            </div>
             <h3>{t('You scored')} {score}/{questions.length}</h3>
             <p style={{ color: '#888' }}>{score >= 4 ? t('Outstanding! Come back tomorrow for the next challenge.') : score >= 3 ? t("Good job — one more try and it's perfect.") : t('Practice makes perfect. Try again!')}</p>
-            <button className="btn btn-primary" onClick={() => { setDone(false); setIdx(0); setScore(0); setAnswered(null); const qs = [...DAILY_CHALLENGE_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 5); setQuestions(qs) }}>{t('Play again')}</button>
+            <button className="btn btn-primary" onClick={() => { setDone(false); setIdx(0); setScore(0); setAnswered(null); const qs = [...DAILY_CHALLENGE_QUESTIONS].sort(() => Math.random() - 0.5).slice(0, 5); setQuestions(qs) }}>
+              <RotateCcw size={15} /> <span>{t('Play again')}</span>
+            </button>
           </div>
         ) : (
           <>
@@ -122,9 +144,11 @@ export default function DailyPage() {
               )
             })}
             {answered !== null && (
-              <div style={{ marginTop: 12 }}>
-                <p style={{ color: '#aaa', fontSize: 13 }}>💡 {lang === 'hi' ? questions[idx].explanationHi : questions[idx].explanation}</p>
-                <button className="btn btn-primary" onClick={next}>{idx + 1 >= questions.length ? t('See results') : t('Next question')}</button>
+              <div style={{ marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontSize: 13, color: '#888' }}>{questions[idx].explanation}</span>
+                <button className="btn btn-primary btn-sm" onClick={next}>
+                  {idx + 1 < questions.length ? <span>{t('Next')}</span> : <span>{t('See Results')}</span>}
+                </button>
               </div>
             )}
           </>
