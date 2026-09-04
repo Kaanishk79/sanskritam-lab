@@ -1,3 +1,4 @@
+#[cfg(feature = "server")]
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 
@@ -15,6 +16,7 @@ pub struct TtsResponse {
     pub text: String,
 }
 
+#[cfg(feature = "server")]
 pub async fn synthesize(body: web::Json<TtsRequest>) -> HttpResponse {
     let clean = body.text.trim();
     let duration = clean.chars().count() * 140;

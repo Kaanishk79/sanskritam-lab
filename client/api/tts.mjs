@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     res.setHeader('Content-Type', 'audio/mpeg')
     res.setHeader('Cache-Control', 'public, max-age=86400')
     res.send(buf)
-  } catch (e) {
+  } catch (_e) {
     res.status(502).json({ error: 'fetch failed' })
   }
 }

@@ -4,7 +4,7 @@
 
 # संस्कृतम् — SanskritLab
 
-**Bridging deep historical research with modern education, powered by high-performance technology.**
+**Bridging deep historical research with modern education, powered by high-performance WebAssembly technology.**
 
 SanskritLab is a full-stack platform for Sanskrit studies spanning manuscript digitization, 3D visualization, adaptive learning, and AI-powered assessment — from **child-friendly play modes** to **PhD-level critical edition tools**.
 
@@ -58,11 +58,11 @@ SanskritLab is a full-stack platform for Sanskrit studies spanning manuscript di
 
 | Layer | Technology |
 |-------|-----------|
-| **Frontend** | React 19, TypeScript, Vite, React Router |
+| **Frontend** | React 19, JavaScript (JSX), Vite, React Router |
+| **WASM Core** | Rust (`wasm-bindgen`), compiled to `wasm32-unknown-unknown` |
 | **Backend (Rust)** | Actix-web, Serde, Tesseract OCR |
-| **Backend (Go)** | Gorilla/Mux, CORS |
 | **Desktop** | PySide6 (Python) |
-| **Storage** | localStorage (client), in-memory (backend stubs) |
+| **Hosting** | Netlify (Static SPA + WebAssembly) |
 
 ---
 
@@ -70,40 +70,36 @@ SanskritLab is a full-stack platform for Sanskrit studies spanning manuscript di
 
 ### Prerequisites
 - Node.js 20+
-- Rust (for backend)
-- Go 1.21+ (for Go backend)
+- Rust & `wasm32-unknown-unknown` target (for compiling WASM engine)
 - Python 3.10+ & PySide6 (for desktop app)
 
-### Frontend (React)
+### Frontend (React + WASM)
 
 ```bash
 cd client
 npm install
-npm run dev        # starts at http://localhost:5173
-npm run build      # production build → dist/
+npm run dev        # starts local dev server at http://localhost:5173
+npm run build      # production build → dist/ (Netlify ready)
 ```
 
-### Rust Backend
+### Compiling Rust to WebAssembly
+
+To compile the high-performance Rust grammar and dictionary engine to WebAssembly:
 
 ```bash
 cd backend/rust
-cargo run          # starts API at http://127.0.0.1:8080
+rustup target add wasm32-unknown-unknown
+cargo build --target wasm32-unknown-unknown
+copy target\wasm32-unknown-unknown\debug\sanskrit_lab_backend.wasm ..\..\client\public\wasm\
 ```
 
-### Go Backend
+### Deploying to Netlify
 
-```bash
-cd backend/go
-go run main.go     # starts API at http://127.0.0.1:9090
-```
-
-### Desktop App (PySide6)
-
-```bash
-cd desktop
-pip install PySide6
-python main.py
-```
+SanskritLab is fully pre-configured for **Netlify static hosting**:
+1. Connect your repository to Netlify.
+2. Build command: `npm run build`
+3. Publish directory: `dist`
+4. The included `netlify.toml` handles SPA routing (`/* -> /index.html 200`) automatically.
 
 ---
 
@@ -111,54 +107,21 @@ python main.py
 
 ```
 SanskritLab/
-├── client/                    # React + TypeScript + Vite
-│   ├── public/
-│   └── src/
-│       ├── components/        # Shared UI (Layout, etc.)
-│       ├── pages/
-│       │   ├── dashboard/     # Overview
-│       │   ├── research/      # Corpus, OCR, Annotation
-│       │   ├── visualization/ # 3D Viewer, Grammar Maps, Timeline
-│       │   ├── teaching/      # Teacher, Student, Assessment
-│       │   ├── viva/          # Viva Simulator, Analytics
-│       │   └── learning/      # Skill Tree, Lessons, Child Mode,
-│       │                       # Research Workspace, Curriculum Builder
-│       ├── hooks/             # useProgress (learning engine)
-│       ├── services/          # API client, learning engine
-│       ├── types/             # TypeScript definitions
-│       └── data/              # Lessons & tracks curriculum data
+├── client/                    # React + JavaScript (JSX) + Vite
+├── netlify.toml               # Netlify hosting configuration
+├── public/
+│   └── wasm/                  # Compiled Rust WebAssembly binaries
+├── src/
+│   ├── components/            # Shared UI (Layout, etc.)
+│   ├── pages/                 # UI Views (Dashboard, Tools, Viva, Research)
+│   ├── services/              # WASM Engine, Supabase, Sanskrit logic
+│   └── data/                  # Lessons & curriculum data
 ├── backend/
-│   ├── rust/                  # Actix-web API (OCR, grammar, corpus, dict)
-│   └── go/                    # Gorilla/mux API (analytics, assessment, viva)
-├── desktop/                   # PySide6 multi-window app
+│   └── rust/                  # Rust engine (Server mode & WASM target)
+├── desktop/                   # PySide6 multi-window desktop app
+├── run.bat                    # One-click Windows launcher
 └── README.md
 ```
-
----
-
-## 🔌 API Endpoints
-
-### Rust (port 8080)
-| Route | Method | Description |
-|-------|--------|-------------|
-| `/api/health` | GET | Health check |
-| `/api/ocr/recognize` | POST | OCR image → text |
-| `/api/grammar/parse` | POST | Parse Sanskrit text |
-| `/api/grammar/sandhi` | POST | Split sandhi |
-| `/api/grammar/declensions` | GET | Declension paradigms |
-| `/api/corpus/search` | GET | Search texts |
-| `/api/corpus/texts` | GET | List texts |
-| `/api/corpus/texts/{id}` | GET | Get text by ID |
-| `/api/dictionary/lookup` | GET | Word lookup |
-| `/api/dictionary/compound-split` | POST | Split compounds |
-
-### Go (port 9090)
-| Route | Method | Description |
-|-------|--------|-------------|
-| `/api/analytics/evaluate` | POST | Evaluate performance |
-| `/api/assessment/generate` | POST | Generate quiz |
-| `/api/viva/session` | POST | Start viva session |
-| `/api/tts/synthesize` | POST | Text-to-speech |
 
 ---
 

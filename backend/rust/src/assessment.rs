@@ -1,3 +1,4 @@
+#[cfg(feature = "server")]
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 
@@ -27,6 +28,7 @@ pub struct Question {
     pub explanation_hi: String,
 }
 
+#[cfg(feature = "server")]
 pub async fn generate(body: web::Json<AssessmentRequest>) -> HttpResponse {
     let topic = body.topic.as_deref().unwrap_or("general");
     let count = body.count.unwrap_or(3).min(10);

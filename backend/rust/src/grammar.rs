@@ -1,3 +1,4 @@
+#[cfg(feature = "server")]
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -70,6 +71,7 @@ pub struct VibhaktiRow {
     pub plural: String,
 }
 
+#[cfg(feature = "server")]
 pub async fn parse(body: web::Json<ParseRequest>) -> HttpResponse {
     let raw = body.text.trim();
     let words: Vec<&str> = raw.split(|c: char| c.is_whitespace() || c == '।' || c == '॥' || c == ',' || c == '.').filter(|s| !s.is_empty()).collect();
@@ -93,7 +95,7 @@ pub async fn parse(body: web::Json<ParseRequest>) -> HttpResponse {
     })
 }
 
-fn analyze_token(w: &str) -> (String, String, Option<String>, Option<String>) {
+pub fn analyze_token(w: &str) -> (String, String, Option<String>, Option<String>) {
     match w {
         "रामः" => ("राम".into(), "noun".into(), Some("प्रथमा एकवचन (Nominative Sg)".into()), Some("Rama".into())),
         "रामम्" => ("राम".into(), "noun".into(), Some("द्वितीया एकवचन (Accusative Sg)".into()), Some("Rama (object)".into())),
@@ -125,6 +127,7 @@ fn analyze_token(w: &str) -> (String, String, Option<String>, Option<String>) {
     }
 }
 
+#[cfg(feature = "server")]
 pub async fn sandhi_split(body: web::Json<SandhiSplitRequest>) -> HttpResponse {
     let input = body.text.trim();
     let (splits, rule, explanation) = match input {
@@ -152,6 +155,7 @@ pub async fn sandhi_split(body: web::Json<SandhiSplitRequest>) -> HttpResponse {
     })
 }
 
+#[cfg(feature = "server")]
 pub async fn sandhi_join(body: web::Json<SandhiJoinRequest>) -> HttpResponse {
     let w1 = body.word1.trim();
     let w2 = body.word2.trim();
@@ -182,6 +186,7 @@ pub async fn sandhi_join(body: web::Json<SandhiJoinRequest>) -> HttpResponse {
     })
 }
 
+#[cfg(feature = "server")]
 pub async fn declensions(query: web::Query<DeclensionQuery>) -> HttpResponse {
     let stem = query.stem.as_deref().unwrap_or("राम");
     let gender = query.gender.as_deref().unwrap_or("masculine");

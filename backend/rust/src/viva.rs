@@ -1,3 +1,4 @@
+#[cfg(feature = "server")]
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 
@@ -49,6 +50,7 @@ pub struct AnalyticsResponse {
     pub mastery_level: String,
 }
 
+#[cfg(feature = "server")]
 pub async fn start_session() -> HttpResponse {
     let questions = vec![
         VivaQuestion {
@@ -85,6 +87,7 @@ pub async fn start_session() -> HttpResponse {
     })
 }
 
+#[cfg(feature = "server")]
 pub async fn evaluate_response(body: web::Json<EvaluateVivaRequest>) -> HttpResponse {
     let text = body.response_text.trim();
     let score = if text.len() > 20 { 85 } else if !text.is_empty() { 60 } else { 0 };
@@ -99,6 +102,7 @@ pub async fn evaluate_response(body: web::Json<EvaluateVivaRequest>) -> HttpResp
     })
 }
 
+#[cfg(feature = "server")]
 pub async fn evaluate_analytics(body: web::Json<AnalyticsRequest>) -> HttpResponse {
     let mut recommendations = Vec::new();
 

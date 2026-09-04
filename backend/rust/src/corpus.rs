@@ -1,3 +1,4 @@
+#[cfg(feature = "server")]
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -112,6 +113,7 @@ pub struct SearchResult {
     pub score: f64,
 }
 
+#[cfg(feature = "server")]
 pub async fn search(query: web::Query<SearchQuery>, corpus: web::Data<CorpusStore>) -> HttpResponse {
     let q = query.q.trim().to_lowercase();
 
@@ -150,12 +152,14 @@ pub async fn search(query: web::Query<SearchQuery>, corpus: web::Data<CorpusStor
     HttpResponse::Ok().json(results)
 }
 
+#[cfg(feature = "server")]
 pub async fn list_texts(corpus: web::Data<CorpusStore>) -> HttpResponse {
     let mut list: Vec<&TextEntry> = corpus.texts.values().collect();
     list.sort_by(|a, b| a.title.cmp(&b.title));
     HttpResponse::Ok().json(list)
 }
 
+#[cfg(feature = "server")]
 pub async fn get_text(path: web::Path<String>, corpus: web::Data<CorpusStore>) -> HttpResponse {
     let id = path.into_inner();
     match corpus.texts.get(&id) {

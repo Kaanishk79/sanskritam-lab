@@ -1,3 +1,4 @@
+#[cfg(feature = "server")]
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 
@@ -16,6 +17,7 @@ pub struct RecognizeResponse {
     pub words: Vec<String>,
 }
 
+#[cfg(feature = "server")]
 pub async fn recognize(body: web::Json<RecognizeRequest>) -> HttpResponse {
     let script = body.script.as_deref().unwrap_or("Devanagari");
 

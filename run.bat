@@ -28,16 +28,25 @@ if not exist "%ROOT%client\node_modules" (
     echo.
 )
 
-REM Launch Rust Backend
+REM Build/Sync Rust WebAssembly module if Cargo is available
 where cargo >nul 2>nul
 if %ERRORLEVEL% equ 0 (
-    echo [INFO] Starting Unified Rust Backend on http://127.0.0.1:8080...
-    start "SanskritLab - Rust Backend (Port 8080)" cmd /k "cd /d %ROOT%backend\rust && cargo run"
+    echo [INFO] Building Rust WebAssembly computational engine...
+    pushd "%ROOT%backend\rust"
+    cargo build --target wasm32-unknown-unknown >nul 2>&1
+    if exist "target\wasm32-unknown-unknown\debug\sanskrit_lab_backend.wasm" (
+        if not exist "%ROOT%client\public\wasm" mkdir "%ROOT%client\public\wasm"
+        copy /Y "target\wasm32-unknown-unknown\debug\sanskrit_lab_backend.wasm" "%ROOT%client\public\wasm\sanskrit_lab_backend.wasm" >nul
+        echo [INFO] WebAssembly module synced to client\public\wasm.
+    )
+    popd
+    echo.
 ) else (
-    echo [INFO] Skipping Rust backend launch - cargo not in PATH.
+    echo [INFO] Cargo not found in PATH. Skipping WASM build step.
+    echo.
 )
 
-REM Launch React Client
+REM Launch React Client (JS/JSX + Vite)
 echo [INFO] Starting SanskritLab Frontend on http://localhost:5173...
 start "SanskritLab - Frontend (Vite)" cmd /k "cd /d %ROOT%client && npm run dev"
 
@@ -49,7 +58,7 @@ start http://localhost:5173
 echo.
 echo ============================================================
 echo  SanskritLab is running!
-echo  - Frontend: http://localhost:5173
-echo  - Rust Backend: http://127.0.0.1:8080/api/health
+echo  - Frontend (JS + WASM): http://localhost:5173
+echo  - Netlify Ready: Build with 'npm run build' in client/
 echo ============================================================
 echo.
