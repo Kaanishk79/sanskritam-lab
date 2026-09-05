@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { getGrammarTopics } from "../data/ncertGrammarSyllabus";
 import { useLanguage } from "../context/LanguageContext";
+import ChapterTextReader from "./ChapterTextReader";
 function deriveVocab(sanskrit) {
   const words = (sanskrit || "").split(/[\s–—-]/).filter((w) => /[\u0900-\u097F]/.test(w) && w.length > 1);
   const seen = /* @__PURE__ */ new Set();
@@ -17,7 +18,7 @@ function deriveVocab(sanskrit) {
 }
 function ChapterResourcePanel({ book, chapter, pdfUrl, onClose }) {
   const { t } = useLanguage();
-  const [tab, setTab] = useState("teach");
+  const [tab, setTab] = useState("read");
   const champ = chapter.titleSanskrit || chapter.title;
   const govClass = Math.max(book.gov_class_min ?? book.govClassMin, 6);
   const grammarTopics = useMemo(() => getGrammarTopics(govClass), [govClass]);
@@ -25,10 +26,11 @@ function ChapterResourcePanel({ book, chapter, pdfUrl, onClose }) {
   const passage = chapter.content_preview ?? chapter.contentPreview ?? "";
   const summary = passage || `${chapter.title}${t(" \u2014 a chapter from the NCERT ")}${book.title}.`;
   const baseTabs = [
-    { id: "teach", label: t("Teach"), icon: "\u{1F4D6}" },
-    { id: "solve", label: t("Solve"), icon: "\u270F\uFE0F" },
-    { id: "mindmap", label: t("Mindmap"), icon: "\u{1F9E0}" },
-    { id: "grammar", label: t("Grammar"), icon: "\u{1F4DD}" }
+    { id: "read", label: t("Read Text (पाठः)"), icon: "📖" },
+    { id: "teach", label: t("Teach"), icon: "👩‍🏫" },
+    { id: "solve", label: t("Solve"), icon: "✏️" },
+    { id: "mindmap", label: t("Mindmap"), icon: "🧠" },
+    { id: "grammar", label: t("Grammar"), icon: "📝" }
   ];
   return <div style={{ marginTop: 8, border: "1px solid var(--accent)", borderRadius: 10, overflow: "hidden", background: "var(--bg-secondary)", padding: 0 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", background: "var(--bg-tertiary)", borderBottom: "1px solid var(--border-color)" }}>
@@ -53,6 +55,15 @@ function ChapterResourcePanel({ book, chapter, pdfUrl, onClose }) {
       </div>
 
       <div style={{ padding: "14px" }}>
+        {tab === "read" && (
+          <ChapterTextReader
+            bookId={book.id}
+            chapterNumber={chapter.chapter_number ?? chapter.chapterNumber}
+            bookTitle={book.title}
+            chapterTitle={chapter.title}
+          />
+        )}
+
         {tab === "teach" && <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             <div>
               <div style={{ fontSize: 13, color: "var(--sanskrit-gold)", marginBottom: 6 }}>📖 {t("What you will learn")}</div>

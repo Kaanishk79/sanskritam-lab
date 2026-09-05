@@ -4,6 +4,7 @@ import { books, chapters, grammarBooks, bookHi } from "../../data/books";
 import { useLanguage } from "../../context/LanguageContext";
 import { fetchBookChapters, fetchChapterVerses } from "../../services/data";
 import { DynamicIcon } from "../../components/icons";
+import ChapterTextReader from "../../components/ChapterTextReader";
 const categories = [
   { id: "all", label: "All Books", icon: "book" },
   { id: "children", label: "Children", icon: "smile" },
@@ -235,7 +236,14 @@ function BookshelfPage() {
                     <div className="chapter-sanskrit">{ch.titleSanskrit}</div>
                     <div className="chapter-preview">{ch.contentPreview}</div>
                     {openChapter?.id === ch.id && <div className="chapter-verses-list" style={{ marginTop: 10 }}>
-                        {versesLoading ? <p className="empty-state">{t("Loading verses...")}</p> : chapterVerses.length > 0 ? chapterVerses.map((v) => <div key={v.id} className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: "rgba(255,255,255,0.03)", borderRadius: 8 }}>
+                        {selectedBook.id.startsWith("ncert-") ? (
+                          <ChapterTextReader
+                            bookId={selectedBook.id}
+                            chapterNumber={ch.chapterNumber}
+                            bookTitle={selectedBook.title}
+                            chapterTitle={ch.title}
+                          />
+                        ) : versesLoading ? <p className="empty-state">{t("Loading verses...")}</p> : chapterVerses.length > 0 ? chapterVerses.map((v) => <div key={v.id} className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: "rgba(255,255,255,0.03)", borderRadius: 8 }}>
                               <div className="verse-sanskrit" style={{ fontFamily: '"Noto Serif Devanagari", serif', fontSize: "1.15em", lineHeight: 1.9 }}>{v.content}</div>
                               {v.title && <div className="verse-title" style={{ fontSize: "0.85em", opacity: 0.7, marginTop: 4 }}>{lang === "hi" && v.title_hi ? v.title_hi : v.title}</div>}
                             </div>) : ch.contentPreview ? <div className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: "rgba(255,255,255,0.03)", borderRadius: 8 }}>

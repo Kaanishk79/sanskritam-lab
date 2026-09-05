@@ -64,7 +64,8 @@ const navSections = [
   {
     title: "NCERT Curriculum",
     links: [
-      { to: "/research/ncert", icon: <BookMarked size={18} />, label: "NCERT Library" }
+      { to: "/research/ncert", icon: <BookMarked size={18} />, label: "NCERT Library" },
+      { to: "/ncert/papers", icon: <FileText size={18} />, label: "Sample Papers (Sets 1-3)" }
     ]
   },
   {

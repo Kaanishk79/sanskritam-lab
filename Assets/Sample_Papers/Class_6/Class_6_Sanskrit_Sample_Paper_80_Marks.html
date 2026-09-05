@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="sa">
+<head>
+<meta charset="UTF-8">
+<title>Class 6 Sanskrit Sample Paper (CBSE 80 Marks)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Yatra+One&display=swap" rel="stylesheet">
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 14mm 14mm 16mm 14mm;
+    @bottom-right {
+      content: "पृष्ठम् " counter(page);
+      font-size: 9pt;
+      color: #555;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    font-family: 'Noto Sans Devanagari', 'Nirmala UI', 'Mangal', 'Segoe UI', sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.5;
+    color: #1a1a1a;
+    background: #fff;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  .no-break {
+    page-break-inside: avoid;
+  }
+
+  /* Header Section */
+  .exam-header {
+    text-align: center;
+    border: 2px solid #1a365d;
+    padding: 10px 14px;
+    background: #f8fafc;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+
+  .board-title {
+    font-size: 14pt;
+    font-weight: 800;
+    color: #1a365d;
+    letter-spacing: 0.5px;
+  }
+
+  .sub-board-title {
+    font-size: 9.5pt;
+    color: #4a5568;
+    margin-top: 1px;
+  }
+
+  .exam-title {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #8c1d40;
+    margin: 4px 0;
+  }
+
+  .paper-info-grid {
+    display: table;
+    width: 100%;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed #cbd5e1;
+    font-size: 10pt;
+    font-weight: 600;
+  }
+
+  .paper-info-row {
+    display: table-row;
+  }
+
+  .paper-info-cell {
+    display: table-cell;
+    padding: 2px 4px;
+  }
+
+  .text-left { text-align: left; }
+  .text-center { text-align: center; }
+  .text-right { text-align: right; }
+
+  /* Candidate Info Box */
+  .candidate-box {
+    width: 100%;
+    border: 1px solid #94a3b8;
+    background: #fff;
+    padding: 6px 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-size: 9.5pt;
+    display: table;
+  }
+
+  .cand-cell {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  .fill-line {
+    display: inline-block;
+    border-bottom: 1px dotted #475569;
+    min-width: 130px;
+    height: 14px;
+  }
+
+  /* General Instructions */
+  .instructions-card {
+    border: 1.5px solid #0d9488;
+    background: #f0fdfa;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    font-size: 9.5pt;
+  }
+
+  .instructions-card h4 {
+    color: #0f766e;
+    font-size: 10pt;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #99f6e4;
+    padding-bottom: 2px;
+  }
+
+  .instructions-list {
+    margin-left: 18px;
+    line-height: 1.45;
+  }
+
+  /* Section Header */
+  .section-banner {
+    background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
+    color: #ffffff;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11pt;
+    margin: 14px 0 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .section-banner .sec-title {
+    font-size: 11.5pt;
+  }
+
+  .section-banner .sec-marks {
+    background: #ffffff;
+    color: #1e3a8a;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 9.5pt;
+    font-weight: 800;
+    float: right;
+  }
+
+  /* Question Structure */
+  .question-item {
+    margin-bottom: 12px;
+    padding: 4px 0;
+  }
+
+  .q-header {
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+    position: relative;
+    padding-right: 60px;
+  }
+
+  .q-marks {
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: #b91c1c;
+    font-weight: 700;
+    font-size: 9.5pt;
+  }
+
+  .passage-box {
+    background: #f8fafc;
+    border-left: 4px solid #3b82f6;
+    padding: 8px 12px;
+    margin: 6px 0 8px 0;
+    border-radius: 0 4px 4px 0;
+    text-align: justify;
+    line-height: 1.6;
+    font-size: 10.5pt;
+  }
+
+  .shloka-box {
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    border-left: 4px solid #d97706;
+    padding: 8px 14px;
+    margin: 6px 0 8px 0;
+    border-radius: 0 6px 6px 0;
+    text-align: center;
+    font-weight: 600;
+    font-size: 11pt;
+    color: #78350f;
+    line-height: 1.7;
+  }
+
+  .dialogue-box {
+    background: #fdf4ff;
+    border-left: 4px solid #c026d3;
+    padding: 8px 12px;
+    margin: 6px 0 8px 0;
+    border-radius: 0 4px 4px 0;
+    line-height: 1.55;
+  }
+
+  .dialogue-line {
+    margin-bottom: 3px;
+  }
+
+  .speaker {
+    font-weight: 700;
+    color: #86198f;
+    min-width: 70px;
+    display: inline-block;
+  }
+
+  .manjusha-box {
+    background: #f1f5f9;
+    border: 1.5px dashed #64748b;
+    border-radius: 5px;
+    padding: 6px 12px;
+    margin: 6px 0 10px 0;
+    text-align: center;
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 10pt;
+  }
+
+  .manjusha-title {
+    color: #0f172a;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+
+  .sub-q-group {
+    margin: 4px 0 4px 12px;
+  }
+
+  .sub-q-title {
+    font-weight: 700;
+    color: #0f766e;
+    margin: 4px 0 2px 0;
+    font-size: 10pt;
+  }
+
+  .sub-q-item {
+    margin-left: 10px;
+    margin-bottom: 3px;
+  }
+
+  .mcq-options {
+    display: table;
+    width: 100%;
+    margin: 2px 0 4px 16px;
+  }
+
+  .mcq-row {
+    display: table-row;
+  }
+
+  .mcq-opt {
+    display: table-cell;
+    padding: 1px 6px;
+    width: 25%;
+  }
+
+  /* Tables */
+  .match-table {
+    width: 95%;
+    margin: 6px auto;
+    border-collapse: collapse;
+    font-size: 10pt;
+  }
+
+  .match-table th {
+    background: #e2e8f0;
+    color: #1e293b;
+    border: 1px solid #cbd5e1;
+    padding: 4px 8px;
+    text-align: center;
+    font-weight: 700;
+  }
+
+  .match-table td {
+    border: 1px solid #cbd5e1;
+    padding: 4px 8px;
+  }
+
+  /* Blueprint Table */
+  .blueprint-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 9pt;
+  }
+
+  .blueprint-table th {
+    background: #1e3a8a;
+    color: #fff;
+    border: 1px solid #94a3b8;
+    padding: 5px 6px;
+    text-align: center;
+  }
+
+  .blueprint-table td {
+    border: 1px solid #cbd5e1;
+    padding: 4px 6px;
+  }
+
+  .blueprint-table tr:nth-child(even) {
+    background: #f8fafc;
+  }
+
+  .total-row {
+    font-weight: 700;
+    background: #e2e8f0 !important;
+  }
+
+  /* Solution Styling */
+  .ans-sec-title {
+    background: #065f46;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 11pt;
+    margin: 12px 0 8px 0;
+  }
+
+  .ans-card {
+    border-left: 3px solid #10b981;
+    background: #f0fdf4;
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    font-size: 10pt;
+  }
+
+  .ans-q-num {
+    font-weight: 700;
+    color: #047857;
+    margin-bottom: 2px;
+  }
+
+  .step-mark {
+    float: right;
+    font-weight: 700;
+    color: #b91c1c;
+    font-size: 9pt;
+  }
+
+  .underline {
+    text-decoration: underline;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ==================== EXAM PAPER HEADER ==================== -->
+  <div class="exam-header">
+    <div class="board-title">केन्द्रीय माध्यमिक शिक्षा बोर्ड (CBSE)</div>
+    <div class="sub-board-title">Central Board of Secondary Education | New Delhi</div>
+    <div class="exam-title">वार्षिक-मूल्याङ्कनम् / Annual Examination (२०२६-२७)</div>
+    <div style="font-size: 11pt; font-weight: 700; color: #1e3a8a;">प्रतिदर्श-प्रश्नपत्रम् (Sample Question Paper)</div>
+    
+    <div class="paper-info-grid">
+      <div class="paper-info-row">
+        <div class="paper-info-cell text-left">कक्षा – षष्ठी (Class 6)</div>
+        <div class="paper-info-cell text-center">विषयः – संस्कृतम् (दीपकम - भाग १)</div>
+        <div class="paper-info-cell text-right">समयः – होरात्रयम् (3 Hours) | पूर्णाङ्काः – ८०</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Candidate Details -->
+  <div class="candidate-box">
+    <div class="cand-cell" style="width: 50%;">
+      <strong>अनुक्रमाङ्कः (Roll No.):</strong> <span class="fill-line" style="min-width: 140px;"></span>
+    </div>
+    <div class="cand-cell" style="width: 50%; text-align: right;">
+      <strong>छात्रस्य / छात्रायाः नाम:</strong> <span class="fill-line" style="min-width: 180px;"></span>
+    </div>
+  </div>
+
+  <!-- Instructions -->
+  <div class="instructions-card no-break">
+    <h4>सामान्य-निर्देशाः (General Instructions) :</h4>
+    <ol class="instructions-list">
+      <li>अस्मिन् प्रश्नपत्रे <strong>चत्वारः खण्डाः</strong> सन्ति —
+        <ul style="margin-left: 16px; list-style-type: square; margin-top: 2px;">
+          <li><strong>खण्डः 'क' : अपठित-अवबोधनम्</strong> (१० अङ्काः)</li>
+          <li><strong>खण्डः 'ख' : रचनात्मक-कार्यम्</strong> (१५ अङ्काः)</li>
+          <li><strong>खण्डः 'ग' : अनुप्रयुक्त-व्याकरणम्</strong> (२५ अङ्काः)</li>
+          <li><strong>खण्डः 'घ' : पठित-अवबोधनम्</strong> (३० अङ्काः)</li>
+        </ul>
+      </li>
+      <li>सर्वे प्रश्नाः <strong>अनिवार्याः</strong> सन्ति। प्रत्येकं खण्डम् अधिकृत्य उत्तराणि क्रमेणैव लेखनीयानि।</li>
+      <li>उत्तरलेखनात् पूर्वं प्रश्नसंख्या अवश्यमेव स्पष्टतया लेखनीया।</li>
+    </ol>
+  </div>
+
+  <!-- ==================== KHন্ড K: APATHIT ==================== -->
+  <div class="section-banner">
+    <span class="sec-title">खण्डः 'क' – अपठित-अवबोधनम्</span>
+    <span class="sec-marks">१० अङ्काः</span>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न १. अधोलिखितं गद्यांशं पठित्वा प्रदत्तप्रश्नानाम् उत्तराणि संस्कृतेन लिखत —
+      <span class="q-marks">[१०]</span>
+    </div>
+
+    <div class="passage-box">
+      भारते अनेकाः उत्सवाः भवन्ति। तेषु दीपावली प्रमुखः उत्सवः अस्ति। एषः उत्सवः कार्तिकमासस्य कृष्णपक्षस्य अमावास्यायां तिथौ भवति। अस्मिन् दिने जनाः गृहं स्वच्छं कुर्वन्ति, दीपानां मालाभिः च गृहं सज्जयन्ति। रात्रौ सर्वे जनाः लक्ष्मी-गणेशयोः पूजनं कुर्वन्ति, मिष्टान्नानि खादन्ति, परस्परं च वितरन्ति। बालकाः नूतनानि वस्त्राणि धारयन्ति, स्फोटकानि च ज्वालयन्ति। दीपावली प्रकाशस्य उल्लासस्य च पर्व अस्ति। एषः उत्सवः असत्यात् सत्यं प्रति, अन्धकारात् प्रकाशं प्रति गमनाय सन्देशं यच्छति।
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(अ) एकपदेन उत्तरत — (केवलं प्रश्नद्वयम्) <span style="float:right; font-weight:normal; color:#b91c1c;">[१ × २ = २]</span></div>
+      <div class="sub-q-item">(i) दीपावली कस्य मासस्य अमावास्यायां तिथौ भवति?</div>
+      <div class="sub-q-item">(ii) अस्मिन् उत्सवे रात्रौ कयोः पूजनं भवति?</div>
+      <div class="sub-q-item">(iii) बालकाः कानि वस्त्राणि धारयन्ति?</div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(आ) पूर्णवाक्येन उत्तरत — (केवलं प्रश्नद्वयम्) <span style="float:right; font-weight:normal; color:#b91c1c;">[२ × २ = ४]</span></div>
+      <div class="sub-q-item">(i) दीपावली कस्य कस्य च पर्व अस्ति?</div>
+      <div class="sub-q-item">(ii) एषः उत्सवः किं सन्देशं यच्छति?</div>
+      <div class="sub-q-item">(iii) अस्मिन् दिने रात्रौ जनाः किं किं कुर्वन्ति?</div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(इ) भाषिककार्यम् (यथानिर्देशम् उत्तरत) — <span style="float:right; font-weight:normal; color:#b91c1c;">[१ × ३ = ३]</span></div>
+      <div class="sub-q-item">(i) <em>'अस्मिन् दिने जनाः गृहं स्वच्छं कुर्वन्ति'</em> — अत्र क्रियापदं किम्?
+        <div class="mcq-options">
+          <div class="mcq-row">
+            <div class="mcq-opt">(क) जनाः</div>
+            <div class="mcq-opt">(ख) गृहम्</div>
+            <div class="mcq-opt">(ग) स्वच्छम्</div>
+            <div class="mcq-opt">(घ) कुर्वन्ति</div>
+          </div>
+        </div>
+      </div>
+      <div class="sub-q-item">(ii) <em>'अन्धकारात्'</em> इति पदस्य विलोमपदं गद्यांशात् चित्वा लिखत —
+        <div class="mcq-options">
+          <div class="mcq-row">
+            <div class="mcq-opt">(क) प्रकाशात्</div>
+            <div class="mcq-opt">(ख) प्रकाशम्</div>
+            <div class="mcq-opt">(ग) दीपेभ्यः</div>
+            <div class="mcq-opt">(घ) उल्लासस्य</div>
+          </div>
+        </div>
+      </div>
+      <div class="sub-q-item">(iii) <em>'नूतनानि वस्त्राणि'</em> — अनयोः पदयोः विशेषणपदं किम्?
+        <div class="mcq-options">
+          <div class="mcq-row">
+            <div class="mcq-opt">(क) वस्त्राणि</div>
+            <div class="mcq-opt">(ख) नूतनानि</div>
+            <div class="mcq-opt">(ग) धारयन्ति</div>
+            <div class="mcq-opt">(घ) बालकाः</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(ई) अस्य अनुच्छेदस्य कृते समुचितं शीर्षकं संस्कृतेन लिखत। <span style="float:right; font-weight:normal; color:#b91c1c;">[१ × १ = १]</span></div>
+    </div>
+  </div>
+
+  <!-- ==================== KHOND KH: RACHANATMAK ==================== -->
+  <div class="section-banner">
+    <span class="sec-title">खण्डः 'ख' – रचनात्मक-कार्यम्</span>
+    <span class="sec-marks">१५ अङ्काः</span>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न २. भवान् देवांशः। अस्वस्थतायाः कारणात् दिनद्वयस्य अवकाशार्थं प्रधानाचार्यं प्रति लिखिते प्रार्थनापत्रे मञ्जूषातः पदानि चित्वा रिक्तस्थानानि पूरयत —
+      <span class="q-marks">[½ × १० = ५]</span>
+    </div>
+
+    <div class="dialogue-box" style="background:#fff; border:1px solid #cbd5e1; font-size:10pt;">
+      सेवायां,<br>
+      (i) ........................................ महोदयाः,<br>
+      केन्द्रीय-विद्यालयः, नवदेहली।<br><br>
+      <strong>विषयः –</strong> (ii) ........................................ अवकाशार्थं प्रार्थनापत्रम्।<br><br>
+      महोदयाः,<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;सविनयं (iii) ........................................ अस्ति यत् अहम् अतीव ज्वरेण (iv) ........................................ अस्मि। अत एव विद्यालये (v) ........................................ असमर्थः अस्मि।<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;कृपया (vi) ........................................ दिनद्वयस्य अवकाशं (vii) ........................................ माम् अनुगृह्णन्तु।<br>
+      (viii) ........................................!<br><br>
+      भवतः (ix) ........................................ शिष्यः<br>
+      देवांशः<br>
+      कक्षा – (x) ........................................ 'अ'
+    </div>
+
+    <div class="manjusha-box">
+      <span class="manjusha-title">मञ्जूषा :</span> [ षष्ठी, आगन्तुम्, दिनद्वयस्य, प्रधानाचार्य, सधन्यवादम्, पीडितः, प्रदाय, निवेदनम्, आज्ञाकारी, मह्यम् ]
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न ३. प्रदत्तं चित्रं दृष्ट्वा मञ्जूषायां दत्तपदानां साहाय्येन पञ्च वाक्यानि संस्कृतेन रचयत —
+      <span class="q-marks">[१ × ५ = ५]</span>
+    </div>
+
+    <div style="border: 1px solid #cbd5e1; background: #f8fafc; padding: 8px 12px; border-radius: 4px; text-align: center; margin: 4px 0;">
+      <svg width="280" height="75" viewBox="0 0 280 75" xmlns="http://www.w3.org/2000/svg" style="margin: 0 auto; display:block;">
+        <rect width="280" height="75" fill="#e0f2fe" rx="6"/>
+        <!-- Sun -->
+        <circle cx="35" cy="24" r="14" fill="#fbbf24"/>
+        <line x1="35" y1="5" x2="35" y2="0" stroke="#f59e0b" stroke-width="2"/>
+        <line x1="35" y1="43" x2="35" y2="48" stroke="#f59e0b" stroke-width="2"/>
+        <line x1="16" y1="24" x2="11" y2="24" stroke="#f59e0b" stroke-width="2"/>
+        <line x1="54" y1="24" x2="59" y2="24" stroke="#f59e0b" stroke-width="2"/>
+        <!-- Trees -->
+        <rect x="75" y="40" width="8" height="25" fill="#78350f"/>
+        <circle cx="79" cy="35" r="18" fill="#22c55e"/>
+        <rect x="235" y="42" width="7" height="23" fill="#78350f"/>
+        <circle cx="238" cy="37" r="16" fill="#16a34a"/>
+        <!-- Ground -->
+        <path d="M0 65 Q 140 55 280 65 L 280 75 L 0 75 Z" fill="#86efac"/>
+        <!-- Children & Ball -->
+        <circle cx="130" cy="38" r="6" fill="#f43f5e"/>
+        <line x1="130" y1="44" x2="130" y2="56" stroke="#0f172a" stroke-width="2"/>
+        <line x1="130" y1="56" x2="124" y2="65" stroke="#0f172a" stroke-width="2"/>
+        <line x1="130" y1="56" x2="136" y2="65" stroke="#0f172a" stroke-width="2"/>
+        <circle cx="170" cy="38" r="6" fill="#0284c7"/>
+        <line x1="170" y1="44" x2="170" y2="56" stroke="#0f172a" stroke-width="2"/>
+        <line x1="170" y1="56" x2="164" y2="65" stroke="#0f172a" stroke-width="2"/>
+        <line x1="170" y1="56" x2="176" y2="65" stroke="#0f172a" stroke-width="2"/>
+        <!-- Football -->
+        <circle cx="150" cy="60" r="4" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+        <text x="90" y="16" font-family="'Noto Sans Devanagari', sans-serif" font-size="10" fill="#1e3a8a" font-weight="bold">[ विद्यालयस्य क्रीडाङ्गणम् / उद्यानम् ]</text>
+      </svg>
+    </div>
+
+    <div class="manjusha-box">
+      <span class="manjusha-title">मञ्जूषा :</span> [ क्रीडाङ्गणे, बालकाः, कन्दुकेन, वृक्षाः, क्रीडन्ति, विकसन्ति, पुष्पाणि, सूर्यः, विद्यालयस्य, सन्ति, उदेति, प्रसन्नाः ]
+    </div>
+
+    <div style="margin-left: 10px; line-height: 1.8;">
+      (i) इदं ............................................................................................................ चित्रम् अस्ति।<br>
+      (ii) क्रीडाङ्गणे बालकाः ........................................................................................ क्रीडन्ति।<br>
+      (iii) उद्याने विविधानि ....................................................................................... विकसन्ति।<br>
+      (iv) परितः हरिताः ............................................................................................... सन्ति।<br>
+      (v) सर्वे छात्राः अतीव .......................................................................................... दृश्यन्ते।
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न ४. मञ्जूषायाः साहाय्येन मित्रयोः मध्ये वार्तालापं (संवादं) पूरयत —
+      <span class="q-marks">[१ × ५ = ५]</span>
+    </div>
+
+    <div class="dialogue-box">
+      <div class="dialogue-line"><span class="speaker">राघवः :</span> नमो नमः माधव! त्वं (i) ........................................ गच्छसि?</div>
+      <div class="dialogue-line"><span class="speaker">माधवः :</span> नमो नमः! अहं (ii) ........................................ गच्छामि।</div>
+      <div class="dialogue-line"><span class="speaker">राघवः :</span> आपणं किमर्थं गच्छसि?</div>
+      <div class="dialogue-line"><span class="speaker">माधवः :</span> अहं तत्र (iii) ........................................ क्रेतुं गच्छामि।</div>
+      <div class="dialogue-line"><span class="speaker">राघवः :</span> तव हस्ते (iv) ........................................ अस्ति किम्?</div>
+      <div class="dialogue-line"><span class="speaker">माधवः :</span> आम्, मम हस्ते स्यूतः अस्ति। त्वम् अपि मया सह (v) ........................................?</div>
+      <div class="dialogue-line"><span class="speaker">राघवः :</span> आम्, अहम् अपि आगच्छामि।</div>
+    </div>
+
+    <div class="manjusha-box">
+      <span class="manjusha-title">मञ्जूषा :</span> [ आपणम्, पुस्तकानि, कुत्र, आगमिष्यसि, स्यूतः ]
+    </div>
+  </div>
+
+  <!-- ==================== KHOND G: VYAKARANAM ==================== -->
+  <div class="page-break"></div>
+
+  <div class="section-banner">
+    <span class="sec-title">खण्डः 'ग' – अनुप्रयुक्त-व्याकरणम्</span>
+    <span class="sec-marks">२५ अङ्काः</span>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न ५. (क) अधोलिखितानां वर्णानां संयोजनं कृत्वा पदं लिखत — (केवलं प्रश्नद्वयम्)
+      <span class="q-marks">[१ × २ = २]</span>
+    </div>
+    <div style="margin-left: 12px; line-height: 1.8;">
+      (i) म् + आ + ध् + अ + व् + अः = ............................................................<br>
+      (ii) व् + ऋ + क् + ष् + आः = ............................................................<br>
+      (iii) च् + अ + न् + द् + र् + अः = ............................................................
+    </div>
+
+    <div class="q-header" style="margin-top: 8px;">
+      (ख) अधोलिखितानां पदानां वर्णवियोगं (वर्णविच्छेदं) कुरुत — (केवलं प्रश्नद्वयम्)
+      <span class="q-marks">[१ × २ = २]</span>
+    </div>
+    <div style="margin-left: 12px; line-height: 1.8;">
+      (i) मयूरः = ............................................................................................................<br>
+      (ii) पुस्तकम् = ............................................................................................................<br>
+      (iii) मित्रम् = ............................................................................................................
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न ६. कोष्ठके प्रदत्तशब्दानां समुचितरूपैः रिक्तस्थानानि पूरयत —
+      <span class="q-marks">[१ × ५ = ५]</span>
+    </div>
+    <div style="margin-left: 12px; line-height: 1.8;">
+      (i) ........................................ फलानि पतन्ति। <em>(वृक्ष - पञ्चमी-एकवचने)</em><br>
+      (ii) ........................................ मधुरं गायति। <em>(बालिका - प्रथमा-एकवचने)</em><br>
+      (iii) छात्रः ........................................ लिखति। <em>(कलम - तृतीया-एकवचने)</em><br>
+      (iv) ........................................ नाम किम्? <em>(युष्मद् - षष्ठी-एकवचने)</em><br>
+      (v) ........................................ प्रतिदिनं संस्कृतं पठामः। <em>(अस्मद् - प्रथमा-बहुवचने)</em>
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न ७. कोष्ठकात् समुचितं धातुरूपं चित्वा वाक्यानि पूरयत —
+      <span class="q-marks">[१ × ५ = ५]</span>
+    </div>
+    <div style="margin-left: 12px; line-height: 1.8;">
+      (i) सः प्रतिदिनं प्रातरुत्थाय पाठं ........................................। <em>(पठति / पठतः / पठन्ति)</em><br>
+      (ii) तौ बालकाः उद्याने ........................................। <em>(क्रीडसि / क्रीडतः / क्रीडामः)</em><br>
+      (iii) वयम् श्वः नगरं ........................................। <em>(गमिष्यामः / गच्छामः / अगच्छम्)</em><br>
+      (iv) त्वं किं ........................................? <em>(करोति / करोषि / करोमि)</em><br>
+      (v) वृक्षाः अस्माकं मित्राणि ........................................। <em>(अस्ति / स्तः / सन्ति)</em>
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न ८. कोष्ठकगत-पदेषु उचित-विभक्तेः प्रयोगं कृत्वा रिक्तस्थानानि पूरयत —
+      <span class="q-marks">[१ × ४ = ४]</span>
+    </div>
+    <div style="margin-left: 12px; line-height: 1.8;">
+      (i) ........................................ परितः वृक्षाः सन्ति। <em>(ग्राम)</em><br>
+      (ii) छात्रः ........................................ सह आपणं गच्छति। <em>(जनक)</em><br>
+      (iii) ........................................ नमः। <em>(गणेश)</em><br>
+      (iv) बालकः ........................................ बिभेति। <em>(सिंह)</em>
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न ९. अधोलिखित-संख्यावाचकशब्दान् संस्कृतेन लिखत —
+      <span class="q-marks">[१ × ४ = ४]</span>
+    </div>
+    <div style="margin-left: 12px; line-height: 1.8;">
+      (i) ५ बालकाः ➔ ........................................ बालकाः। <em>(५ इति संख्यापदं संस्कृतेन लिखत)</em><br>
+      (ii) ३ फलानि ➔ ........................................ फलानि। <em>(३ इति नपुंसकलिंग-संख्यापदं लिखत)</em><br>
+      (iii) १२ ➔ ........................................। <em>(द्वादश / एकादश / त्रयोदश)</em><br>
+      (iv) २० ➔ ........................................। <em>(विंशतिः / त्रिंशत् / चत्वारिंशत्)</em>
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न १०. कोष्ठकप्रदत्त-धातुषु उचित-प्रत्ययं (क्त्वा / ल्यप् / तुमुन्) योजयित्वा रिक्तस्थानानि पूरयत —
+      <span class="q-marks">[१ × ३ = ३]</span>
+    </div>
+    <div style="margin-left: 12px; line-height: 1.8;">
+      (i) बालकः दुग्धं ........................................ <em>(पा + क्त्वा)</em> शयनं करोति।<br>
+      (ii) सः गुरुं ........................................ <em>(प्र + नम् + ल्यप्)</em> पठितुम् आरभते।<br>
+      (iii) छात्राः ज्ञानं ........................................ <em>(प्राप् + तुमुन्)</em> विद्यालयं गच्छन्ति।
+    </div>
+  </div>
+
+  <!-- ==================== KHOND GH: PATHIT ==================== -->
+  <div class="section-banner">
+    <span class="sec-title">खण्डः 'घ' – पठित-अवबोधनम्</span>
+    <span class="sec-marks">३० अङ्काः</span>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न ११. अधोलिखितं गद्यांशं पठित्वा प्रश्नानाम् उत्तराणि लिखत — (पाठ १० - 'बुद्धिः सर्वार्थसाधिका')
+      <span class="q-marks">[५]</span>
+    </div>
+
+    <div class="passage-box">
+      एकस्मिन वने एकः नित्यजलपूर्णः महान सरोवरः अस्ति। कदाचित एकं पिपासाकुलं गजयूथं वनान्तरात तत्र आगच्छति। तस्मिन सरोवरे ते गजाः स्वेच्छया जलं पीत्वा, स्नात्वा, क्रीडित्वा च सूर्यास्तसमये निर्गच्छन्ति। तस्य च सरोवरस्य तीरे समन्तात सुकोमलभूमौ बहूनि शशक-बिलानि सन्ति, येषु बहवः शशकाः निवसन्ति। गजानां परिभ्रमणेन तेषु बिलेषु निवसन्तः बहवः शशकाः क्षतविक्षताः भवन्ति, केचन पुनः मृताः अपि भवन्ति। अतः शशकाः भीताः चिन्तामग्नाः च भवन्ति।
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(अ) एकपदेन उत्तरत — (केवलं प्रश्नद्वयम्) <span style="float:right; font-weight:normal; color:#b91c1c;">[½ × २ = १]</span></div>
+      <div class="sub-q-item">(i) वने कीदृशः सरोवरः अस्ति?</div>
+      <div class="sub-q-item">(ii) सरोवरस्य तीरे केषां बिलानि सन्ति?</div>
+      <div class="sub-q-item">(iii) पिपासाकुलं किम् आगच्छति?</div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(आ) पूर्णवाक्येन उत्तरत — (केवलम् एकः प्रश्नः) <span style="float:right; font-weight:normal; color:#b91c1c;">[२ × १ = २]</span></div>
+      <div class="sub-q-item">(i) गजानां परिभ्रमणेन शशकानां का दशा अभवत्?</div>
+      <div class="sub-q-item">(ii) गजाः सरोवरे किं कृत्वा निर्गच्छन्ति?</div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(इ) भाषिककार्यम् (यथानिर्देशम् उत्तरत) — <span style="float:right; font-weight:normal; color:#b91c1c;">[१ × २ = २]</span></div>
+      <div class="sub-q-item">(i) <em>'महान् सरोवरः'</em> — अनयोः पदयोः विशेष्यपदं किम्?
+        <div class="mcq-options">
+          <div class="mcq-row">
+            <div class="mcq-opt">(क) महान्</div>
+            <div class="mcq-opt">(ख) सरोवरः</div>
+            <div class="mcq-opt">(ग) वने</div>
+            <div class="mcq-opt">(घ) अस्ति</div>
+          </div>
+        </div>
+      </div>
+      <div class="sub-q-item">(ii) <em>'पिपासाकुलं गजयूथम् आगच्छति'</em> — अत्र कर्तृपदं किम्?
+        <div class="mcq-options">
+          <div class="mcq-row">
+            <div class="mcq-opt">(क) गजयूथम्</div>
+            <div class="mcq-opt">(ख) आगच्छति</div>
+            <div class="mcq-opt">(ग) पिपासाकुलम्</div>
+            <div class="mcq-opt">(घ) वनान्तरात्</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न १२. अधोलिखितं पद्यांशं पठित्वा प्रश्नानाम् उत्तराणि लिखत — (पाठ १३ - 'पृथिव्यां त्रीणि रत्नानि')
+      <span class="q-marks">[५]</span>
+    </div>
+
+    <div class="shloka-box">
+      पृथिव्यां त्रीणि रत्नानि जलमन्नं सुभाषितम्।<br>
+      मूढैः पाषाणखण्डेषु रत्नसंज्ञा विधीयते॥<br>
+      अयं निजः परो वेति गणना लघुचेतसाम्।<br>
+      उदारचरितानां तु वसुधैव कुटुम्बकम्॥
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(अ) एकपदेन उत्तरत — (केवलं प्रश्नद्वयम्) <span style="float:right; font-weight:normal; color:#b91c1c;">[½ × २ = १]</span></div>
+      <div class="sub-q-item">(i) पृथिव्यां कति रत्नानि सन्ति?</div>
+      <div class="sub-q-item">(ii) कैः पाषाणखण्डेषु रत्नसंज्ञा विधीयते?</div>
+      <div class="sub-q-item">(iii) उदारचरितानां कृते का कुटुम्बकम् अस्ति?</div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(आ) पूर्णवाक्येन उत्तरत — (केवलम् एकः प्रश्नः) <span style="float:right; font-weight:normal; color:#b91c1c;">[२ × १ = २]</span></div>
+      <div class="sub-q-item">(i) पृथिव्यां त्रीणि रत्नानि कानि सन्ति?</div>
+      <div class="sub-q-item">(ii) 'अयं निजः परो वा' इति गणना केषां भवति?</div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(इ) भाषिककार्यम् (यथानिर्देशम् उत्तरत) — <span style="float:right; font-weight:normal; color:#b91c1c;">[१ × २ = २]</span></div>
+      <div class="sub-q-item">(i) <em>'मूर्खैः'</em> इति पदस्य पर्यायपदं श्लोके किं प्रयुक्तम्?
+        <div class="mcq-options">
+          <div class="mcq-row">
+            <div class="mcq-opt">(क) रत्नानि</div>
+            <div class="mcq-opt">(ख) पाषाणेषु</div>
+            <div class="mcq-opt">(ग) मूढैः</div>
+            <div class="mcq-opt">(घ) लघुचेतसाम्</div>
+          </div>
+        </div>
+      </div>
+      <div class="sub-q-item">(ii) <em>'वसुधा एव'</em> इत्यस्य सन्धियुक्तं पदं श्लोके किम् अस्ति?
+        <div class="mcq-options">
+          <div class="mcq-row">
+            <div class="mcq-opt">(क) वसुधैव</div>
+            <div class="mcq-opt">(ख) कुटुम्बकम्</div>
+            <div class="mcq-opt">(ग) पृथिव्याम्</div>
+            <div class="mcq-opt">(घ) उदारचरितानाम्</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न १३. अधोलिखितं संवादांशं पठित्वा प्रश्नानाम् उत्तराणि लिखत — (पाठ ८ - 'सः एव महान् चित्रकारः')
+      <span class="q-marks">[५]</span>
+    </div>
+
+    <div class="dialogue-box">
+      <div class="dialogue-line"><span class="speaker">शिक्षकः :</span> वयम् अत्र किं किं पश्यामः?</div>
+      <div class="dialogue-line"><span class="speaker">श्रद्धा :</span> सर्वत्र विविधानि पुष्पाणि, हरितानि पर्णानि, खगाः, जन्तवः च सन्ति इति पश्यामः।</div>
+      <div class="dialogue-line"><span class="speaker">शिक्षकः :</span> सत्यम्। एवमेव तेषां वर्णाः अपि विविधाः। यथा श्रद्धा वदति ‘हरितानि पर्णानि’ इति, अत्र पर्णस्य कः वर्णः?</div>
+      <div class="dialogue-line"><span class="speaker">छात्राः :</span> (सर्वे) हरितः।</div>
+      <div class="dialogue-line"><span class="speaker">श्रद्धा :</span> अत्र वृक्षस्य उपरि शुकः अस्ति। सः अपि हरितवर्णेन शोभते।</div>
+      <div class="dialogue-line"><span class="speaker">मेधा :</span> आचार्य! अत्र काकः अपि अस्ति, यस्य वर्णः कृष्णः। एवं पिकस्य अपि वर्णः कृष्णः।</div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(अ) एकपदेन उत्तरत — (केवलं प्रश्नद्वयम्) <span style="float:right; font-weight:normal; color:#b91c1c;">[½ × २ = १]</span></div>
+      <div class="sub-q-item">(i) पर्णस्य कः वर्णः अस्ति?</div>
+      <div class="sub-q-item">(ii) वृक्षस्य उपरि कः शोभते?</div>
+      <div class="sub-q-item">(iii) काकस्य वर्णः कीदृशः भवति?</div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(आ) पूर्णवाक्येन उत्तरत — (केवलम् एकः प्रश्नः) <span style="float:right; font-weight:normal; color:#b91c1c;">[२ × १ = २]</span></div>
+      <div class="sub-q-item">(i) मेधायाः मते कयोः द्वयोः वर्णः कृष्णः अस्ति?</div>
+      <div class="sub-q-item">(ii) श्रद्धा उद्याने कानि कानि पश्यति?</div>
+    </div>
+
+    <div class="sub-q-group">
+      <div class="sub-q-title">(इ) भाषिककार्यम् (यथानिर्देशम् उत्तरत) — <span style="float:right; font-weight:normal; color:#b91c1c;">[१ × २ = २]</span></div>
+      <div class="sub-q-item">(i) <em>'शुकः'</em> इति पदस्य समानार्थकं पदं किम्?
+        <div class="mcq-options">
+          <div class="mcq-row">
+            <div class="mcq-opt">(क) पिकः</div>
+            <div class="mcq-opt">(ख) कीरः</div>
+            <div class="mcq-opt">(ग) काकः</div>
+            <div class="mcq-opt">(घ) बकः</div>
+          </div>
+        </div>
+      </div>
+      <div class="sub-q-item">(ii) <em>'हरितानि पर्णानि'</em> — अत्र विशेष्यपदं किम्?
+        <div class="mcq-options">
+          <div class="mcq-row">
+            <div class="mcq-opt">(क) हरितानि</div>
+            <div class="mcq-opt">(ख) पर्णानि</div>
+            <div class="mcq-opt">(ग) वर्णः</div>
+            <div class="mcq-opt">(घ) शोभते</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न १४. अधोलिखितस्य श्लोकस्य मञ्जूषायाः साहाय्येन अन्वयं पूरयत —
+      <span class="q-marks">[१ × ४ = ४]</span>
+    </div>
+
+    <div class="shloka-box" style="font-size:10.5pt; padding:6px 10px;">
+      छायामन्यस्य कुर्वन्ति तिष्ठन्ति स्वयमातपे।<br>
+      फलान्यपि परार्थाय वृक्षाः सत्पुरुषा इव॥
+    </div>
+
+    <div style="margin-left: 10px; line-height: 1.8;">
+      <strong>अन्वयः :</strong> (वृक्षाः) स्वयम् (i) ........................................ तिष्ठन्ति, (किन्तु) अन्यस्य (ii) ........................................ कुर्वन्ति, फलानि अपि (iii) ........................................ (यच्छन्ति), अतः वृक्षाः (iv) ........................................ इव (भवन्ति)।
+    </div>
+
+    <div class="manjusha-box">
+      <span class="manjusha-title">मञ्जूषा :</span> [ परार्थाय, छायाम्, सत्पुरुषाः, आतपे ]
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न १५. रेखाङ्कितपदानि आधृत्य प्रश्ननिर्माणं कुरुत — (केवलं प्रश्नचतुष्टयम्)
+      <span class="q-marks">[१ × ४ = ४]</span>
+    </div>
+    <div style="margin-left: 12px; line-height: 1.8;">
+      (i) पृथिव्यां <span class="underline">त्रीणि</span> रत्नानि सन्ति। ➔ ............................................................................................<br>
+      (ii) शशकराजः <span class="underline">गजराजस्य</span> समीपं गच्छति। ➔ ............................................................................................<br>
+      (iii) <span class="underline">वृक्षाः</span> सत्पुरुषाः इव भवन्ति। ➔ ............................................................................................<br>
+      (iv) राधिका <span class="underline">मार्जार्यै</span> क्षीरं ददाति। ➔ ............................................................................................<br>
+      (v) <span class="underline">आलस्यं</span> मनुष्याणां शरीरस्थः महान् रिपुः। ➔ ............................................................................................
+    </div>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न १६. (क) 'क' स्तम्भे दत्तानां श्लोकांशानां 'ख' स्तम्भे दत्तैः श्लोकांशैः सह समुचितं मेलनं कुरुत —
+      <span class="q-marks">[१ × २ = २]</span>
+    </div>
+
+    <table class="match-table">
+      <tr>
+        <th style="width: 50%;">स्तम्भः 'क'</th>
+        <th style="width: 50%;">स्तम्भः 'ख'</th>
+      </tr>
+      <tr>
+        <td>(i) दशकूपसमा वापी</td>
+        <td>(क) वसुधैव कुटुम्बकम्।</td>
+      </tr>
+      <tr>
+        <td>(ii) उदारचरितानां तु</td>
+        <td>(ख) दशवापीसमो ह्रदः।</td>
+      </tr>
+    </table>
+
+    <div class="q-header" style="margin-top: 8px;">
+      (ख) अधोलिखित-पदानां तैः सह समानार्थक-पदानां मेलनं कुरुत —
+      <span class="q-marks">[१ × २ = २]</span>
+    </div>
+
+    <table class="match-table">
+      <tr>
+        <th style="width: 50%;">स्तम्भः 'क'</th>
+        <th style="width: 50%;">स्तम्भः 'ख'</th>
+      </tr>
+      <tr>
+        <td>(i) खगाः</td>
+        <td>(क) जलाशयः</td>
+      </tr>
+      <tr>
+        <td>(ii) सरोवरः</td>
+        <td>(ख) पक्षिणः</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="question-item no-break">
+    <div class="q-header">
+      प्रश्न १७. अधोलिखितानि वाक्यानि कथाक्रमानुसारेण पुनः लिखत —
+      <span class="q-marks">[½ × ६ = ३]</span>
+    </div>
+    <div style="margin-left: 12px; line-height: 1.75;">
+      (i) गजराजः जले चन्द्रस्य प्रतिबिम्बं पश्यति।<br>
+      (ii) गजानां परिभ्रमणेन बहवः शशकाः मृताः अभवन्।<br>
+      (iii) एकस्मिन वने महान सरोवरः आसीत्।<br>
+      (iv) भीताः शशकाः स्वरक्षार्थं शशकराजस्य समीपे अगच्छन्।<br>
+      (v) पिपासाकुलं गजयूथं सरोवरं प्रति आगच्छति।<br>
+      (vi) शशकराजः गजराजं सरोवरस्य समीपं नयति।
+    </div>
+  </div>
+
+  <!-- ==================== PAGE BREAK: BLUEPRINT & SOLUTIONS ==================== -->
+  <div class="page-break"></div>
+
+  <!-- Header for Blueprint & Marking Scheme -->
+  <div class="exam-header">
+    <div class="board-title">केन्द्रीय माध्यमिक शिक्षा बोर्ड (CBSE)</div>
+    <div class="exam-title" style="color: #065f46;">प्रश्नपत्र-नीलनक्शा, उत्तरमाला एवं मूल्याङ्कन-योजना</div>
+    <div style="font-size: 10.5pt; font-weight: 700; color: #1e3a8a;">Blue Print, Marking Scheme & Model Solutions</div>
+    <div style="font-size: 9.5pt; color: #475569; margin-top: 2px;">कक्षा – षष्ठी (Class 6) | विषयः – संस्कृतम् (दीपकम) | पूर्णाङ्काः – ८०</div>
+  </div>
+
+  <h3 style="color:#1e3a8a; font-size:11pt; border-bottom:1.5px solid #1e3a8a; padding-bottom:3px; margin: 10px 0 6px 0;">
+    १. प्रश्नपत्र-नीलनक्शा (CBSE Question Paper Blueprint)
+  </h3>
+
+  <table class="blueprint-table no-break">
+    <thead>
+      <tr>
+        <th style="width: 14%;">खण्डः</th>
+        <th style="width: 32%;">विषयवस्तु / उपविषयाः</th>
+        <th style="width: 18%;">प्रश्नानां प्रकारः</th>
+        <th style="width: 18%;">अङ्क-विभाजनम्</th>
+        <th style="width: 18%;">कुल-अङ्काः</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>खण्डः 'क'</strong><br>अपठितम्</td>
+        <td>अपठित-गद्यांशम् (एकपदेन, पूर्णवाक्येन, भाषिककार्यम्, शीर्षकम्)</td>
+        <td>VSA, SA, MCQ</td>
+        <td>२+४+३+१</td>
+        <td class="text-center"><strong>१० अङ्काः</strong></td>
+      </tr>
+      <tr>
+        <td rowspan="3"><strong>खण्डः 'ख'</strong><br>रचनात्मकम्</td>
+        <td>२. पत्रलेखनम् (मञ्जूषा-पूरणम्)</td>
+        <td>रिक्तस्थानपूर्तिः</td>
+        <td>१० × ½</td>
+        <td class="text-center">५ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>३. चित्रवर्णनम् (मञ्जूषा-वाक्यरचना)</td>
+        <td>वाक्यरचना</td>
+        <td>५ × १</td>
+        <td class="text-center">५ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>४. संवादलेखनम् (मञ्जूषा-पूरणम्)</td>
+        <td>संवादपूर्तिः</td>
+        <td>५ × १</td>
+        <td class="text-center">५ अङ्काः</td>
+      </tr>
+      <tr>
+        <td rowspan="6"><strong>खण्डः 'ग'</strong><br>व्याकरणम्</td>
+        <td>५. वर्णसंयोजनम् / वर्णवियोगः (पाठ १, २)</td>
+        <td>VSA</td>
+        <td>२ + २</td>
+        <td class="text-center">४ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>६. शब्दरूपाणि (पुं./स्त्री./नपुं./सर्वनाम)</td>
+        <td>रिक्तस्थानम्</td>
+        <td>५ × १</td>
+        <td class="text-center">५ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>७. धातुरूपाणि (लट् एवं लृट् लकारौ)</td>
+        <td>MCQ / रिक्तस्थानम्</td>
+        <td>५ × १</td>
+        <td class="text-center">५ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>८. कारक-विभक्तयः / उपपदविभक्तयः</td>
+        <td>रिक्तस्थानम्</td>
+        <td>४ × १</td>
+        <td class="text-center">४ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>९. संख्यागणना (१-५०) (पाठ ५)</td>
+        <td>VSA</td>
+        <td>४ × १</td>
+        <td class="text-center">४ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>१०. प्रत्ययाः (क्त्वा, ल्यप्, तुमुन्)</td>
+        <td>रिक्तस्थानम्</td>
+        <td>३ × १</td>
+        <td class="text-center">३ अङ्काः</td>
+      </tr>
+      <tr>
+        <td rowspan="7"><strong>खण्डः 'घ'</strong><br>पठितम्<br>(दीपकम)</td>
+        <td>११. पठित-गद्यांशः (पाठ १०)</td>
+        <td>VSA, SA, MCQ</td>
+        <td>१ + २ + २</td>
+        <td class="text-center">५ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>१२. पठित-पद्यांशः (पाठ १३)</td>
+        <td>VSA, SA, MCQ</td>
+        <td>१ + २ + २</td>
+        <td class="text-center">५ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>१३. पठित-नाट्यांशः (पाठ ८)</td>
+        <td>VSA, SA, MCQ</td>
+        <td>१ + २ + २</td>
+        <td class="text-center">५ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>१४. श्लोकान्वयपूर्तिः (पाठ १६)</td>
+        <td>मञ्जूषा-पूरणम्</td>
+        <td>४ × १</td>
+        <td class="text-center">४ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>१५. प्रश्ननिर्माणम्</td>
+        <td>वाक्यरचना</td>
+        <td>४ × १</td>
+        <td class="text-center">४ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>१६. श्लोकांश-मेलनम् / शब्दार्थमेलनम्</td>
+        <td>स्तम्भमेलनम्</td>
+        <td>२ + २</td>
+        <td class="text-center">४ अङ्काः</td>
+      </tr>
+      <tr>
+        <td>१७. कथाक्रम-संयोजनम् (पाठ १०)</td>
+        <td>क्रमसंयोजनम्</td>
+        <td>६ × ½</td>
+        <td class="text-center">३ अङ्काः</td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="2" class="text-center"><strong>सम्पूर्ण-प्रश्नपत्र-योगः (Grand Total)</strong></td>
+        <td class="text-center"><strong>१७ प्रश्नाः</strong></td>
+        <td class="text-center"><strong>—</strong></td>
+        <td class="text-center"><strong>८० अङ्काः</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Solutions Section -->
+  <h3 style="color:#065f46; font-size:11.5pt; border-bottom:1.5px solid #065f46; padding-bottom:3px; margin: 14px 0 8px 0;">
+    २. उत्तरमाला एवं मूल्याङ्कन-योजना (Marking Scheme & Detailed Solutions)
+  </h3>
+
+  <div class="ans-sec-title">खण्डः 'क' – अपठित-अवबोधनम् (१० अङ्काः)</div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर १.</div>
+    <div><strong>(अ) एकपदेन उत्तरत :</strong> <span class="step-mark">[१ × २ = २ अङ्कौ]</span></div>
+    <div style="margin-left:10px;">
+      (i) कार्तिकमासस्य <br>
+      (ii) लक्ष्मी-गणेशयोः <br>
+      (iii) नूतनानि
+    </div>
+    <div style="margin-top:4px;"><strong>(आ) पूर्णवाक्येन उत्तरत :</strong> <span class="step-mark">[२ × २ = ४ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      (i) दीपावली प्रकाशस्य उल्लासस्य च पर्व अस्ति।<br>
+      (ii) एषः उत्सवः असत्यात् सत्यं प्रति, अन्धकारात् प्रकाशं प्रति गमनाय सन्देशं यच्छति।<br>
+      (iii) अस्मिन् दिने रात्रौ सर्वे जनाः लक्ष्मी-गणेशयोः पूजनं कुर्वन्ति, मिष्टान्नानि खादन्ति, परस्परं च वितरन्ति।
+    </div>
+    <div style="margin-top:4px;"><strong>(इ) भाषिककार्यम् :</strong> <span class="step-mark">[१ × ३ = ३ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      (i) (घ) कुर्वन्ति &nbsp;&nbsp;&nbsp;&nbsp; (ii) (ख) प्रकाशम् (अथवा प्रकाशात्) &nbsp;&nbsp;&nbsp;&nbsp; (iii) (ख) नूतनानि
+    </div>
+    <div style="margin-top:4px;"><strong>(ई) समुचितं शीर्षकम् :</strong> <span class="step-mark">[१ अङ्कः]</span></div>
+    <div style="margin-left:10px;"><strong>दीपावली-उत्सवः</strong> (अथवा <em>'दीपोत्सवः' / 'दीपावली-पर्व'</em>)</div>
+  </div>
+
+  <div class="ans-sec-title">खण्डः 'ख' – रचनात्मक-कार्यम् (१५ अङ्काः)</div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर २. पत्रलेखनम् (रिक्तस्थानपूर्तिः) : <span class="step-mark">[½ × १० = ५ अङ्काः]</span></div>
+    <div style="margin-left:10px; line-height:1.6;">
+      (i) <strong>प्रधानाचार्य</strong> &nbsp;|&nbsp; (ii) <strong>दिनद्वयस्य</strong> &nbsp;|&nbsp; (iii) <strong>निवेदनम्</strong> &nbsp;|&nbsp; (iv) <strong>पीडितः</strong> &nbsp;|&nbsp; (v) <strong>आगन्तुम्</strong> <br>
+      (vi) <strong>मह्यम्</strong> &nbsp;|&nbsp; (vii) <strong>प्रदाय</strong> &nbsp;|&nbsp; (viii) <strong>सधन्यवादम्</strong> &nbsp;|&nbsp; (ix) <strong>आज्ञाकारी</strong> &nbsp;|&nbsp; (x) <strong>षष्ठी</strong>
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर ३. चित्रवर्णनम् : <span class="step-mark">[१ × ५ = ५ अङ्काः]</span></div>
+    <div style="margin-left:10px; line-height:1.6;">
+      (i) इदं <strong>विद्यालयस्य क्रीडाङ्गणस्य</strong> चित्रम् अस्ति।<br>
+      (ii) क्रीडाङ्गणे बालकाः <strong>कन्दुकेन</strong> क्रीडन्ति।<br>
+      (iii) उद्याने विविधानि <strong>पुष्पाणि</strong> विकसन्ति।<br>
+      (iv) परितः हरिताः <strong>वृक्षाः</strong> सन्ति।<br>
+      (v) सर्वे छात्राः अतीव <strong>प्रसन्नाः</strong> दृश्यन्ते।<br>
+      <em>(टीका : छात्रैः निर्मितानि अन्यान्यपि व्याकरणशुद्धानि वाक्यानि पूर्णानि अङ्कानि प्राप्स्यन्ति।)</em>
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर ४. संवादपूर्तिः : <span class="step-mark">[१ × ५ = ५ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      (i) <strong>कुत्र</strong> &nbsp;|&nbsp; (ii) <strong>आपणम्</strong> &nbsp;|&nbsp; (iii) <strong>पुस्तकानि</strong> &nbsp;|&nbsp; (iv) <strong>स्यूतः</strong> &nbsp;|&nbsp; (v) <strong>आगमिष्यसि</strong>
+    </div>
+  </div>
+
+  <div class="ans-sec-title">खण्डः 'ग' – अनुप्रयुक्त-व्याकरणम् (२५ अङ्काः)</div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर ५. वर्णसंयोजनम् एवं वर्णवियोगः : <span class="step-mark">[२ + २ = ४ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      <strong>(क) वर्णसंयोजनम् :</strong> (i) माधवः &nbsp;&nbsp; (ii) वृक्षाः &nbsp;&nbsp; (iii) चन्द्रः <br>
+      <strong>(ख) वर्णवियोगः :</strong> <br>
+      (i) मयूरः = म् + अ + य् + ऊ + र् + अः <br>
+      (ii) पुस्तकम् = प् + उ + स् + त् + अ + क् + अ + म् <br>
+      (iii) मित्रम् = म् + इ + त् + र् + अ + म्
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर ६. शब्दरूपाणि : <span class="step-mark">[१ × ५ = ५ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      (i) <strong>वृक्षात्</strong> &nbsp;|&nbsp; (ii) <strong>बालिका</strong> &nbsp;|&nbsp; (iii) <strong>कलमेन</strong> &nbsp;|&nbsp; (iv) <strong>तव</strong> &nbsp;|&nbsp; (v) <strong>वयम्</strong>
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर ७. धातुरूपाणि : <span class="step-mark">[१ × ५ = ५ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      (i) <strong>पठति</strong> &nbsp;|&nbsp; (ii) <strong>क्रीडतः</strong> &nbsp;|&nbsp; (iii) <strong>गमिष्यामः</strong> &nbsp;|&nbsp; (iv) <strong>करोषि</strong> &nbsp;|&nbsp; (v) <strong>सन्ति</strong>
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर ८. कारक एवं उपपदविभक्तयः : <span class="step-mark">[१ × ४ = ४ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      (i) <strong>ग्रामम्</strong> <em>('परितः' योगे द्वितीया)</em> &nbsp;|&nbsp; (ii) <strong>जनकेन</strong> <em>('सह' योगे तृतीया)</em> <br>
+      (iii) <strong>गणेशाय</strong> <em>('नमः' योगे चतुर्थी)</em> &nbsp;|&nbsp; (iv) <strong>सिंहात्</strong> <em>('बिभेति/भयार्थे' पञ्चमी)</em>
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर ९. संख्यावाचकशब्दाः : <span class="step-mark">[१ × ४ = ४ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      (i) <strong>पञ्च</strong> &nbsp;|&nbsp; (ii) <strong>त्रीणि</strong> &nbsp;|&nbsp; (iii) <strong>द्वादश</strong> &nbsp;|&nbsp; (iv) <strong>विंशतिः</strong>
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर १०. प्रत्ययाः : <span class="step-mark">[१ × ३ = ३ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      (i) <strong>पीत्वा</strong> <em>(पा + क्त्वा)</em> &nbsp;|&nbsp; (ii) <strong>प्रणम्य</strong> <em>(प्र + नम् + ल्यप्)</em> &nbsp;|&nbsp; (iii) <strong>प्राप्तुम्</strong> <em>(प्राप् + तुमुन्)</em>
+    </div>
+  </div>
+
+  <div class="ans-sec-title">खण्डः 'घ' – पठित-अवबोधनम् (३० अङ्काः)</div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर ११. पठित-गद्यांशः ('बुद्धिः सर्वार्थसाधिका') : <span class="step-mark">[५ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      <strong>(अ) एकपदेन :</strong> (i) नित्यजलपूर्णः (महान्) &nbsp;|&nbsp; (ii) शशकानाम् &nbsp;|&nbsp; (iii) गजयूथम् <br>
+      <strong>(आ) पूर्णवाक्येन :</strong> (i) गजानां परिभ्रमणेन तेषु बिलेषु निवसन्तः बहवः शशकाः क्षतविक्षताः अभवन्, केचन पुनः मृताः अपि अभवन्। <br>
+      <strong>(इ) भाषिककार्यम् :</strong> (i) (ख) सरोवरः &nbsp;&nbsp;&nbsp;&nbsp; (ii) (क) गजयूथम्
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर १२. पठित-पद्यांशः ('पृथिव्यां त्रीणि रत्नानि') : <span class="step-mark">[५ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      <strong>(अ) एकपदेन :</strong> (i) त्रीणि &nbsp;|&nbsp; (ii) मूढैः &nbsp;|&nbsp; (iii) वसुधा (पृथिवी) <br>
+      <strong>(आ) पूर्णवाक्येन :</strong> (i) पृथिव्यां जलम्, अन्नम्, सुभाषितं च इति त्रीणि रत्नानि सन्ति। <br>
+      <strong>(इ) भाषिककार्यम् :</strong> (i) (ग) मूढैः &nbsp;&nbsp;&nbsp;&nbsp; (ii) (क) वसुधैव
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर १३. पठित-नाट्यांशः ('सः एव महान् चित्रकारः') : <span class="step-mark">[५ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      <strong>(अ) एकपदेन :</strong> (i) हरितः &nbsp;|&nbsp; (ii) शुकः &nbsp;|&nbsp; (iii) कृष्णः <br>
+      <strong>(आ) पूर्णवाक्येन :</strong> (i) मेधायाः मते काकस्य पिकस्य च वर्णः कृष्णः अस्ति। <br>
+      <strong>(इ) भाषिककार्यम् :</strong> (i) (ख) कीरः &nbsp;&nbsp;&nbsp;&nbsp; (ii) (ख) पर्णानि
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर १४. श्लोकान्वयपूर्तिः : <span class="step-mark">[१ × ४ = ४ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      (i) <strong>आतपे</strong> &nbsp;|&nbsp; (ii) <strong>छायाम्</strong> &nbsp;|&nbsp; (iii) <strong>परार्थाय</strong> &nbsp;|&nbsp; (iv) <strong>सत्पुरुषाः</strong>
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर १५. प्रश्ननिर्माणम् : <span class="step-mark">[१ × ४ = ४ अङ्काः]</span></div>
+    <div style="margin-left:10px; line-height:1.6;">
+      (i) पृथिव्यां <strong>कति</strong> रत्नानि सन्ति? <br>
+      (ii) शशकराजः <strong>कस्य</strong> समीपं गच्छति? <br>
+      (iii) <strong>के</strong> सत्पुरुषाः इव भवन्ति? <br>
+      (iv) राधिका <strong>कस्यै</strong> क्षीरं ददाति? <br>
+      (v) <strong>किम् / कः</strong> मनुष्याणां शरीरस्थः महान् रिपुः?
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर १६. मेलनम् : <span class="step-mark">[२ + २ = ४ अङ्काः]</span></div>
+    <div style="margin-left:10px;">
+      <strong>(क) श्लोकांश-मेलनम् :</strong> <br>
+      (i) दशकूपसमा वापी ➔ (ख) दशवापीसमो ह्रदः। <br>
+      (ii) उदारचरितानां तु ➔ (क) वसुधैव कुटुम्बकम्। <br>
+      <strong>(ख) समानार्थक-मेलनम् :</strong> <br>
+      (i) खगाः ➔ (ख) पक्षिणः <br>
+      (ii) सरोवरः ➔ (क) जलाशयः
+    </div>
+  </div>
+
+  <div class="ans-card no-break">
+    <div class="ans-q-num">उत्तर १७. कथाक्रम-संयोजनम् : <span class="step-mark">[½ × ६ = ३ अङ्काः]</span></div>
+    <div style="margin-left:10px; line-height:1.6;">
+      (१) एकस्मिन वने महान सरोवरः आसीत्। <br>
+      (२) पिपासाकुलं गजयूथं सरोवरं प्रति आगच्छति। <br>
+      (३) गजानां परिभ्रमणने बहवः शशकाः मृताः अभवन्। <br>
+      (४) भीताः शशकाः स्वरक्षार्थं शशकराजस्य समीपे अगच्छन्। <br>
+      (५) शशकराजः गजराजं सरोवरस्य समीपं नयति। <br>
+      (६) गजराजः जले चन्द्रस्य प्रतिबिम्बं पश्यति।
+    </div>
+  </div>
+
+</body>
+</html>

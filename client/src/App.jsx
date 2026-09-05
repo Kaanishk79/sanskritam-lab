@@ -15,6 +15,7 @@ import TeacherDashboardPage from "./pages/teaching/TeacherDashboardPage";
 import StudentWorkspacePage from "./pages/teaching/StudentWorkspacePage";
 import InstitutionDashboardPage from "./pages/teaching/InstitutionDashboardPage";
 import AssessmentPage from "./pages/teaching/AssessmentPage";
+import SamplePapersPage from "./pages/teaching/SamplePapersPage";
 import VivaSimulatorPage from "./pages/viva/VivaSimulatorPage";
 import LanguageLabPage from "./pages/viva/LanguageLabPage";
 import AnalyticsPage from "./pages/viva/AnalyticsPage";
@@ -67,6 +68,7 @@ export default function App() {
             <Route path="research/ocr" element={<OCRPage />} />
             <Route path="research/annotate" element={<AnnotationPage />} />
             <Route path="research/ncert" element={<NCERTResearchPage />} />
+            <Route path="ncert/papers" element={<SamplePapersPage />} />
             <Route path="visualization/3d" element={<Viewer3DPage />} />
             <Route path="visualization/grammar" element={<GrammarMapsPage />} />
             <Route path="visualization/timeline" element={<TimelinePage />} />
@@ -74,6 +76,7 @@ export default function App() {
             <Route path="teaching/workspace" element={<StudentWorkspacePage />} />
             <Route path="teaching/school" element={<InstitutionDashboardPage />} />
             <Route path="teaching/assessment" element={<AssessmentPage />} />
+            <Route path="teaching/papers" element={<SamplePapersPage />} />
             <Route path="viva/simulator" element={<VivaSimulatorPage />} />
             <Route path="viva/lab" element={<LanguageLabPage />} />
             <Route path="viva/analytics" element={<AnalyticsPage />} />

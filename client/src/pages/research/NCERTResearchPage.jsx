@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BookOpen,
   BookMarked,
   CheckCircle2,
   XCircle,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  FileText,
+  ChevronRight
 } from "lucide-react";
 import { books, chapters, grammarBooks, ncertChapterPdfUrl } from "../../data/books";
 import { fetchNCERTBooks, fetchChapters, fetchNCERTGrammarBooks } from "../../services/data";
@@ -22,6 +25,7 @@ const classColors = {
 };
 function NCERTResearchPage() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("textbooks");
   const [expandedBook, setExpandedBook] = useState(null);
   const [expandedGrammar, setExpandedGrammar] = useState(null);
@@ -114,6 +118,15 @@ function NCERTResearchPage() {
   >
           <BookMarked size={14} />
           <span>{t("NCERT Grammar (Shashwati)")}</span>
+        </button>
+        <button
+    className="btn btn-outline"
+    onClick={() => navigate("/ncert/papers")}
+    style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: "auto", borderColor: "var(--vt-orange)" }}
+  >
+          <FileText size={14} color="var(--vt-orange)" />
+          <span style={{ fontWeight: 600 }}>{t("Annual Sample Papers (Sets 1-3)")}</span>
+          <ChevronRight size={13} />
         </button>
       </div>
 
