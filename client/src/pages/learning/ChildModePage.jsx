@@ -114,10 +114,10 @@ function ChildModePage() {
   }}>
             {cl.dev}
           </div>
-          <div style={{ fontSize: 18, marginBottom: 4 }}>
+          <div style={{ fontSize: 18, marginBottom: 4, color: "var(--vt-text)" }}>
             {t("Say: ")}<strong>{cl.trans}</strong>
           </div>
-          <div style={{ fontSize: 14, color: "#888", marginBottom: 20 }}>
+          <div style={{ fontSize: 14, color: "var(--vt-text-light)", marginBottom: 20 }}>
             {t("Like the ")}<strong>{cl.sound}</strong>{t(" in ")}"{cl.sound === "u" ? "up" : cl.sound === "a" ? "father" : cl.sound === "i" ? "sit" : cl.sound === "ee" ? "see" : cl.sound === "oo" ? "moon" : cl.sound === "o" ? "go" : "up"}"
           </div>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
@@ -128,8 +128,8 @@ function ChildModePage() {
               <span>{t("Next")}</span> <ArrowRight size={16} />
             </button>
           </div>
-          <div style={{ marginTop: 16, fontSize: 12, color: "#555", display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>
-            {letters.map((_, i) => <span key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: i === currentLetter ? "var(--sanskrit-gold)" : "#333", display: "inline-block" }} />)}
+          <div style={{ marginTop: 16, fontSize: 12, color: "var(--vt-text-lighter)", display: "flex", justifyContent: "center", gap: 4, flexWrap: "wrap" }}>
+            {letters.map((_, i) => <span key={i} style={{ width: 8, height: 8, borderRadius: "50%", background: i === currentLetter ? "var(--sanskrit-gold)" : "var(--vt-border)", display: "inline-block" }} />)}
           </div>
         </div>}
 
@@ -146,7 +146,7 @@ function ChildModePage() {
   }}>
             {renderWordIcon(cp.icon, 72, cp.color)}
           </div>
-          <div style={{ fontSize: 14, color: "#888", marginBottom: 4 }}>{t("What is this in Sanskrit?")}</div>
+          <div style={{ fontSize: 14, color: "var(--vt-text-light)", marginBottom: 4 }}>{t("What is this in Sanskrit?")}</div>
           <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 12 }}>
             <input
     value={guess}

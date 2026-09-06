@@ -74,8 +74,8 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
   };
 
   const handleWordClick = (word) => {
-    const cleanWord = word.replace(/[\u0964\u0965,.;:!?()[\]{}"'–—]/g, "").trim();
-    if (!cleanWord) return;
+    const cleanWord = word.replace(/[\u0964\u0965,.;:!?()[\]{}"'–—*०-९\d]/g, "").trim();
+    if (!cleanWord || cleanWord.length < 1) return;
     setSelectedWord(cleanWord);
     speakWithFallback(cleanWord);
   };
@@ -224,26 +224,73 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
       {!loading && !error && (
         <div
           style={{
-            maxHeight: "58vh",
+            maxHeight: "60vh",
             overflowY: "auto",
-            padding: "16px 20px",
+            padding: "20px 24px",
             background: "var(--bg-primary)",
-            borderRadius: 8,
+            borderRadius: 10,
             border: "1px solid var(--border-color)",
-            lineHeight: 1.85,
+            lineHeight: 2.1,
             fontSize: `${fontSize}px`,
-            fontFamily: "'Noto Sans Devanagari', 'Nirmala UI', serif"
+            fontFamily: "'Noto Sans Devanagari', 'Noto Serif Devanagari', 'Nirmala UI', sans-serif",
+            textRendering: "optimizeLegibility",
+            WebkitFontSmoothing: "antialiased"
           }}
         >
           {paragraphs.map((para, pIdx) => {
-            const lines = para.split("\n");
-            return (
-              <p key={pIdx} style={{ margin: "0 0 16px 0" }}>
-                {lines.map((line, lIdx) => {
-                  const words = line.split(" ");
-                  return (
-                    <span key={lIdx} style={{ display: "block" }}>
-                      {words.map((w, wIdx) => {
+            const trimmed = para.trim();
+            const isHeading =
+              /^[१२३४५६७८९०\d]+[\.\)]/.test(trimmed) ||
+              /^\([१२३४५६७८९०\d]+\)/.test(trimmed) ||
+              trimmed.startsWith("प्रथमः पाठः") ||
+              trimmed.startsWith("द्वितीयः पाठः") ||
+              trimmed.startsWith("तृतीयः पाठः") ||
+              trimmed.startsWith("चतुर्थः पाठः") ||
+              trimmed.startsWith("पञ्चमः पाठः") ||
+              trimmed.startsWith("अभ्यासः") ||
+              trimmed.length < 35 && !trimmed.includes("।");
+
+            const isVerse =
+              (trimmed.includes("॥") || (trimmed.includes("।") && trimmed.split("\n").length >= 2)) &&
+              !isHeading;
+
+            if (isHeading) {
+              return (
+                <div
+                  key={pIdx}
+                  style={{
+                    margin: "20px 0 10px 0",
+                    fontWeight: 700,
+                    color: "var(--sanskrit-gold)",
+                    fontSize: `${fontSize * 1.15}px`,
+                    borderBottom: "1px solid rgba(201, 168, 76, 0.25)",
+                    paddingBottom: 6
+                  }}
+                >
+                  {trimmed}
+                </div>
+              );
+            }
+
+            if (isVerse) {
+              const lines = trimmed.split("\n");
+              return (
+                <div
+                  key={pIdx}
+                  style={{
+                    margin: "18px 0",
+                    padding: "14px 20px",
+                    background: "rgba(201, 168, 76, 0.05)",
+                    borderLeft: "3px solid var(--sanskrit-gold)",
+                    borderRadius: "0 8px 8px 0",
+                    textAlign: "center",
+                    lineHeight: 2.2,
+                    fontStyle: "italic"
+                  }}
+                >
+                  {lines.map((line, lIdx) => (
+                    <div key={lIdx}>
+                      {line.split(" ").map((w, wIdx) => {
                         const isHighlighted = searchQuery && w.toLowerCase().includes(searchQuery.toLowerCase());
                         return (
                           <span
@@ -251,9 +298,9 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
                             onClick={() => handleWordClick(w)}
                             style={{
                               cursor: "pointer",
-                              padding: "0 2px",
-                              borderRadius: 3,
-                              background: isHighlighted ? "rgba(241, 196, 15, 0.35)" : "transparent",
+                              padding: "1px 3px",
+                              borderRadius: 4,
+                              background: isHighlighted ? "rgba(241, 196, 15, 0.4)" : "transparent",
                               transition: "background 0.15s ease"
                             }}
                             onMouseEnter={(e) => {
@@ -268,6 +315,45 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
                           </span>
                         );
                       })}
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+
+            // Standard prose paragraph
+            const words = trimmed.split(/\s+/);
+            return (
+              <p
+                key={pIdx}
+                style={{
+                  margin: "0 0 18px 0",
+                  textAlign: "justify",
+                  textJustify: "inter-word"
+                }}
+              >
+                {words.map((w, wIdx) => {
+                  const isHighlighted = searchQuery && w.toLowerCase().includes(searchQuery.toLowerCase());
+                  return (
+                    <span
+                      key={wIdx}
+                      onClick={() => handleWordClick(w)}
+                      style={{
+                        cursor: "pointer",
+                        padding: "1px 2px",
+                        borderRadius: 3,
+                        background: isHighlighted ? "rgba(241, 196, 15, 0.4)" : "transparent",
+                        transition: "background 0.15s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isHighlighted) e.currentTarget.style.background = "var(--bg-secondary)";
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isHighlighted) e.currentTarget.style.background = "transparent";
+                      }}
+                      title={t("Click to listen & inspect")}
+                    >
+                      {w}{" "}
                     </span>
                   );
                 })}

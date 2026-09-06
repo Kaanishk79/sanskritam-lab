@@ -125,9 +125,9 @@ function DictionaryPage() {
                 </button>
               </div>
             </div>
-            <div style={{ color: "#999", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ color: "var(--vt-text-light)", fontSize: 13, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <span>
-                {toIAST(e.word)} {e.pos ? `\xB7 ${bi(lang, e.pos, POS_HI[e.pos] || e.pos)}` : ""}
+                {toIAST(e.word)} {e.pos ? ` · ${bi(lang, e.pos, POS_HI[e.pos] || e.pos)}` : ""}
               </span>
               {e.source === "Monier-Williams" && (
                 <span className="chip" style={{ fontSize: 10, padding: "2px 6px", background: "rgba(230, 126, 34, 0.12)", color: "var(--vt-orange)", borderRadius: 4, fontWeight: 600 }}>
@@ -135,26 +135,26 @@ function DictionaryPage() {
                 </span>
               )}
             </div>
-            <ul style={{ margin: 0, paddingLeft: 18, color: "#ccc" }}>
+            <ul style={{ margin: 0, paddingLeft: 18, color: "var(--vt-text)", lineHeight: 1.6 }}>
               {(lang === "hi" && e.meanings_hi && e.meanings_hi.length ? e.meanings_hi : e.meanings || []).map((m, i) => <li key={i}>{m}</li>)}
               {(lang === "hi" ? e.meanings_hi?.length || 0 : e.meanings?.length || 0) === 0 && e.raw_def ? (
-                <li style={{ color: "#bbb" }}>{e.raw_def}</li>
+                <li style={{ color: "var(--vt-text-light)" }}>{e.raw_def}</li>
               ) : (lang === "hi" ? e.meanings_hi?.length || 0 : e.meanings?.length || 0) === 0 ? (
-                <li style={{ color: "#888" }}>—</li>
+                <li style={{ color: "var(--vt-text-lighter)" }}>—</li>
               ) : null}
             </ul>
-            {e.root && <div style={{ fontSize: 13, color: "#aaa", display: "flex", alignItems: "center", gap: 6 }}>
+            {e.root && <div style={{ fontSize: 13, color: "var(--vt-text-light)", display: "flex", alignItems: "center", gap: 6 }}>
                 <Sprout size={14} color="var(--vt-green)" />
                 <span>{t("Root")}: {toDevanagari(e.root) || e.root} ({toIAST(e.root)})</span>
               </div>}
-            {e.derivations && e.derivations.length > 0 && <div style={{ fontSize: 13, color: "#aaa", display: "flex", alignItems: "center", gap: 6 }}>
+            {e.derivations && e.derivations.length > 0 && <div style={{ fontSize: 13, color: "var(--vt-text-light)", display: "flex", alignItems: "center", gap: 6 }}>
                 <Link2 size={14} color="var(--vt-orange)" />
                 <span>{t("Related")}: {e.derivations.join(", ")}</span>
               </div>}
           </div>)}
       </div>
 
-      {!loading && entries.length === 0 && <p style={{ color: "#888", marginTop: 16 }}>{t("No entries found.")}</p>}
+      {!loading && entries.length === 0 && <p style={{ color: "var(--vt-text-lighter)", marginTop: 16 }}>{t("No entries found.")}</p>}
     </div>;
 }
 export {

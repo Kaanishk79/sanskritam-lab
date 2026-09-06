@@ -8,7 +8,13 @@ const PENDING_TEACHER_KEY = "sanskritlab-pending-teacher";
 function RoleProvider({ children }) {
   const [user, setUser] = useState(() => getAuthState().user);
   const [role, setRoleState] = useState("learner");
-  const [guest, setGuest] = useState(() => !getAuthState().user && localStorage.getItem(GUEST_KEY) === "1");
+  const [guest, setGuest] = useState(() => {
+    try {
+      return !getAuthState().user && localStorage.getItem(GUEST_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const [school, setSchool] = useState(null);
   const [schoolLoading, setSchoolLoading] = useState(false);
   const sessionUserRef = useRef(user);
@@ -23,7 +29,12 @@ function RoleProvider({ children }) {
   const isInstitution = user?.accountType === "institution";
   const canSwitch = isInstitution;
   useEffect(() => {
-    const stored = localStorage.getItem(ROLE_KEY);
+    let stored = null;
+    try {
+      stored = localStorage.getItem(ROLE_KEY);
+    } catch {
+      // Storage access blocked or unavailable
+    }
     if (isInstitution) {
       setRoleState(stored && ["institution", "teacher", "student"].includes(stored) ? stored : "institution");
     } else if (user?.accountType === "teacher" || user?.accountType === "student") {
@@ -110,14 +121,26 @@ function RoleProvider({ children }) {
   const setRole = (r) => {
     if (!canSwitch) return;
     setRoleState(r);
-    localStorage.setItem(ROLE_KEY, r);
+    try {
+      localStorage.setItem(ROLE_KEY, r);
+    } catch (e) {
+      console.warn("Could not persist role:", e);
+    }
   };
   const beginGuest = () => {
-    localStorage.setItem(GUEST_KEY, "1");
+    try {
+      localStorage.setItem(GUEST_KEY, "1");
+    } catch (e) {
+      console.warn("Could not persist guest mode:", e);
+    }
     setGuest(true);
   };
   const endGuest = () => {
-    localStorage.removeItem(GUEST_KEY);
+    try {
+      localStorage.removeItem(GUEST_KEY);
+    } catch {
+      // Storage access blocked or unavailable
+    }
     setGuest(false);
   };
   return <RoleContext.Provider value={{ user, role, setRole, canSwitch, school, schoolLoading, refreshSchool, guest, beginGuest, endGuest }}>

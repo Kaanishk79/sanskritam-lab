@@ -25,8 +25,7 @@ export const samplePapersCatalog = [
       questionPaperPdf: "/sample-papers/Class_6/Class_6_Sanskrit_Question_Paper_80_Marks.pdf",
       markingSchemeHtml: "/sample-papers/Class_6/Class_6_Sanskrit_Marking_Scheme_80_Marks.html",
       markingSchemePdf: "/sample-papers/Class_6/Class_6_Sanskrit_Marking_Scheme_80_Marks.pdf",
-      completeMasterPdf: "/sample-papers/Class_6/Class_6_Sanskrit_Complete_Sample_Paper_80_Marks.pdf",
-      previewImage: "/sample-papers/preview/qp_v2_page_1.png"
+      completeMasterPdf: "/sample-papers/Class_6/Class_6_Sanskrit_Complete_Sample_Paper_80_Marks.pdf"
     },
     sets: [
       {
@@ -38,7 +37,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_6/Set_1/Class_6_Sanskrit_Marking_Scheme_Set_1_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_6/Set_1/Class_6_Sanskrit_Marking_Scheme_Set_1_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_6/Set_1/Class_6_Sanskrit_Complete_Sample_Paper_Set_1_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_page_1.png"
       },
       {
         setId: "set-2",
@@ -49,7 +47,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_6/Set_2/Class_6_Sanskrit_Marking_Scheme_Set_2_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_6/Set_2/Class_6_Sanskrit_Marking_Scheme_Set_2_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_6/Set_2/Class_6_Sanskrit_Complete_Sample_Paper_Set_2_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_page_2.png"
       },
       {
         setId: "set-3",
@@ -60,7 +57,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_6/Set_3/Class_6_Sanskrit_Marking_Scheme_Set_3_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_6/Set_3/Class_6_Sanskrit_Marking_Scheme_Set_3_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_6/Set_3/Class_6_Sanskrit_Complete_Sample_Paper_Set_3_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_page_3.png"
       }
     ]
   },
@@ -86,7 +82,6 @@ export const samplePapersCatalog = [
       markingSchemeHtml: "/sample-papers/Class_7/Class_7_Sanskrit_Marking_Scheme_80_Marks.html",
       markingSchemePdf: "/sample-papers/Class_7/Class_7_Sanskrit_Marking_Scheme_80_Marks.pdf",
       completeMasterPdf: "/sample-papers/Class_7/Class_7_Sanskrit_Complete_Sample_Paper_80_Marks.pdf",
-      previewImage: "/sample-papers/preview/qp_v2_page_2.png"
     },
     sets: [
       {
@@ -98,7 +93,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_7/Set_1/Class_7_Sanskrit_Marking_Scheme_Set_1_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_7/Set_1/Class_7_Sanskrit_Marking_Scheme_Set_1_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_7/Set_1/Class_7_Sanskrit_Complete_Sample_Paper_Set_1_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_v2_page_1.png"
       },
       {
         setId: "set-2",
@@ -109,7 +103,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_7/Set_2/Class_7_Sanskrit_Marking_Scheme_Set_2_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_7/Set_2/Class_7_Sanskrit_Marking_Scheme_Set_2_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_7/Set_2/Class_7_Sanskrit_Complete_Sample_Paper_Set_2_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_v2_page_2.png"
       },
       {
         setId: "set-3",
@@ -120,7 +113,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_7/Set_3/Class_7_Sanskrit_Marking_Scheme_Set_3_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_7/Set_3/Class_7_Sanskrit_Marking_Scheme_Set_3_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_7/Set_3/Class_7_Sanskrit_Complete_Sample_Paper_Set_3_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_v2_page_3.png"
       }
     ]
   },
@@ -146,7 +138,6 @@ export const samplePapersCatalog = [
       markingSchemeHtml: "/sample-papers/Class_8/Class_8_Sanskrit_Marking_Scheme_80_Marks.html",
       markingSchemePdf: "/sample-papers/Class_8/Class_8_Sanskrit_Marking_Scheme_80_Marks.pdf",
       completeMasterPdf: "/sample-papers/Class_8/Class_8_Sanskrit_Complete_Sample_Paper_80_Marks.pdf",
-      previewImage: "/sample-papers/preview/qp_v2_page_3.png"
     },
     sets: [
       {
@@ -158,7 +149,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_8/Set_1/Class_8_Sanskrit_Marking_Scheme_Set_1_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_8/Set_1/Class_8_Sanskrit_Marking_Scheme_Set_1_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_8/Set_1/Class_8_Sanskrit_Complete_Sample_Paper_Set_1_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_page_1.png"
       },
       {
         setId: "set-2",
@@ -169,7 +159,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_8/Set_2/Class_8_Sanskrit_Marking_Scheme_Set_2_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_8/Set_2/Class_8_Sanskrit_Marking_Scheme_Set_2_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_8/Set_2/Class_8_Sanskrit_Complete_Sample_Paper_Set_2_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_page_2.png"
       },
       {
         setId: "set-3",
@@ -180,7 +169,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_8/Set_3/Class_8_Sanskrit_Marking_Scheme_Set_3_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_8/Set_3/Class_8_Sanskrit_Marking_Scheme_Set_3_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_8/Set_3/Class_8_Sanskrit_Complete_Sample_Paper_Set_3_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_page_3.png"
       }
     ]
   },
@@ -206,7 +194,6 @@ export const samplePapersCatalog = [
       markingSchemeHtml: "/sample-papers/Class_9/Class_9_Sanskrit_Marking_Scheme_80_Marks.html",
       markingSchemePdf: "/sample-papers/Class_9/Class_9_Sanskrit_Marking_Scheme_80_Marks.pdf",
       completeMasterPdf: "/sample-papers/Class_9/Class_9_Sanskrit_Complete_Sample_Paper_80_Marks.pdf",
-      previewImage: "/sample-papers/preview/qp_v2_page_4.png"
     },
     sets: [
       {
@@ -218,7 +205,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_9/Set_1/Class_9_Sanskrit_Marking_Scheme_Set_1_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_9/Set_1/Class_9_Sanskrit_Marking_Scheme_Set_1_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_9/Set_1/Class_9_Sanskrit_Complete_Sample_Paper_Set_1_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_v2_page_1.png"
       },
       {
         setId: "set-2",
@@ -229,7 +215,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_9/Set_2/Class_9_Sanskrit_Marking_Scheme_Set_2_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_9/Set_2/Class_9_Sanskrit_Marking_Scheme_Set_2_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_9/Set_2/Class_9_Sanskrit_Complete_Sample_Paper_Set_2_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_v2_page_2.png"
       },
       {
         setId: "set-3",
@@ -240,7 +225,6 @@ export const samplePapersCatalog = [
         markingSchemeHtml: "/sample-papers/Class_9/Set_3/Class_9_Sanskrit_Marking_Scheme_Set_3_80_Marks.html",
         markingSchemePdf: "/sample-papers/Class_9/Set_3/Class_9_Sanskrit_Marking_Scheme_Set_3_80_Marks.pdf",
         completeMasterPdf: "/sample-papers/Class_9/Set_3/Class_9_Sanskrit_Complete_Sample_Paper_Set_3_80_Marks.pdf",
-        previewImage: "/sample-papers/preview/qp_v2_page_4.png"
       }
     ]
   }

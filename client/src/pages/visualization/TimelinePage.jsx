@@ -39,8 +39,8 @@ function TimelinePage() {
   >
               {e.year}
             </div>
-            <h3 style={{ color: "#f0f0f0", fontSize: 16, marginBottom: 4 }}>{lang === "hi" && e.titleHi ? e.titleHi : e.title}</h3>
-            <p style={{ color: "#777", fontSize: 14 }}>{lang === "hi" && e.descriptionHi ? e.descriptionHi : e.description}</p>
+            <h3 style={{ color: "var(--vt-text)", fontSize: 16, marginBottom: 4 }}>{lang === "hi" && e.titleHi ? e.titleHi : e.title}</h3>
+            <p style={{ color: "var(--vt-text-light)", fontSize: 14 }}>{lang === "hi" && e.descriptionHi ? e.descriptionHi : e.description}</p>
           </div>)}
       </div>
     </div>;

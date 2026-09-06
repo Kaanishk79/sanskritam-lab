@@ -62,8 +62,8 @@ function SearchPage() {
       </div>
 
       {q.trim() && <div style={{ maxWidth: 640 }}>
-          <p style={{ color: "#888", fontSize: 13, margin: "4px 0 12px" }}>
-            {loading ? t("Searching\u2026") : `${results.length} ${t("results for")} \u201C${q.trim()}\u201D`}
+          <p style={{ color: "var(--vt-text-light)", fontSize: 13, margin: "4px 0 12px" }}>
+            {loading ? t("Searching…") : `${results.length} ${t("results for")} “${q.trim()}”`}
           </p>
           {results.map((r, i) => <div key={r.kind + "-" + r.id + "-" + i} className="card search-hit" style={{ padding: "12px 16px", marginBottom: 8, cursor: "pointer" }} onClick={() => open(r)}>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -71,20 +71,20 @@ function SearchPage() {
                   {KIND_ICON[r.kind]}
                 </span>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600 }}>{r.title}{r.extra ? <span style={{ color: "#888", fontWeight: 400 }}> · {r.extra}</span> : null}</div>
-                  <div style={{ color: "#999", fontSize: 13 }}>{hi ? r.subHi ?? r.sub : r.sub}</div>
+                  <div style={{ fontWeight: 600, color: "var(--vt-text)" }}>{r.title}{r.extra ? <span style={{ color: "var(--vt-text-light)", fontWeight: 400 }}> · {r.extra}</span> : null}</div>
+                  <div style={{ color: "var(--vt-text-light)", fontSize: 13 }}>{hi ? r.subHi ?? r.sub : r.sub}</div>
                 </div>
                 <span className="badge">{t(KIND_LABEL[r.kind])}</span>
               </div>
             </div>)}
-          {!loading && results.length === 0 && <p style={{ color: "#888" }}>{t("No matches \u2014 try a shorter word or an English keyword.")}</p>}
+          {!loading && results.length === 0 && <p style={{ color: "var(--vt-text-light)" }}>{t("No matches — try a shorter word or an English keyword.")}</p>}
         </div>}
 
       {!q.trim() && <div className="card" style={{ padding: 24, maxWidth: 640, marginTop: 12 }}>
-          <h3 style={{ marginTop: 0 }}>{t("Search tips")}</h3>
-          <ul style={{ color: "#bbb", paddingLeft: 20 }}>
-            <li>{t("Devanagari words: \u0930\u093E\u092E, \u0935\u093F\u0926\u094D\u092F\u093E, \u0917\u0940\u0924\u093E")}</li>
-            <li>{t("IAST words: r\u0101ma, vidy\u0101, g\u012Bt\u0101")}</li>
+          <h3 style={{ marginTop: 0, color: "var(--vt-text)" }}>{t("Search tips")}</h3>
+          <ul style={{ color: "var(--vt-text)", paddingLeft: 20, lineHeight: 1.7 }}>
+            <li>{t("Devanagari words: राम, विद्या, गीता")}</li>
+            <li>{t("IAST words: rāma, vidyā, gītā")}</li>
             <li>{t("English concepts: grammar, sandhi, yoga")}</li>
             <li>{t("Dictionary hits open the Explore panel with meaning, grammar and text references.")}</li>
           </ul>

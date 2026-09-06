@@ -106,30 +106,30 @@ function ExplorePanel({ word, onClose }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
         <div>
           <h2 style={{ fontSize: 34, margin: 0 }}>{word}</h2>
-          <p style={{ color: "#888", margin: "4px 0 0", fontSize: 15 }}>{iast}</p>
+          <p style={{ color: "var(--vt-text-light)", margin: "4px 0 0", fontSize: 15 }}>{iast}</p>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button className="btn btn-sm btn-outline" onClick={speak} disabled={speaking}>
-            {speaking ? "\u{1F50A}\u2026" : "\u{1F50A} " + t("Pronounce")}
+            {speaking ? "🔊…" : "🔊 " + t("Pronounce")}
           </button>
           {onClose && <button className="btn btn-sm btn-outline" onClick={onClose}>✕</button>}
         </div>
       </div>
 
-      {loading ? <p style={{ color: "#888" }}>⏳ {t("Looking up")}…</p> : <>
+      {loading ? <p style={{ color: "var(--vt-text-light)" }}>⏳ {t("Looking up")}…</p> : <>
           <div className="explore-section">
             <h4>📖 {t("Meaning")}</h4>
             {entry ? <ul style={{ margin: 0, paddingLeft: 20 }}>
                 {(lang === "hi" && entry.meanings_hi && entry.meanings_hi.length ? entry.meanings_hi : entry.meanings || []).map((m, i) => <li key={i}>{m}</li>)}
-                {(lang === "hi" ? entry.meanings_hi?.length || 0 : entry.meanings?.length || 0) === 0 && <li style={{ color: "#888" }}>—</li>}
-              </ul> : <p style={{ color: "#888", margin: 0 }}>{t("Not in dictionary yet \u2014 try the related-words and text references below.")}</p>}
+                {(lang === "hi" ? entry.meanings_hi?.length || 0 : entry.meanings?.length || 0) === 0 && <li style={{ color: "var(--vt-text-lighter)" }}>—</li>}
+              </ul> : <p style={{ color: "var(--vt-text-light)", margin: 0 }}>{t("Not in dictionary yet — try the related-words and text references below.")}</p>}
           </div>
 
           <div className="explore-section">
             <h4>🔤 {t("Grammar")}</h4>
             <p style={{ margin: 0 }}>
-              <span className="chip">{t("Part of speech")}: {(lang === "hi" ? POS_HI[entry?.pos ?? ""] ?? entry?.pos : entry?.pos) || "\u2014"}</span>{" "}
-              <span className="chip">{t("Root")}: {entry?.root ? `${toDevanagari(entry.root) || entry.root} (${toIAST(entry.root)})` : "\u2014"}</span>{" "}
+              <span className="chip">{t("Part of speech")}: {(lang === "hi" ? POS_HI[entry?.pos ?? ""] ?? entry?.pos : entry?.pos) || "—"}</span>{" "}
+              <span className="chip">{t("Root")}: {entry?.root ? `${toDevanagari(entry.root) || entry.root} (${toIAST(entry.root)})` : "—"}</span>{" "}
               <span className="chip">IAST: {iast}</span>
             </p>
           </div>
@@ -138,7 +138,7 @@ function ExplorePanel({ word, onClose }) {
               <h4>🔗 {t("Related words")}</h4>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {related.map((r) => <button key={r.word} className="btn btn-sm btn-outline" onClick={() => exploreWord(r.word)}>
-                    {r.word} <span style={{ color: "#999" }}>({lang === "hi" && r.meanings_hi?.length ? r.meanings_hi[0] : r.meanings[0] || ""})</span>
+                    {r.word} <span style={{ color: "var(--vt-text-light)" }}>({lang === "hi" && r.meanings_hi?.length ? r.meanings_hi[0] : r.meanings[0] || ""})</span>
                   </button>)}
               </div>
             </div>}
@@ -147,7 +147,7 @@ function ExplorePanel({ word, onClose }) {
               <h4>📜 {t("Text references")}</h4>
               {refs.map((r) => <div key={r.id} style={{ marginBottom: 8 }}>
                   <strong style={{ fontSize: 14 }}>{r.title}</strong>
-                  <p style={{ margin: "2px 0", color: "#bbb", fontSize: 13 }}>{r.snippet}</p>
+                  <p style={{ margin: "2px 0", color: "var(--vt-text)", fontSize: 13, lineHeight: 1.6 }}>{r.snippet}</p>
                 </div>)}
             </div>}
 
@@ -155,7 +155,7 @@ function ExplorePanel({ word, onClose }) {
               <h4>💬 {t("Example sentences")}</h4>
               {examples.map((r) => <div key={r.id} style={{ marginBottom: 8 }}>
                   <strong style={{ fontSize: 14 }}>{r.title}</strong>
-                  <p style={{ margin: "2px 0", color: "#bbb", fontSize: 13 }}>{r.snippet}</p>
+                  <p style={{ margin: "2px 0", color: "var(--vt-text)", fontSize: 13, lineHeight: 1.6 }}>{r.snippet}</p>
                   <button className="btn btn-sm btn-outline" onClick={() => speakWithFallback(r.snippet.slice(0, 120))}>🔊</button>
                 </div>)}
             </div>}

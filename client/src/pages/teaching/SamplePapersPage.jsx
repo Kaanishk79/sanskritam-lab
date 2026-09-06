@@ -24,6 +24,7 @@ export default function SamplePapersPage() {
   const [selectedSetIndex, setSelectedSetIndex] = useState(0); // 0: Set 1, 1: Set 2, 2: Set 3, -1: Master
   const [modalMode, setModalMode] = useState(null); // 'qp' | 'ms' | null
   const [modalFullscreen, setModalFullscreen] = useState(false);
+  const [previewDocType, setPreviewDocType] = useState("qp"); // 'qp' | 'ms'
 
   const currentClassData = samplePapersCatalog.find((c) => c.classNum === selectedClass) || samplePapersCatalog[0];
   const isMasterSet = selectedSetIndex === -1;
@@ -45,6 +46,7 @@ export default function SamplePapersPage() {
   };
 
   const activeViewerUrl = modalMode === "qp" ? currentSet.questionPaperHtml : currentSet.markingSchemeHtml;
+  const activePreviewUrl = previewDocType === "qp" ? currentSet.questionPaperHtml : currentSet.markingSchemeHtml;
 
   return (
     <div className="page-container" style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 24px" }}>
@@ -80,7 +82,7 @@ export default function SamplePapersPage() {
                 borderRadius: 10,
                 border: isSelected ? `2px solid ${item.badgeColor}` : "1px solid var(--border-color)",
                 background: isSelected ? `${item.badgeColor}18` : "var(--bg-secondary)",
-                color: isSelected ? "var(--text-color)" : "inherit",
+                color: isSelected ? "var(--vt-text)" : "var(--vt-text-light)",
                 cursor: "pointer",
                 fontWeight: isSelected ? 700 : 500,
                 transition: "all 0.2s ease"
@@ -239,63 +241,128 @@ export default function SamplePapersPage() {
           </div>
         </div>
 
-        {/* Right Column: Visual Preview Thumbnail Card */}
-        <div className="card" style={{ padding: 22, display: "flex", flexDirection: "column", background: "var(--bg-secondary)", border: "1px solid var(--border-color)", borderRadius: 12 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+        {/* Right Column: Visual Preview Live Card */}
+        <div className="card" style={{ padding: 20, display: "flex", flexDirection: "column", background: "var(--bg-secondary)", border: "1px solid var(--border-color)", borderRadius: 12 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12, flexWrap: "wrap", gap: 8 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <Sparkles size={16} color="var(--sanskrit-gold)" />
-              <span style={{ fontWeight: 600, fontSize: 14 }}>{t("Paper First-Page Preview")}</span>
+              <span style={{ fontWeight: 600, fontSize: 14 }}>{t("Live Document Preview")}</span>
             </div>
-            <a
-              href={currentSet.questionPaperHtml}
-              target="_blank"
-              rel="noreferrer"
-              style={{ fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4, color: "var(--vt-orange)", textDecoration: "none" }}
-            >
-              <span>{t("Open in new tab")}</span>
-              <ExternalLink size={12} />
-            </a>
+
+            {/* QP vs MS preview toggle */}
+            <div style={{ display: "inline-flex", background: "var(--bg-tertiary)", borderRadius: 8, padding: 3, border: "1px solid var(--border-color)" }}>
+              <button
+                type="button"
+                onClick={() => setPreviewDocType("qp")}
+                style={{
+                  padding: "4px 10px",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  border: "none",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                  background: previewDocType === "qp" ? "var(--vt-orange)" : "transparent",
+                  color: previewDocType === "qp" ? "#ffffff" : "var(--vt-text-light)",
+                  transition: "all 0.2s"
+                }}
+              >
+                {t("Question Paper")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewDocType("ms")}
+                style={{
+                  padding: "4px 10px",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  border: "none",
+                  borderRadius: 6,
+                  cursor: "pointer",
+                  background: previewDocType === "ms" ? "var(--vt-orange)" : "transparent",
+                  color: previewDocType === "ms" ? "#ffffff" : "var(--vt-text-light)",
+                  transition: "all 0.2s"
+                }}
+              >
+                {t("Marking Scheme")}
+              </button>
+            </div>
           </div>
 
           <div
             style={{
               flex: 1,
-              minHeight: 360,
-              background: "#1e293b",
+              minHeight: 480,
+              background: "#ffffff",
               borderRadius: 8,
               overflow: "hidden",
               border: "1px solid var(--border-color)",
               position: "relative",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center"
+              boxShadow: "0 4px 16px rgba(0,0,0,0.12)"
             }}
           >
-            {currentSet.previewImage ? (
-              <img
-                src={currentSet.previewImage}
-                alt={`${currentClassData.className} Sample Paper Preview`}
+            {activePreviewUrl ? (
+              <iframe
+                key={`${selectedClass}-${selectedSetIndex}-${previewDocType}`}
+                src={activePreviewUrl}
+                title={`${currentClassData.className} ${currentSet.setName} Preview`}
                 style={{
                   width: "100%",
                   height: "100%",
-                  objectFit: "contain",
-                  cursor: "pointer",
-                  transition: "transform 0.25s ease"
+                  minHeight: 480,
+                  border: "none",
+                  background: "#ffffff"
                 }}
-                onClick={() => openViewer("qp")}
-                title={t("Click to open interactive paper")}
               />
             ) : (
-              <div style={{ textAlign: "center", opacity: 0.5, padding: 20 }}>
+              <div style={{ textAlign: "center", opacity: 0.5, padding: 40, color: "var(--text-secondary)" }}>
                 <FileText size={48} style={{ margin: "0 auto 12px" }} />
                 <div>{t("Preview available inside interactive viewer")}</div>
               </div>
             )}
           </div>
 
-          <div style={{ marginTop: 12, display: "flex", justifyContent: "space-between", fontSize: 12, opacity: 0.7 }}>
-            <span>{currentSet.setNameSanskrit || currentSet.setName}</span>
-            <span>{t("Standard A4 Print Layout")}</span>
+          <div style={{ marginTop: 12, display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, flexWrap: "wrap", gap: 8 }}>
+            <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+              {currentSet.setNameSanskrit || currentSet.setName} ({previewDocType === "qp" ? t("Question Paper") : t("Marking Scheme")})
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+              <button
+                type="button"
+                onClick={() => openViewer(previewDocType)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  cursor: "pointer",
+                  color: "var(--sanskrit-gold, #f59e0b)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  fontSize: 12,
+                  fontWeight: 600,
+                  padding: 0
+                }}
+              >
+                <Maximize2 size={13} />
+                <span>{t("Fullscreen Reader")}</span>
+              </button>
+              <a
+                href={activePreviewUrl}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  fontSize: 12,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 4,
+                  color: "var(--vt-orange, #e67e22)",
+                  textDecoration: "none",
+                  fontWeight: 600
+                }}
+              >
+                <span>{t("Open tab")}</span>
+                <ExternalLink size={12} />
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -431,18 +498,40 @@ export default function SamplePapersPage() {
               </div>
             </div>
 
-            {/* Iframe View */}
-            <div style={{ flex: 1, background: "#ffffff" }}>
-              <iframe
-                id="sample-paper-iframe"
-                src={activeViewerUrl}
-                title="Sanskrit Sample Paper View"
+            {/* Iframe View with A4 Sheet Presentation */}
+            <div
+              style={{
+                flex: 1,
+                background: "var(--vt-bg, #0b0f19)",
+                padding: modalFullscreen ? "8px 0" : "16px 20px",
+                display: "flex",
+                justifyContent: "center",
+                overflowY: "auto"
+              }}
+            >
+              <div
                 style={{
                   width: "100%",
+                  maxWidth: modalFullscreen ? 1020 : 880,
                   height: "100%",
-                  border: "none"
+                  background: "#ffffff",
+                  borderRadius: modalFullscreen ? 0 : 8,
+                  overflow: "hidden",
+                  boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4)",
+                  border: "1px solid rgba(255, 255, 255, 0.1)"
                 }}
-              />
+              >
+                <iframe
+                  id="sample-paper-iframe"
+                  src={activeViewerUrl}
+                  title="Sanskrit Sample Paper View"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: "none"
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>

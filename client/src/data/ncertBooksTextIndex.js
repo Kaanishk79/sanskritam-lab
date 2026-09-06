@@ -53,11 +53,13 @@ export function getChapterTextUrl(bookId, chapterNum) {
 }
 
 /**
- * Clean up text content by removing printer artifacts like reprint dates, page markers, indd lines
+ * Clean up and normalize Sanskrit Devanagari text content
  */
 export function cleanChapterText(rawText) {
   if (!rawText) return "";
-  return rawText
+
+  // 1. Remove InDesign printer/export headers and metadata lines
+  let text = rawText
     .split("\n")
     .filter((line) => {
       const trimmed = line.trim();
@@ -65,7 +67,45 @@ export function cleanChapterText(rawText) {
       if (/Reprint\s+\d{4}-\d{2}/i.test(trimmed)) return false;
       if (/\.indd\s+\d+/i.test(trimmed)) return false;
       if (/Rationalised\s+\d{4}-\d{2}/i.test(trimmed)) return false;
+      if (/^\d{1,3}\s*$/.test(trimmed)) return false;
       return true;
     })
     .join("\n");
+
+  // 2. Normalize whitespace artifacts
+  text = text
+    .replace(/\t/g, " ")
+    .replace(/[\u2009\u200a\u200b]/g, "")
+    .replace(/\u00a0/g, " ");
+
+  // 3. Fix split repha: [Char]र\s+[Consonant]्[Matra]? -> [Char]र्[Consonant][Matra]?
+  text = text.replace(
+    /([\u0900-\u094C\u094E-\u097F])र\s+([\u0915-\u0939])्([ािीुूृॄेैोौंःँ]?)/g,
+    (_, prefix, targetCons, trailing) => `${prefix}र्${targetCons}${trailing || ""}`
+  );
+
+  // 4. Reconnect broken word linebreaks
+  text = text
+    .replace(/([\u0900-\u097F]्)\n\s*([\u0900-\u097F])/g, "$1$2")
+    .replace(/([\u0900-\u097F])\n\s*([ािीुूृॄेैोौ्ंःँ])/g, "$1$2");
+
+  // 5. Fix split halants
+  text = text
+    .replace(/([\u0900-\u097F])\s+्/g, "$1्")
+    .replace(/्\s+([\u0900-\u097F])/g, "्$1");
+
+  // 6. Fix split matras
+  text = text.replace(/([\u0900-\u097F])\s+([ािीुूृॄेैोौ])/g, "$1$2");
+
+  // 7. Fix split anusvara / visarga / chandrabindu
+  text = text
+    .replace(/([\u0900-\u097F])\s+([ंःँ])/g, "$1$2")
+    .replace(/\s+([ंःँ])([\u0900-\u097F])/g, "$1$2");
+
+  // 8. Collapse spaces and excessive blank lines
+  text = text
+    .replace(/[ ]{2,}/g, " ")
+    .replace(/\n{3,}/g, "\n\n");
+
+  return text.trim();
 }

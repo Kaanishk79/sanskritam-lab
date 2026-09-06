@@ -15,7 +15,7 @@ function SchoolOnly({ children }) {
         </div>
 
         <div className="card" style={{ textAlign: "center", padding: 28 }}>
-          <p style={{ color: "#aaa", fontSize: 13.5, lineHeight: 1.7, marginBottom: 18 }}>
+          <p style={{ color: "var(--vt-text-light)", fontSize: 13.5, lineHeight: 1.7, marginBottom: 18 }}>
             {t("Sign in with a school account \u2014 or register your school for free \u2014 to unlock the Pronunciation Lab with speech recognition, recordings, and teacher feedback.")}
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>

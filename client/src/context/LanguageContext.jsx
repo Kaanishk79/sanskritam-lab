@@ -3,11 +3,19 @@ import { translations } from "../i18n/translations";
 const LanguageContext = createContext(null);
 function LanguageProvider({ children }) {
   const [lang, setLangState] = useState(() => {
-    const saved = localStorage.getItem("sanskritlab-lang");
-    return saved === "en" ? "en" : "hi";
+    try {
+      const saved = localStorage.getItem("sanskritlab-lang");
+      return saved === "en" ? "en" : "hi";
+    } catch {
+      return "hi";
+    }
   });
   useEffect(() => {
-    localStorage.setItem("sanskritlab-lang", lang);
+    try {
+      localStorage.setItem("sanskritlab-lang", lang);
+    } catch (e) {
+      console.warn("Could not persist language to localStorage:", e);
+    }
     document.documentElement.lang = lang === "hi" ? "hi" : "en";
   }, [lang]);
   const setLang = (l) => setLangState(l);

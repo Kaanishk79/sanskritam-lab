@@ -18,9 +18,9 @@ function QuizInput({ onReady }) {
       marginTop: 8,
       width: "100%",
       padding: "10px 12px",
-      background: "#1e1e3a",
-      color: "#e0e0e0",
-      border: "1px solid #444",
+      background: "var(--bg-secondary)",
+      color: "var(--vt-text)",
+      border: "1px solid var(--border-color)",
       borderRadius: 6,
       fontFamily: "'Noto Sans Devanagari', sans-serif",
       fontSize: 16
@@ -69,44 +69,45 @@ function LessonPage() {
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
           <button className="btn btn-secondary" onClick={() => navigate("/learning/tree")}>← {t("Back")}</button>
-          <span style={{ fontSize: 13, color: "#888" }}>{lang === "hi" && lessonHi[lesson.id]?.durationHi ? lessonHi[lesson.id].durationHi : lesson.duration} · {t("Level")} {lesson.level}</span>
+          <span style={{ fontSize: 13, color: "var(--vt-text-light)" }}>{lang === "hi" && lessonHi[lesson.id]?.durationHi ? lessonHi[lesson.id].durationHi : lesson.duration} · {t("Level")} {lesson.level}</span>
         </div>
-        <h2 style={{ fontSize: 24, color: "#f0f0f0", marginBottom: 4 }}>{lesson.title}</h2>
-        <p style={{ color: "#888", fontSize: 14 }}>{lang === "hi" && lessonHi[lesson.id]?.subtitleHi ? lessonHi[lesson.id].subtitleHi : lesson.subtitle}</p>
-        <div style={{ width: "100%", height: 4, background: "#1e1e3a", borderRadius: 2, marginTop: 8 }}>
+        <h2 style={{ fontSize: 24, color: "var(--vt-text)", marginBottom: 4 }}>{lesson.title}</h2>
+        <p style={{ color: "var(--vt-text-light)", fontSize: 14 }}>{lang === "hi" && lessonHi[lesson.id]?.subtitleHi ? lessonHi[lesson.id].subtitleHi : lesson.subtitle}</p>
+        <div style={{ width: "100%", height: 4, background: "var(--bg-secondary)", borderRadius: 2, marginTop: 8 }}>
           <div style={{ width: `${progressPct}%`, height: "100%", background: "var(--sanskrit-gold)", borderRadius: 2, transition: "width 0.3s" }} />
         </div>
       </div>
 
       {!quizActive ? <div>
-          {sectionIdx === 0 && <div className="card" style={{ marginBottom: 20, background: "linear-gradient(135deg, #16213e, #1a1a3e)" }}>
-              <p style={{ fontSize: 15, lineHeight: 1.7, color: "#d0d0d0" }}>{lesson.content.introduction}</p>
+          {sectionIdx === 0 && <div className="card" style={{ marginBottom: 20, background: "var(--bg-secondary)", border: "1px solid var(--border-color)" }}>
+              <p style={{ fontSize: 15, lineHeight: 1.7, color: "var(--vt-text)" }}>{lesson.content.introduction}</p>
             </div>}
 
           <div className="card" style={{ marginBottom: 20 }}>
-            <h3 style={{ marginBottom: 12, fontSize: 18 }}>{section.heading}</h3>
-            <p style={{ fontSize: 14, lineHeight: 1.7, color: "#bbb", whiteSpace: "pre-line" }}>{section.body}</p>
+            <h3 style={{ marginBottom: 12, fontSize: 18, color: "var(--vt-text)" }}>{section.heading}</h3>
+            <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--vt-text)", whiteSpace: "pre-line" }}>{section.body}</p>
             {section.devanagari && <div style={{
     marginTop: 16,
     padding: 20,
-    background: "rgba(0,0,0,0.2)",
+    background: "var(--bg-secondary)",
+    border: "1px solid var(--border-color)",
     borderRadius: 8,
     fontFamily: "'Noto Sans Devanagari', serif",
     fontSize: 28,
     lineHeight: 1.8,
     textAlign: "center",
-    color: "#f0f0f0"
+    color: "var(--vt-text)"
   }}>
                 {section.devanagari}
               </div>}
-            {section.transliteration && <div style={{ marginTop: 8, fontSize: 14, color: "#888", textAlign: "center" }}>
+            {section.transliteration && <div style={{ marginTop: 8, fontSize: 14, color: "var(--vt-text-light)", textAlign: "center" }}>
                 {section.transliteration}
               </div>}
             {section.examples && <div style={{ marginTop: 16 }}>
-                <div style={{ fontSize: 13, color: "#888", marginBottom: 8 }}>{t("Examples:")}</div>
-                {section.examples.map((ex, i) => <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #1e1e3a", fontSize: 14 }}>
-                    <span style={{ fontFamily: "'Noto Sans Devanagari', serif" }}>{ex.text}</span>
-                    <span style={{ color: "#888" }}>{ex.meaning}</span>
+                <div style={{ fontSize: 13, color: "var(--vt-text-light)", marginBottom: 8 }}>{t("Examples:")}</div>
+                {section.examples.map((ex, i) => <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid var(--border-color)", fontSize: 14 }}>
+                    <span style={{ fontFamily: "'Noto Sans Devanagari', serif", color: "var(--vt-text)" }}>{ex.text}</span>
+                    <span style={{ color: "var(--vt-text-light)" }}>{ex.meaning}</span>
                   </div>)}
               </div>}
           </div>
@@ -126,18 +127,18 @@ function LessonPage() {
             </div>
           </div>
         </div> : <div className="card">
-          <h3 style={{ marginBottom: 16 }}>
+          <h3 style={{ marginBottom: 16, color: "var(--vt-text)" }}>
             {quizDone ? t("Quiz Results") : t("Quiz \u2014 ") + lesson.quiz.length + t(" questions")}
           </h3>
 
           {lesson.quiz.map((q, qi) => {
     const answer = quizAnswers[q.id];
     return <div key={q.id} style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 15, marginBottom: 10, color: "#e0e0e0" }}>
+                <div style={{ fontSize: 15, marginBottom: 10, color: "var(--vt-text)" }}>
                   {qi + 1}. {q.prompt}
                 </div>
                 {q.options.map((opt, oi) => {
-      let bg = "#1e1e3a";
+      let bg = "var(--bg-secondary)";
       if (quizDone) {
         if (oi === q.correctIndex) bg = "rgba(76,175,80,0.15)";
         else if (oi === answer && oi !== q.correctIndex) bg = "rgba(244,67,54,0.15)";
@@ -159,7 +160,7 @@ function LessonPage() {
                 {!quizDone && searchParams.has("quiz") && <QuizInput onReady={(ref) => {
       if (qi === 0) openKeyboard(ref);
     }} />}
-                {quizDone && <div style={{ fontSize: 13, color: "#888", marginTop: 6, padding: "8px 12px", background: "rgba(0,0,0,0.2)", borderRadius: 6 }}>
+                {quizDone && <div style={{ fontSize: 13, color: "var(--vt-text-light)", marginTop: 6, padding: "8px 12px", background: "var(--bg-secondary)", border: "1px solid var(--border-color)", borderRadius: 6 }}>
                     {q.explanation}
                   </div>}
               </div>;
@@ -169,12 +170,12 @@ function LessonPage() {
               {t("Submit Answers")}
             </button>}
 
-          {quizDone && <div style={{ marginTop: 20, padding: 20, background: "rgba(0,0,0,0.2)", borderRadius: 8, textAlign: "center" }}>
-              <div style={{ fontSize: 14, color: "#888", marginBottom: 4 }}>{t("Score")}</div>
+          {quizDone && <div style={{ marginTop: 20, padding: 20, background: "var(--bg-secondary)", border: "1px solid var(--border-color)", borderRadius: 8, textAlign: "center" }}>
+              <div style={{ fontSize: 14, color: "var(--vt-text-light)", marginBottom: 4 }}>{t("Score")}</div>
               <div style={{ fontSize: 36, fontWeight: 700, color: "var(--sanskrit-gold)" }}>
                 {Math.round(quizScore * 100)}%
               </div>
-              <div style={{ fontSize: 13, color: "#888", marginTop: 8 }}>
+              <div style={{ fontSize: 13, color: "var(--vt-text-light)", marginTop: 8 }}>
                 +{Math.round(quizScore * 10 * (1 + (lesson.quiz[0]?.difficulty ?? 1) * 0.5))}{t(" XP earned")}
               </div>
               <button className="btn btn-primary" style={{ marginTop: 16 }} onClick={() => navigate("/learning/tree")}>
