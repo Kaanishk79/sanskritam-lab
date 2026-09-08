@@ -20,6 +20,7 @@ pub struct VivaQuestion {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 pub struct EvaluateVivaRequest {
     pub question_id: String,
     pub response_text: String,
@@ -36,6 +37,7 @@ pub struct EvaluateVivaResponse {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 pub struct AnalyticsRequest {
     pub user_id: String,
     pub module: String,

@@ -36,7 +36,7 @@ pub async fn generate(body: web::Json<AssessmentRequest>) -> HttpResponse {
 
     let all_questions = get_questions_pool();
 
-    let mut selected: Vec<Question> = all_questions.into_iter().take(count).collect();
+    let selected: Vec<Question> = all_questions.into_iter().take(count).collect();
 
     HttpResponse::Ok().json(AssessmentResponse {
         topic: topic.to_string(),
@@ -45,6 +45,7 @@ pub async fn generate(body: web::Json<AssessmentRequest>) -> HttpResponse {
     })
 }
 
+#[allow(dead_code)]
 fn get_questions_pool() -> Vec<Question> {
     vec![
         Question {

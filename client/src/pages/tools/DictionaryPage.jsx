@@ -1,35 +1,44 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Volume2, Sprout, Link2, BookOpen, Sparkles } from "lucide-react";
+import { Volume2, Sprout, Link2 } from "lucide-react";
 import { supabase } from "../../services/supabase";
 import { toIAST, toDevanagari } from "../../services/sanskrit";
 import { speakWithFallback } from "../../services/speech";
 import { useLanguage } from "../../context/LanguageContext";
 import { bi } from "../../services/bilingual";
-import monierCore from "../../data/monier_core.json";
 
 const POS_HI = {
-  noun: "\u0938\u0902\u091C\u094D\u091E\u093E",
-  verb: "\u0915\u094D\u0930\u093F\u092F\u093E",
-  adjective: "\u0935\u093F\u0936\u0947\u0937\u0923",
-  adverb: "\u0915\u094D\u0930\u093F\u092F\u093E\u0935\u093F\u0936\u0947\u0937\u0923",
-  pronoun: "\u0938\u0930\u094D\u0935\u0928\u093E\u092E",
-  particle: "\u0905\u0935\u094D\u092F\u092F",
-  indeclinable: "\u0905\u0935\u094D\u092F\u092F"
+  noun: "संज्ञा",
+  verb: "क्रिया",
+  adjective: "विशेषण",
+  adverb: "क्रियाविशेषण",
+  pronoun: "सर्वनाम",
+  particle: "अव्यय",
+  indeclinable: "अव्यय"
 };
 
-function searchLocalMonier(query) {
+let cachedMonierCore = null;
+async function getMonierCore() {
+  if (!cachedMonierCore) {
+    const mod = await import("../../data/monier_core.json");
+    cachedMonierCore = mod.default || mod;
+  }
+  return cachedMonierCore;
+}
+
+function searchLocalMonier(monierList, query) {
+  if (!monierList || !monierList.length) return [];
   const trimmed = (query || "").trim();
-  if (!trimmed) return monierCore.slice(0, 40);
+  if (!trimmed) return monierList.slice(0, 40);
   const qLower = trimmed.toLowerCase();
   const devQuery = toDevanagari(trimmed) || trimmed;
-  return monierCore
+  return monierList
     .filter((entry) => {
       return (
         entry.word.includes(devQuery) ||
         entry.word.includes(trimmed) ||
         (entry.iast && entry.iast.toLowerCase().includes(qLower)) ||
-        entry.meanings.some((m) => m.toLowerCase().includes(qLower)) ||
+        entry.meanings?.some((m) => m.toLowerCase().includes(qLower)) ||
         (entry.raw_def && entry.raw_def.toLowerCase().includes(qLower))
       );
     })
@@ -52,7 +61,7 @@ function DictionaryPage() {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [sourceTag, setSourceTag] = useState("all");
+  const monierRef = useRef(cachedMonierCore);
 
   const load = async (query) => {
     setLoading(true);
@@ -70,8 +79,13 @@ function DictionaryPage() {
         cloudData = data || [];
       }
 
-      // If cloud returned results, use them; supplement or fallback with Monier-Williams
-      const localResults = searchLocalMonier(trimmed);
+      // Load local Monier-Williams data on-demand if needed
+      if (!monierRef.current) {
+        monierRef.current = await getMonierCore();
+      }
+
+      // Supplement cloud results with Monier-Williams
+      const localResults = searchLocalMonier(monierRef.current, trimmed);
       const combined = [...cloudData];
       const seenWords = new Set(cloudData.map((c) => c.word));
 
@@ -84,9 +98,15 @@ function DictionaryPage() {
 
       setEntries(combined);
     } catch (e) {
-      // Offline fallback: load from local Monier-Williams
       console.warn("Supabase dictionary unavailable, falling back to local Monier-Williams:", e);
-      setEntries(searchLocalMonier(trimmed));
+      try {
+        if (!monierRef.current) {
+          monierRef.current = await getMonierCore();
+        }
+        setEntries(searchLocalMonier(monierRef.current, trimmed));
+      } catch (err) {
+        setError(t("Failed to load dictionary data."));
+      }
     } finally {
       setLoading(false);
     }
@@ -96,7 +116,9 @@ function DictionaryPage() {
     const timer = window.setTimeout(() => load(q), 300);
     return () => window.clearTimeout(timer);
   }, [q]);
-  return <div className="page-container">
+
+  return (
+    <div className="page-container">
       <div className="page-header">
         <h2>{t("Sanskrit Dictionary")}</h2>
         <p>{t("Word meaning, Devanagari, transliteration, English meaning, examples and related words.")}</p>
@@ -104,16 +126,17 @@ function DictionaryPage() {
 
       <div className="form-group" style={{ maxWidth: 560 }}>
         <input
-    value={q}
-    onChange={(e) => setQ(e.target.value)}
-    placeholder={t("Search: \u0930\u093E\u092E, r\u0101ma, love, \u0917\u0941\u0930\u0941\u2026")}
-    style={{ fontSize: 17, padding: "12px 14px" }}
-  />
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder={t("Search: राम, rāma, love, गुरु…")}
+          style={{ fontSize: 17, padding: "12px 14px" }}
+        />
       </div>
       {error && <p style={{ color: "#e55" }}>{error}</p>}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
-        {entries.map((e) => <div key={e.id} className="card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 8 }}>
+        {entries.map((e) => (
+          <div key={e.id} className="card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <strong style={{ fontSize: 22 }}>{e.word}</strong>
               <div style={{ display: "flex", gap: 6 }}>
@@ -143,20 +166,25 @@ function DictionaryPage() {
                 <li style={{ color: "var(--vt-text-lighter)" }}>—</li>
               ) : null}
             </ul>
-            {e.root && <div style={{ fontSize: 13, color: "var(--vt-text-light)", display: "flex", alignItems: "center", gap: 6 }}>
+            {e.root && (
+              <div style={{ fontSize: 13, color: "var(--vt-text-light)", display: "flex", alignItems: "center", gap: 6 }}>
                 <Sprout size={14} color="var(--vt-green)" />
                 <span>{t("Root")}: {toDevanagari(e.root) || e.root} ({toIAST(e.root)})</span>
-              </div>}
-            {e.derivations && e.derivations.length > 0 && <div style={{ fontSize: 13, color: "var(--vt-text-light)", display: "flex", alignItems: "center", gap: 6 }}>
+              </div>
+            )}
+            {e.derivations && e.derivations.length > 0 && (
+              <div style={{ fontSize: 13, color: "var(--vt-text-light)", display: "flex", alignItems: "center", gap: 6 }}>
                 <Link2 size={14} color="var(--vt-orange)" />
                 <span>{t("Related")}: {e.derivations.join(", ")}</span>
-              </div>}
-          </div>)}
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       {!loading && entries.length === 0 && <p style={{ color: "var(--vt-text-lighter)", marginTop: 16 }}>{t("No entries found.")}</p>}
-    </div>;
+    </div>
+  );
 }
-export {
-  DictionaryPage as default
-};
+
+export default DictionaryPage;

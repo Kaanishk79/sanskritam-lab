@@ -3,6 +3,7 @@ use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 pub struct TtsRequest {
     pub text: String,
     pub accent: Option<String>,
@@ -28,6 +29,7 @@ pub async fn synthesize(body: web::Json<TtsRequest>) -> HttpResponse {
     })
 }
 
+#[allow(dead_code)]
 fn urlencoding(input: &str) -> String {
     let mut out = String::new();
     for byte in input.bytes() {

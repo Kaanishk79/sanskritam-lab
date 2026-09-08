@@ -2,29 +2,30 @@ import { useMemo, useState } from "react";
 import { getGrammarTopics } from "../data/ncertGrammarSyllabus";
 import { useLanguage } from "../context/LanguageContext";
 import ChapterTextReader from "./ChapterTextReader";
-function deriveVocab(sanskrit) {
-  const words = (sanskrit || "").split(/[\s–—-]/).filter((w) => /[\u0900-\u097F]/.test(w) && w.length > 1);
-  const seen = /* @__PURE__ */ new Set();
+function deriveVocab(sanskrit, preview = "") {
+  const combined = `${sanskrit || ""} ${preview || ""}`;
+  const words = combined.split(/[\s–—,.;:!?()[\]{}"'\\/]+/).filter((w) => /[\u0900-\u097F]/.test(w) && w.length > 1);
+  const seen = new Set();
   const out = [];
   for (const w of words) {
-    const clean = w.replace(/[\u0964\u0965[:punct:]]/g, "");
+    const clean = w.replace(/[^\u0900-\u097F]/g, "").trim();
     if (clean.length >= 3 && !seen.has(clean)) {
       seen.add(clean);
       out.push(clean);
-      if (out.length >= 6) break;
+      if (out.length >= 8) break;
     }
   }
   return out;
 }
-function ChapterResourcePanel({ book, chapter, pdfUrl, onClose }) {
+function ChapterResourcePanel({ book, chapter, pdfUrl, onClose, onChapterChange, totalChapters }) {
   const { t } = useLanguage();
   const [tab, setTab] = useState("read");
   const champ = chapter.titleSanskrit || chapter.title;
   const govClass = Math.max(book.gov_class_min ?? book.govClassMin, 6);
   const grammarTopics = useMemo(() => getGrammarTopics(govClass), [govClass]);
-  const vocab = useMemo(() => deriveVocab(champ), [champ]);
   const passage = chapter.content_preview ?? chapter.contentPreview ?? "";
-  const summary = passage || `${chapter.title}${t(" \u2014 a chapter from the NCERT ")}${book.title}.`;
+  const vocab = useMemo(() => deriveVocab(champ, passage), [champ, passage]);
+  const summary = passage || `${chapter.title}${t(" — a chapter from the NCERT ")}${book.title}.`;
   const baseTabs = [
     { id: "read", label: t("Read Text (पाठः)"), icon: "📖" },
     { id: "teach", label: t("Teach"), icon: "👩‍🏫" },
@@ -60,7 +61,9 @@ function ChapterResourcePanel({ book, chapter, pdfUrl, onClose }) {
             bookId={book.id}
             chapterNumber={chapter.chapter_number ?? chapter.chapterNumber}
             bookTitle={book.title}
-            chapterTitle={chapter.title}
+            chapterTitle={chapter.titleSanskrit ? `${chapter.titleSanskrit} (${chapter.title})` : chapter.title}
+            onChapterChange={onChapterChange}
+            totalChapters={totalChapters || book.total_chapters || book.totalChapters}
           />
         )}
 

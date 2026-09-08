@@ -29,7 +29,21 @@ export const ncertTextBookMap = {
     prefix: "ihsh1",
     totalChapters: 16,
     hasIntro: true,
-    title: "शेमुषी - प्रथमो भागः (कक्षा ९)"
+    title: "शारदा / शेमुषी - प्रथमो भागः (कक्षा ९)"
+  },
+  "ncert-sharada-9": {
+    folder: "class9",
+    prefix: "ihsh1",
+    totalChapters: 16,
+    hasIntro: true,
+    title: "शारदा - प्रथमो भागः (कक्षा ९)"
+  },
+  "ncert-shemushi-10": {
+    prefix: "jhsk1",
+    totalChapters: 12,
+    hasIntro: true,
+    isPdfOnly: true,
+    title: "शेमुषी - द्वितीयो भागः (कक्षा १०)"
   },
   "ncert-vyakaranavithi": {
     folder: "class9&10grammar",
@@ -37,19 +51,59 @@ export const ncertTextBookMap = {
     totalChapters: 12,
     hasIntro: true,
     title: "व्याकरणवीथिः (कक्षा ९-१०)"
+  },
+  "ncert-bhaswati-11": {
+    prefix: "khsk1",
+    totalChapters: 11,
+    hasIntro: true,
+    isPdfOnly: true,
+    title: "भास्वती - प्रथमो भागः (कक्षा ११)"
+  },
+  "ncert-shashwati-11": {
+    prefix: "khsk2",
+    totalChapters: 11,
+    hasIntro: true,
+    isPdfOnly: true,
+    title: "शाश्वती - प्रथमो भागः (कक्षा ११)"
+  },
+  "ncert-bhaswati-12": {
+    prefix: "lhsk1",
+    totalChapters: 12,
+    hasIntro: true,
+    isPdfOnly: true,
+    title: "भास्वती - द्वितीयो भागः (कक्षा १२)"
+  },
+  "ncert-shashwati-12": {
+    prefix: "lhsk2",
+    totalChapters: 11,
+    hasIntro: true,
+    isPdfOnly: true,
+    title: "शाश्वती - द्वितीयो भागः (कक्षा १२)"
   }
 };
 
 /**
- * Returns the public URL to fetch the chapter's raw text
+ * Returns the public URL to fetch the chapter's raw text (if available)
  */
 export function getChapterTextUrl(bookId, chapterNum) {
   const meta = ncertTextBookMap[bookId];
-  if (!meta) return null;
+  if (!meta || meta.isPdfOnly || !meta.folder) return null;
   const num = parseInt(chapterNum, 10);
   if (isNaN(num) || num < 1 || num > meta.totalChapters) return null;
   const chStr = String(num).padStart(2, "0");
   return `/books-data/${meta.folder}/${meta.prefix}${chStr}.txt`;
+}
+
+/**
+ * Returns the official NCERT PDF download/view URL for a chapter
+ */
+export function getChapterPdfUrl(bookId, chapterNum) {
+  const meta = ncertTextBookMap[bookId];
+  if (!meta || !meta.prefix) return null;
+  const num = parseInt(chapterNum, 10);
+  if (isNaN(num) || num < 1 || num > meta.totalChapters) return null;
+  const chStr = String(num).padStart(2, "0");
+  return `https://ncert.nic.in/textbook/pdf/${meta.prefix}${chStr}.pdf`;
 }
 
 /**
@@ -58,8 +112,10 @@ export function getChapterTextUrl(bookId, chapterNum) {
 export function cleanChapterText(rawText) {
   if (!rawText) return "";
 
-  // 1. Remove InDesign printer/export headers and metadata lines
+  // 1. Normalize line endings and strip InDesign printer/export headers
   let text = rawText
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
     .split("\n")
     .filter((line) => {
       const trimmed = line.trim();

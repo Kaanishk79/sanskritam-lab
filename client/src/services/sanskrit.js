@@ -1,21 +1,21 @@
 import { supabase } from "./supabase";
 const DEV_VOWELS = [
-  ["\u090D", "\xEA"],
-  ["\u0911", "\xF4"],
-  ["\u0914", "au"],
-  ["\u0910", "ai"],
-  ["\u0913", "o"],
-  ["\u090F", "e"],
-  ["\u0960", "\u1E5D"],
-  ["\u090C", "\u1E37"],
-  ["\u090B", "\u1E5B"],
-  ["\u090A", "\u016B"],
-  ["\u0913", "o"],
+  ["\u0905", "a"],
   ["\u0906", "\u0101"],
   ["\u0907", "i"],
   ["\u0908", "\u012B"],
   ["\u0909", "u"],
-  ["\u090A", "\u016B"]
+  ["\u090A", "\u016B"],
+  ["\u090B", "\u1E5B"],
+  ["\u0960", "\u1E5D"],
+  ["\u090C", "\u1E37"],
+  ["\u0961", "\u1E39"],
+  ["\u090F", "e"],
+  ["\u0910", "ai"],
+  ["\u0913", "o"],
+  ["\u0914", "au"],
+  ["\u090D", "\xEA"],
+  ["\u0911", "\xF4"]
 ];
 const DEV_CONSONANTS = [
   ["\u0915\u094D\u0937", "k\u1E63"],
@@ -223,7 +223,7 @@ const IAST_SIGNS = {
   "au": "\u094C"
 };
 function toDevanagari(input) {
-  let s = input.trim().replace(/\./g, "");
+  let s = input.trim().replace(/[.,!?;:]+$/, "");
   let out = "";
   let i = 0;
   const isVowel = (ch) => /[aeiouāīūṛṝḷêô]/.test(ch);
@@ -234,39 +234,22 @@ function toDevanagari(input) {
       i += 1;
       continue;
     }
-    const single = IAST_TO_DEV[c];
-    if (single) {
-      out += single;
-      i += 1;
-      const next = s[i];
-      if (next && isVowel(next)) {
-        if (next === "a") {
-          i += 1;
-        } else {
-          out += IAST_SIGNS[next] || "";
-          i += 1;
-        }
-      }
-      continue;
-    }
     let found = null;
     let len = 0;
-    if (i + 2 <= s.length) {
-      const t2 = s.slice(i, i + 2);
-      if (IAST_TO_DEV[t2]) {
-        found = IAST_TO_DEV[t2];
-        len = 2;
-      }
+    if (i + 3 <= s.length && IAST_TO_DEV[s.slice(i, i + 3)]) {
+      found = IAST_TO_DEV[s.slice(i, i + 3)];
+      len = 3;
+    } else if (i + 2 <= s.length && IAST_TO_DEV[s.slice(i, i + 2)]) {
+      found = IAST_TO_DEV[s.slice(i, i + 2)];
+      len = 2;
+    } else if (IAST_TO_DEV[c]) {
+      found = IAST_TO_DEV[c];
+      len = 1;
     }
-    if (!found && i + 3 <= s.length) {
-      const t3 = s.slice(i, i + 3);
-      if (IAST_TO_DEV[t3]) {
-        found = IAST_TO_DEV[t3];
-        len = 3;
-      }
-    }
+
     if (found) {
       out += found;
+      const matchedKey = s.slice(i, i + len);
       i += len;
       const next = s[i];
       if (next && isVowel(next)) {
@@ -276,27 +259,22 @@ function toDevanagari(input) {
           out += IAST_SIGNS[next] || "";
           i += 1;
         }
+      } else if (!isVowel(matchedKey) && matchedKey !== "\u1E43" && matchedKey !== "\u1E25") {
+        if (next && (/[bcdfghjklmnpqrstvwxyz]/.test(next) || IAST_TO_DEV[next])) {
+          out += "\u094D";
+        } else if (!next) {
+          out += "\u094D";
+        }
       }
       continue;
     }
-    if (i + 1 < s.length) {
-      const n2 = s.slice(i, i + 2);
-      if (IAST_SIGNS[n2]) {
-        out += IAST_SIGNS[n2];
-        i += 2;
-        continue;
-      }
-    }
-    if (c === "a") {
-      out += "\u0905";
-      i += 1;
-      continue;
-    }
+
     if (isVowel(c)) {
       out += IAST_BASE[c] || "";
       i += 1;
       continue;
     }
+
     const base = IAST_BASE[c];
     if (base) {
       out += base;
@@ -338,7 +316,7 @@ function endsWithVowel(w) {
   return null;
 }
 function stripEndVowel(w) {
-  return w.replace(/[ाािीुूृेैोौअआइईउऊऋएऐओऔ]$/, "");
+  return w.replace(/[ािीुूृॄेैोौअआइईउऊऋएऐओऔ]$/, "");
 }
 function startsWithVowel(w) {
   const map = { "\u0905": "a", "\u0906": "\u0101", "\u0907": "i", "\u0908": "\u012B", "\u0909": "u", "\u090A": "\u016B", "\u090B": "\u1E5B", "\u090F": "e", "\u0910": "ai", "\u0913": "o", "\u0914": "au" };
@@ -348,6 +326,13 @@ function stripStartVowel(w) {
   return w.replace(/^[अआइईउऊऋएऐओऔ]/, "");
 }
 const CONSONANTS_DEV = "\u0915\u0916\u0917\u0918\u0919\u091A\u091B\u091C\u091D\u091E\u091F\u0920\u0921\u0922\u0923\u0924\u0925\u0926\u0927\u0928\u092A\u092B\u092C\u092D\u092E\u092F\u0930\u0932\u0935\u0936\u0937\u0938\u0939";
+const JASHTVA_MAP = {
+  "\u0915": "\u0917", // k -> g
+  "\u091A": "\u091C", // c -> j
+  "\u091F": "\u0921", // ṭ -> ḍ
+  "\u0924": "\u0926", // t -> d
+  "\u092A": "\u092C"  // p -> b
+};
 function joinVowel(a, b) {
   const pairs = {
     a: { a: "\u0101", \u0101: "\u0101", i: "e", \u012B: "e", u: "o", \u016B: "o", \u1E5B: "ar", e: "ai", ai: "ai", o: "au", au: "au" },
@@ -372,11 +357,14 @@ function tryJoinSandhi(first, second) {
     if (joined) {
       if (joined.length === 1 && "yvr".includes(joined)) {
         const sv = { y: "\u092F", v: "\u0935", r: "\u0930" }[joined] || "\u092F";
-        return { ok: true, result: stripEndVowel(a) + "\u094D" + sv + VOWEL_SIGN[startV] + stripStartVowel(b), explanation: `Ya\u1E47 sandhi: ${endV}/${startV} \u2192 ${joined}\u094D` };
+        const stripped = stripEndVowel(a);
+        const baseWithVirama = stripped.endsWith("\u094D") ? stripped : stripped + "\u094D";
+        return { ok: true, result: baseWithVirama + sv + VOWEL_SIGN[startV] + stripStartVowel(b), explanation: `Ya\u1E47 sandhi: ${endV}/${startV} \u2192 ${joined}\u094D` };
       }
       const rule = endV + "/" + startV;
       const ruleName = rule === "a/a" || rule === "a/\u0101" || rule === "\u0101/a" || rule === "\u0101/\u0101" ? "D\u012Brgha" : /^[aā][iīuūṛ]$/.test(rule) ? "Gu\u1E47a" : /^[aā][eo]$/.test(rule) ? "V\u1E5Bddhi" : "Sandhi";
-      return { ok: true, result: stripEndVowel(a) + VOWEL_SIGN[joined] + stripStartVowel(b), explanation: `${ruleName} sandhi: ${rule} \u2192 ${joined}` };
+      const baseClean = stripEndVowel(a).replace(/\u094D$/, "");
+      return { ok: true, result: baseClean + VOWEL_SIGN[joined] + stripStartVowel(b), explanation: `${ruleName} sandhi: ${rule} \u2192 ${joined}` };
     }
     if (endV === "a" && startV !== "a") {
       return { ok: true, result: stripEndVowel(a) + b, explanation: `Elision: final \u0905 dropped before vowel \u2192 ${a} + ${b}` };
@@ -394,6 +382,7 @@ function tryJoinSandhi(first, second) {
   }
   if (/[कखगघचछजझटठडढणतथदधनपफबभमयरलवशषसह]्$/.test(a)) {
     const b0 = b[0];
+    const finalConsonant = a.slice(-2, -1);
     if (b0 && CONSONANTS_DEV.includes(b0)) {
       const map = {
         "\u091A": ["\u091A\u094D\u091A", "\u0924\u094D + \u091A \u2192 \u091A\u094D\u091A"],
@@ -411,10 +400,19 @@ function tryJoinSandhi(first, second) {
       if (a.endsWith("\u0928\u094D") && (b0 === "\u0915" || b0 === "\u0916")) {
         return { ok: true, result: a.slice(0, -1) + "\u0919\u094D" + b, explanation: `\u0928\u094D + ${b0} \u2192 \u0919\u094D${b0}` };
       }
+      // Jash-tva before soft consonants
+      if (JASHTVA_MAP[finalConsonant] && "गघजझडढदधबभयरलवह".includes(b0)) {
+        const softRepl = JASHTVA_MAP[finalConsonant];
+        return { ok: true, result: a.slice(0, -2) + softRepl + "\u094D" + b, explanation: `Ja\u015Btva sandhi: ${finalConsonant}\u094D \u2192 ${softRepl}\u094D before ${b0}` };
+      }
       return { ok: true, result: a + b, explanation: `Consonant + ${b0}: final consonant stays (e.g. \u092A\u0943\u0925\u0915\u094D + \u091A = \u092A\u0943\u0925\u0915\u094D\u091A)` };
     }
     if (startV) {
-      return { ok: true, result: a.slice(0, -1) + VOWEL_SIGN[startV] + b.slice(1), explanation: `Consonant + vowel: vir\u0101ma dropped, vowel attaches (e.g. \u0938\u0924\u094D\u092F\u092E\u094D + \u090F\u0935 = \u0938\u0924\u094D\u092F\u092E\u0947\u0935)` };
+      if (JASHTVA_MAP[finalConsonant]) {
+        const softRepl = JASHTVA_MAP[finalConsonant];
+        return { ok: true, result: a.slice(0, -2) + softRepl + VOWEL_SIGN[startV] + stripStartVowel(b), explanation: `Ja\u015Btva sandhi: ${finalConsonant}\u094D \u2192 ${softRepl} before vowel` };
+      }
+      return { ok: true, result: a.slice(0, -1) + VOWEL_SIGN[startV] + stripStartVowel(b), explanation: `Consonant + vowel: vir\u0101ma dropped, vowel attaches (e.g. \u0938\u0924\u094D\u092F\u092E\u094D + \u090F\u0935 = \u0938\u0924\u094D\u092F\u092E\u0947\u0935)` };
     }
   }
   return { ok: false, result: a + " " + b, explanation: "No automatic rule matched \u2014 keep them separate (pada-p\u0101\u1E6Dha)." };
@@ -593,8 +591,10 @@ export {
   SANDHI_RULES,
   VERSES_OF_DAY,
   dayOfYear,
+  endsWithVowel,
   phraseOfDay,
   searchAll,
+  startsWithVowel,
   toDevanagari,
   toIAST,
   tryJoinSandhi,

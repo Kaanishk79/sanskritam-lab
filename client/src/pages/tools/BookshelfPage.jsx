@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { BookOpen, School, ArrowLeft, X } from "lucide-react";
-import { books, chapters, grammarBooks, bookHi } from "../../data/books";
+import { books, chapters, grammarBooks, bookHi, ncertChapterPdfUrl } from "../../data/books";
 import { useLanguage } from "../../context/LanguageContext";
 import { fetchBookChapters, fetchChapterVerses } from "../../services/data";
 import { DynamicIcon } from "../../components/icons";
 import ChapterTextReader from "../../components/ChapterTextReader";
+import { ncertTextBookMap } from "../../data/ncertBooksTextIndex";
 const categories = [
   { id: "all", label: "All Books", icon: "book" },
   { id: "children", label: "Children", icon: "smile" },
@@ -236,19 +237,53 @@ function BookshelfPage() {
                     <div className="chapter-sanskrit">{ch.titleSanskrit}</div>
                     <div className="chapter-preview">{ch.contentPreview}</div>
                     {openChapter?.id === ch.id && <div className="chapter-verses-list" style={{ marginTop: 10 }}>
-                        {selectedBook.id.startsWith("ncert-") ? (
+                        {selectedBook.id in ncertTextBookMap ? (
                           <ChapterTextReader
                             bookId={selectedBook.id}
                             chapterNumber={ch.chapterNumber}
                             bookTitle={selectedBook.title}
-                            chapterTitle={ch.title}
+                            chapterTitle={ch.titleSanskrit ? `${ch.titleSanskrit} (${ch.title})` : ch.title}
+                            onChapterChange={(num) => {
+                              const targetCh = bookChapters.find((c) => c.chapterNumber === num);
+                              if (targetCh) setOpenChapter(targetCh);
+                            }}
+                            totalChapters={bookChapters.length}
                           />
-                        ) : versesLoading ? <p className="empty-state">{t("Loading verses...")}</p> : chapterVerses.length > 0 ? chapterVerses.map((v) => <div key={v.id} className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: "rgba(255,255,255,0.03)", borderRadius: 8 }}>
+                        ) : versesLoading ? (
+                          <p className="empty-state">{t("Loading verses...")}</p>
+                        ) : chapterVerses.length > 0 ? (
+                          chapterVerses.map((v) => (
+                            <div key={v.id} className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: "rgba(255,255,255,0.03)", borderRadius: 8 }}>
                               <div className="verse-sanskrit" style={{ fontFamily: '"Noto Serif Devanagari", serif', fontSize: "1.15em", lineHeight: 1.9 }}>{v.content}</div>
                               {v.title && <div className="verse-title" style={{ fontSize: "0.85em", opacity: 0.7, marginTop: 4 }}>{lang === "hi" && v.title_hi ? v.title_hi : v.title}</div>}
-                            </div>) : ch.contentPreview ? <div className="chapter-verse" style={{ marginBottom: 12, padding: 10, background: "rgba(255,255,255,0.03)", borderRadius: 8 }}>
-                            <div className="verse-sanskrit" style={{ fontFamily: '"Noto Serif Devanagari", serif', fontSize: "1.15em", lineHeight: 1.9 }}>{ch.contentPreview}</div>
-                          </div> : <p className="empty-state">{t("No verses available for this chapter yet")}</p>}
+                            </div>
+                          ))
+                        ) : (
+                          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                            {ch.contentPreview && (
+                              <div className="chapter-verse" style={{ padding: 12, background: "rgba(255,255,255,0.03)", borderRadius: 8 }}>
+                                <div className="verse-sanskrit" style={{ fontFamily: '"Noto Serif Devanagari", serif', fontSize: "1.15em", lineHeight: 1.9 }}>{ch.contentPreview}</div>
+                              </div>
+                            )}
+                            {selectedBook.id.startsWith("ncert-") && ncertChapterPdfUrl(selectedBook.id, ch.chapterNumber) && (
+                              <div style={{ padding: "10px 14px", background: "var(--bg-secondary)", borderRadius: 8, border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                <span style={{ fontSize: 13 }}>📄 {t("Official NCERT Textbook Chapter PDF")}</span>
+                                <a
+                                  className="btn btn-sm btn-primary"
+                                  href={ncertChapterPdfUrl(selectedBook.id, ch.chapterNumber)}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {t("Open PDF")}
+                                </a>
+                              </div>
+                            )}
+                            {!ch.contentPreview && !selectedBook.id.startsWith("ncert-") && (
+                              <p className="empty-state">{t("No verses available for this chapter yet")}</p>
+                            )}
+                          </div>
+                        )}
                       </div>}
                   </div>
                   <div className="chapter-verses">{ch.verseCount > 0 ? `${ch.verseCount} ${t("verses")}` : ""}</div>

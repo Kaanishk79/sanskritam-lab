@@ -44,3 +44,26 @@ pub fn search_corpus_wasm(query: &str) -> String {
         .collect();
     serde_json::to_string(&matches).unwrap_or_else(|_| "[]".to_string())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_init_engine() {
+        assert_eq!(init_sanskrit_engine(), "Sanskritam Lab WASM Engine Initialized");
+    }
+
+    #[test]
+    fn test_analyze_token() {
+        let res = analyze_token_wasm("रामः");
+        assert!(res.contains("noun"));
+        assert!(res.contains("Rama"));
+    }
+
+    #[test]
+    fn test_corpus_search() {
+        let res = search_corpus_wasm("अग्नि");
+        assert!(res.contains("Ṛgveda"));
+    }
+}

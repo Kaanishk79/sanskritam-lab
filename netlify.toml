@@ -2,6 +2,12 @@
   base = "client"
   publish = "dist"
   command = "npm run build"
+  functions = "client/netlify/functions"
+
+[[redirects]]
+  from = "/api/tts"
+  to = "/.netlify/functions/tts"
+  status = 200
 
 [[redirects]]
   from = "/*"

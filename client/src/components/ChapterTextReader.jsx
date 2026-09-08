@@ -8,25 +8,59 @@ import {
   ZoomIn,
   ZoomOut,
   ExternalLink,
-  Sparkles,
-  AlertCircle
+  ChevronLeft,
+  ChevronRight,
+  FileText
 } from "lucide-react";
-import { getChapterTextUrl, cleanChapterText } from "../data/ncertBooksTextIndex";
+import { getChapterTextUrl, getChapterPdfUrl, cleanChapterText, ncertTextBookMap } from "../data/ncertBooksTextIndex";
+import { ncertChapterPdfUrl } from "../data/books";
 import { toIAST } from "../services/sanskrit";
 import { speakWithFallback } from "../services/speech";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 
-export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, chapterTitle }) {
+export default function ChapterTextReader({
+  bookId,
+  chapterNumber,
+  bookTitle,
+  chapterTitle,
+  onChapterChange,
+  totalChapters
+}) {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [fontSize, setFontSize] = useState(19); // px
+  const [fontSize, setFontSize] = useState(() => {
+    try {
+      const saved = localStorage.getItem("sanskrit_reader_fontsize");
+      return saved ? parseInt(saved, 10) : 19;
+    } catch {
+      return 19;
+    }
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [copied, setCopied] = useState(false);
   const [selectedWord, setSelectedWord] = useState(null);
+
+  const handleFontSizeChange = (delta) => {
+    setFontSize((prev) => {
+      const next = Math.max(14, Math.min(32, prev + delta));
+      try {
+        localStorage.setItem("sanskrit_reader_fontsize", String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
+
+  const pdfUrl = ncertChapterPdfUrl(bookId, chapterNumber) || getChapterPdfUrl(bookId, chapterNumber);
+  const maxChapters = totalChapters || ncertTextBookMap[bookId]?.totalChapters || 16;
+  const currentCh = parseInt(chapterNumber, 10);
+  const hasPrev = currentCh > 1;
+  const hasNext = currentCh < maxChapters;
 
   useEffect(() => {
     let isMounted = true;
@@ -34,7 +68,7 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
 
     if (!url) {
       setLoading(false);
-      setError("Full chapter text not available for this book.");
+      setError("Full digital text transcription is being prepared for this book. You can view the official NCERT textbook PDF directly.");
       return;
     }
 
@@ -88,6 +122,89 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      {/* Top Header Banner if title is present */}
+      {(bookTitle || chapterTitle) && (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "10px 14px",
+            background: "var(--bg-tertiary)",
+            borderRadius: 8,
+            border: "1px solid var(--border-color)",
+            flexWrap: "wrap",
+            gap: 10
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            <span
+              style={{
+                fontSize: 12,
+                fontWeight: 700,
+                padding: "2px 8px",
+                borderRadius: 4,
+                background: "var(--vt-orange)",
+                color: "#fff"
+              }}
+            >
+              {t("Chapter")} {chapterNumber}
+            </span>
+            {chapterTitle && (
+              <span style={{ fontWeight: 600, fontSize: 14 }}>
+                {chapterTitle}
+              </span>
+            )}
+            {bookTitle && (
+              <span style={{ fontSize: 12, opacity: 0.6 }}>
+                · {bookTitle}
+              </span>
+            )}
+          </div>
+
+          {/* Chapter Navigation & PDF quick launch */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            {onChapterChange && (
+              <>
+                <button
+                  className="btn btn-sm btn-outline"
+                  onClick={() => onChapterChange(currentCh - 1)}
+                  disabled={!hasPrev}
+                  style={{ padding: "4px 8px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 2 }}
+                  title={t("Previous Chapter")}
+                >
+                  <ChevronLeft size={14} />
+                  <span>{t("Prev")}</span>
+                </button>
+                <button
+                  className="btn btn-sm btn-outline"
+                  onClick={() => onChapterChange(currentCh + 1)}
+                  disabled={!hasNext}
+                  style={{ padding: "4px 8px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 2 }}
+                  title={t("Next Chapter")}
+                >
+                  <span>{t("Next")}</span>
+                  <ChevronRight size={14} />
+                </button>
+              </>
+            )}
+            {pdfUrl && (
+              <a
+                className="btn btn-sm btn-primary"
+                href={pdfUrl}
+                target="_blank"
+                rel="noreferrer"
+                style={{ padding: "4px 10px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4 }}
+                title={t("Open Official NCERT Textbook Chapter PDF")}
+              >
+                <FileText size={13} />
+                <span>{t("NCERT PDF")}</span>
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Control Bar */}
       <div
         style={{
@@ -127,7 +244,7 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
           <div style={{ display: "inline-flex", alignItems: "center", gap: 2, background: "var(--bg-primary)", borderRadius: 6, padding: "2px 4px", border: "1px solid var(--border-color)" }}>
             <button
               className="btn btn-sm btn-ghost"
-              onClick={() => setFontSize((f) => Math.max(14, f - 2))}
+              onClick={() => handleFontSizeChange(-2)}
               style={{ padding: "2px 6px" }}
               title={t("Decrease text size")}
             >
@@ -136,7 +253,7 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
             <span style={{ fontSize: 11, minWidth: 28, textAlign: "center" }}>{fontSize}px</span>
             <button
               className="btn btn-sm btn-ghost"
-              onClick={() => setFontSize((f) => Math.min(30, f + 2))}
+              onClick={() => handleFontSizeChange(2)}
               style={{ padding: "2px 6px" }}
               title={t("Increase text size")}
             >
@@ -147,6 +264,7 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
           <button
             className="btn btn-sm btn-outline"
             onClick={handleCopy}
+            disabled={!text}
             style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, padding: "4px 8px" }}
             title={t("Copy chapter text")}
           >
@@ -215,9 +333,40 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
       )}
 
       {error && (
-        <div style={{ padding: "24px 16px", textAlign: "center", color: "#e67e22", background: "var(--bg-tertiary)", borderRadius: 8 }}>
-          <AlertCircle size={24} style={{ margin: "0 auto 8px" }} />
-          <div style={{ fontSize: 13 }}>{error}</div>
+        <div
+          style={{
+            padding: "28px 20px",
+            textAlign: "center",
+            background: "var(--bg-tertiary)",
+            borderRadius: 10,
+            border: "1px solid var(--border-color)",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 12
+          }}
+        >
+          <FileText size={36} style={{ color: "var(--vt-orange)" }} />
+          <div style={{ maxWidth: 500 }}>
+            <div style={{ fontWeight: 600, fontSize: 15, marginBottom: 4 }}>
+              {chapterTitle || `${t("Chapter")} ${chapterNumber}`}
+            </div>
+            <div style={{ fontSize: 13, opacity: 0.8, lineHeight: 1.6 }}>
+              {error}
+            </div>
+          </div>
+          {pdfUrl && (
+            <a
+              className="btn btn-primary"
+              href={pdfUrl}
+              target="_blank"
+              rel="noreferrer"
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "8px 16px" }}
+            >
+              <ExternalLink size={15} />
+              <span>{t("Open Official NCERT Chapter PDF")}</span>
+            </a>
+          )}
         </div>
       )}
 
@@ -240,7 +389,7 @@ export default function ChapterTextReader({ bookId, chapterNumber, bookTitle, ch
           {paragraphs.map((para, pIdx) => {
             const trimmed = para.trim();
             const isHeading =
-              /^[१२३४५६७८९०\d]+[\.\)]/.test(trimmed) ||
+              /^[१२३४५६७८९०\d]+[.)]/.test(trimmed) ||
               /^\([१२३४५६७८९०\d]+\)/.test(trimmed) ||
               trimmed.startsWith("प्रथमः पाठः") ||
               trimmed.startsWith("द्वितीयः पाठः") ||
