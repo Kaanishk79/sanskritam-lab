@@ -1,4 +1,4 @@
-import { useState, useId } from "react";
+import { useState } from "react";
 import {
   FileText,
   Download,
@@ -6,13 +6,11 @@ import {
   CheckCircle2,
   Clock,
   Award,
-  BookOpen,
   Printer,
   Maximize2,
   Minimize2,
   X,
   ExternalLink,
-  ChevronRight,
   Sparkles
 } from "lucide-react";
 import { samplePapersCatalog } from "../../data/samplePapers";

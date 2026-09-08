@@ -41,7 +41,7 @@ const saveStats = (key, s) => {
   } catch {
   }
 };
-const normalize = (s) => s.replace(/[।॥\.,!?;:"'\u200c\u200d\s]+/g, "").toLowerCase();
+const normalize = (s) => s.replace(/[।॥.,!?;:"'\u200c\u200d\s]+/g, "").toLowerCase();
 function useAudioRecorder() {
   const [recording, setRecording] = useState(false);
   const [audioUrl, setAudioUrl] = useState(null);

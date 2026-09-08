@@ -3,6 +3,17 @@
   command = "npm run build"
   functions = "netlify/functions"
 
+[[headers]]
+  for = "/wasm/*"
+  [headers.values]
+    Content-Type = "application/wasm"
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 [[redirects]]
   from = "/api/tts"
   to = "/.netlify/functions/tts"

@@ -30,7 +30,7 @@ export default async (req) => {
         "Cache-Control": "public, max-age=86400",
       },
     });
-  } catch (_e) {
+  } catch {
     return new Response(JSON.stringify({ error: "fetch failed" }), {
       status: 502,
       headers: { "Content-Type": "application/json" },

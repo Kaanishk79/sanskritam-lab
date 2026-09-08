@@ -1,4 +1,5 @@
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8080";
+const isHttps = typeof window !== "undefined" && window.location?.protocol === "https:";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || (isHttps ? "" : "http://127.0.0.1:8080");
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "https://placeholder-url.supabase.co";
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || "placeholder-anon-key";
 const TUTOR_API_BASE = `${supabaseUrl}/functions/v1/tutor-g`;
