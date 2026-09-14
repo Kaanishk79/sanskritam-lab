@@ -156,7 +156,7 @@ function AssessmentPage() {
             </button>)}
         </div>
 
-        {selected !== null && <div style={{ padding: 16, background: "rgba(0,0,0,0.2)", borderRadius: 8, marginBottom: 20 }}>
+        {selected !== null && <div style={{ padding: 16, background: "var(--vt-bg)", border: "1px solid var(--vt-border)", borderRadius: 8, marginBottom: 20 }}>
             <div style={{ color: selected === q.correctIdx ? "#4caf50" : "#f44336", fontWeight: 600, marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
               {selected === q.correctIdx ? <><Check size={16} /> <span>{t("Correct!")}</span></> : <><X size={16} /> <span>{t("Incorrect")}</span></>}
             </div>

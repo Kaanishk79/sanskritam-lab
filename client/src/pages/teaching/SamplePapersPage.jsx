@@ -11,7 +11,8 @@ import {
   Minimize2,
   X,
   ExternalLink,
-  Sparkles
+  Sparkles,
+  Scroll,
 } from "lucide-react";
 import { samplePapersCatalog } from "../../data/samplePapers";
 import { useLanguage } from "../../context/LanguageContext";
@@ -51,7 +52,7 @@ export default function SamplePapersPage() {
       {/* Header */}
       <div className="page-header" style={{ marginBottom: 24 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-          <span style={{ fontSize: 28 }}>📜</span>
+          <Scroll size={28} color="var(--sanskrit-gold)" />
           <h2 style={{ margin: 0, fontSize: 26, fontWeight: 700 }}>
             {t("Sanskrit Annual Examination Sample Papers (२०२६-२७)")}
           </h2>
@@ -165,8 +166,8 @@ export default function SamplePapersPage() {
 
           {/* Section Blueprint Breakdown */}
           <div style={{ background: "var(--bg-tertiary)", borderRadius: 10, padding: 14, border: "1px solid var(--border-color)" }}>
-            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10, opacity: 0.8 }}>
-              📑 {t("Question Paper Blueprint (अङ्कविभाजनम्)")}
+            <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 10, opacity: 0.8, display: "flex", alignItems: "center", gap: 6 }}>
+              <FileText size={14} /> <span>{t("Question Paper Blueprint (अङ्कविभाजनम्)")}</span>
             </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
               {currentClassData.sections.map((sec) => (

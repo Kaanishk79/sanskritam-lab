@@ -4,6 +4,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as pdfjsLib from "pdfjs-dist";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { useLanguage } from "../context/LanguageContext";
+import { Box, Settings, RotateCcw, X, FileText } from "lucide-react";
 const DEFAULT_SETTINGS = {
   layout: "spiral",
   spacing: 0.7,
@@ -453,21 +454,21 @@ function Pdf3DViewer({ open, onClose }) {
   return <div style={overlayStyle}>
       <div style={barStyle}>
         <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14 }}>
-          <span style={{ fontSize: 18 }}>🧊</span>
+          <Box size={18} color="#60a5fa" />
           <strong>{t("3D PDF Viewer")}</strong>
           {sourceName && <span style={{ background: "rgba(255,255,255,0.1)", borderRadius: 999, padding: "2px 10px", fontSize: 12 }}>{sourceName}</span>}
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {phase === "ready" && <>
               <button style={btnStyle(panelOpen)} onClick={() => setPanelOpen((v) => !v)}>
-                {t("\u2699\uFE0F Customize")}
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><Settings size={13} /> {t("Customize")}</span>
               </button>
               <button style={btnStyle(false)} onClick={() => setSettings(DEFAULT_SETTINGS)}>
-                {t("\u21BA Reset")}
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}><RotateCcw size={13} /> {t("Reset")}</span>
               </button>
             </>}
-          <button style={{ ...btnStyle(false), padding: "7px 10px" }} onClick={close} aria-label={t("Close")}>
-            ✕
+          <button style={{ ...btnStyle(false), padding: "7px 10px", display: "inline-flex", alignItems: "center", justifyContent: "center" }} onClick={close} aria-label={t("Close")}>
+            <X size={15} />
           </button>
         </div>
       </div>
@@ -504,7 +505,7 @@ function Pdf3DViewer({ open, onClose }) {
       color: "#e5e7eb"
     }}
   >
-                <div style={{ fontSize: 34, marginBottom: 8 }}>📄</div>
+                <div style={{ marginBottom: 8, display: "flex", justifyContent: "center" }}><FileText size={36} color="#9ca3af" /></div>
                 <div style={{ fontWeight: 600 }}>{t("Drop a PDF here or click to browse")}</div>
                 <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>{t("The whole document is rendered as 3D pages")}</div>
                 <input ref={fileRef} type="file" accept="application/pdf,.pdf" style={{ display: "none" }} onChange={(e) => onFile(e.target.files?.[0])} />

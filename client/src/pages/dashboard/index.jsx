@@ -67,8 +67,8 @@ function Dashboard() {
     background: "rgba(255,140,0,0.1)",
     border: "1px solid rgba(255,140,0,0.35)"
   }}>
-          <span style={{ fontSize: 13, color: "#fff", display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <Award size={15} /> {t("You are in Guest mode \u2014 progress is kept on this device only.")}
+          <span style={{ fontSize: 13, color: "var(--vt-text)", display: "inline-flex", alignItems: "center", gap: 6 }}>
+            <Award size={15} color="var(--vt-orange)" /> {t("You are in Guest mode — progress is kept on this device only.")}
           </span>
           <button className="btn btn-sm btn-primary" onClick={() => navigate("/auth")}>{t("Create Free Account")}</button>
           <button className="btn btn-sm btn-outline" onClick={() => navigate("/auth/login")}>{t("Sign In")}</button>

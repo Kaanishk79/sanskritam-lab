@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLanguage } from "../../context/LanguageContext";
+import { useTheme } from "../../context/ThemeContext";
 import { GRAMMAR_RULES, PHILOSOPHY_NETWORKS } from "../../data/grammarMaps";
 import { loadGrammarRules, loadPhilosophyNetworks } from "../../services/contentDb";
 
@@ -10,6 +11,8 @@ function GrammarMapsPage() {
   const [selectedRule, setSelectedRule] = useState(null);
   const [selectedDarshana, setSelectedDarshana] = useState(null);
   const { t, lang } = useLanguage();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const hi = lang === "hi";
 
   useEffect(() => {
@@ -66,9 +69,9 @@ function GrammarMapsPage() {
           <div
             style={{
               padding: 24,
-              background: "#0d1b2a",
+              background: isDark ? "#0d1b2a" : "var(--vt-bg)",
               borderRadius: 12,
-              border: "1px solid #1e3a5f",
+              border: isDark ? "1px solid #1e3a5f" : "1px solid var(--vt-border)",
               marginBottom: 20,
               display: "flex",
               flexDirection: "column",
@@ -77,7 +80,7 @@ function GrammarMapsPage() {
               position: "relative",
             }}
           >
-            <div style={{ fontSize: 13, color: "#7fa6ce", marginBottom: 8, letterSpacing: "1px", fontWeight: 600 }}>
+            <div style={{ fontSize: 13, color: isDark ? "#7fa6ce" : "var(--vt-text-light)", marginBottom: 8, letterSpacing: "1px", fontWeight: 600 }}>
               {t("PĀṆINIAN SŪTRA RELATIONSHIP GRAPH")}
             </div>
 
@@ -100,7 +103,7 @@ function GrammarMapsPage() {
                       y1="160"
                       x2={x}
                       y2={y}
-                      stroke={isSel ? "#c9a84c" : "#2a507a"}
+                      stroke={isSel ? "var(--sanskrit-gold)" : (isDark ? "#2a507a" : "#cbd5e1")}
                       strokeWidth={isSel ? "2.5" : "1.5"}
                       strokeDasharray={isSel ? "none" : "4 4"}
                       style={{ transition: "all 0.3s" }}
@@ -116,8 +119,8 @@ function GrammarMapsPage() {
                   left: "50%",
                   top: "50%",
                   transform: "translate(-50%, -50%)",
-                  background: "linear-gradient(135deg, #243b55, #141e30)",
-                  border: "2px solid #c9a84c",
+                  background: isDark ? "linear-gradient(135deg, #243b55, #141e30)" : "linear-gradient(135deg, #ffffff, var(--vt-orange-light))",
+                  border: "2px solid var(--sanskrit-gold)",
                   borderRadius: "50%",
                   width: 90,
                   height: 90,
@@ -130,8 +133,8 @@ function GrammarMapsPage() {
                   textAlign: "center",
                 }}
               >
-                <div style={{ fontSize: 11, color: "#c9a84c", fontWeight: 700 }}>अष्टाध्यायी</div>
-                <div style={{ fontSize: 10, color: "#8ca0b8" }}>Pāṇini</div>
+                <div style={{ fontSize: 11, color: "var(--sanskrit-gold)", fontWeight: 700 }}>अष्टाध्यायी</div>
+                <div style={{ fontSize: 10, color: isDark ? "#8ca0b8" : "var(--vt-text-lighter)" }}>Pāṇini</div>
               </div>
 
               {/* Node Rules */}
@@ -149,19 +152,19 @@ function GrammarMapsPage() {
                       left: x,
                       top: y,
                       transform: "translate(-50%, -50%)",
-                      background: isSel ? "#c9a84c" : "#132842",
-                      color: isSel ? "#121212" : "#f0e6d2",
-                      border: isSel ? "2px solid #ffe699" : "1px solid #2a507a",
+                      background: isSel ? "var(--sanskrit-gold)" : (isDark ? "#132842" : "var(--vt-white)"),
+                      color: isSel ? (isDark ? "#121212" : "#ffffff") : "var(--vt-text)",
+                      border: isSel ? "2px solid var(--vt-orange)" : (isDark ? "1px solid #2a507a" : "1px solid var(--vt-border)"),
                       borderRadius: 8,
                       padding: "8px 14px",
                       textAlign: "center",
                       cursor: "pointer",
                       transition: "all 0.25s",
                       zIndex: 3,
-                      boxShadow: isSel ? "0 0 16px rgba(201, 168, 76, 0.5)" : "none",
+                      boxShadow: isSel ? "0 0 16px rgba(201, 168, 76, 0.5)" : "var(--vt-shadow)",
                     }}
                   >
-                    <div style={{ fontSize: 10, color: isSel ? "#333" : "#7fa6ce", fontWeight: 600 }}>{r.id}</div>
+                    <div style={{ fontSize: 10, color: isSel ? (isDark ? "#333" : "#fff") : (isDark ? "#7fa6ce" : "var(--vt-text-lighter)"), fontWeight: 600 }}>{r.id}</div>
                     <div style={{ fontSize: 17, fontFamily: "'Noto Sans Devanagari', serif", fontWeight: 700 }}>{r.rule}</div>
                   </div>
                 );
@@ -174,18 +177,19 @@ function GrammarMapsPage() {
                 style={{
                   marginTop: 18,
                   padding: "12px 20px",
-                  background: "rgba(20, 40, 68, 0.8)",
+                  background: isDark ? "rgba(20, 40, 68, 0.8)" : "var(--vt-white)",
                   borderRadius: 8,
-                  border: "1px solid #284c75",
+                  border: isDark ? "1px solid #284c75" : "1px solid var(--vt-border)",
+                  boxShadow: "var(--vt-shadow)",
                   maxWidth: 540,
                   width: "100%",
                   textAlign: "center",
                 }}
               >
-                <div style={{ fontSize: 18, fontWeight: 700, color: "#c9a84c", marginBottom: 4 }}>
+                <div style={{ fontSize: 18, fontWeight: 700, color: "var(--sanskrit-gold)", marginBottom: 4 }}>
                   {activeRule.rule} — {hi ? activeRule.meaningHi ?? activeRule.meaning : activeRule.meaning}
                 </div>
-                <div style={{ fontSize: 13, color: "#a8c0dc" }}>
+                <div style={{ fontSize: 13, color: isDark ? "#a8c0dc" : "var(--vt-text-light)" }}>
                   Aṣṭādhyāyī Sūtra {activeRule.id} · {activeRule.category}
                 </div>
               </div>
@@ -219,14 +223,14 @@ function GrammarMapsPage() {
           <div
             style={{
               padding: 24,
-              background: "#0d1b2a",
+              background: isDark ? "#0d1b2a" : "var(--vt-bg)",
               borderRadius: 12,
-              border: "1px solid #1e3a5f",
+              border: isDark ? "1px solid #1e3a5f" : "1px solid var(--vt-border)",
               marginBottom: 24,
               textAlign: "center",
             }}
           >
-            <div style={{ fontSize: 13, color: "#7fa6ce", marginBottom: 16, letterSpacing: "1px", fontWeight: 600 }}>
+            <div style={{ fontSize: 13, color: isDark ? "#7fa6ce" : "var(--vt-text-light)", marginBottom: 16, letterSpacing: "1px", fontWeight: 600 }}>
               {t("ṢAḌ-DARŚANA COMPLEMENTARY PAIRINGS (आस्तिक षड्दर्शनानि)")}
             </div>
             <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
@@ -238,16 +242,17 @@ function GrammarMapsPage() {
                 <div
                   key={p.pair}
                   style={{
-                    background: "#162840",
+                    background: isDark ? "#162840" : "var(--vt-white)",
                     border: `1px solid ${p.color}`,
                     borderRadius: 8,
                     padding: "12px 18px",
                     maxWidth: 240,
                     textAlign: "center",
+                    boxShadow: "var(--vt-shadow)",
                   }}
                 >
                   <div style={{ fontWeight: 700, color: p.color, fontSize: 15, marginBottom: 4 }}>{p.pair}</div>
-                  <div style={{ fontSize: 12, color: "#9bb5d0" }}>{p.desc}</div>
+                  <div style={{ fontSize: 12, color: isDark ? "#9bb5d0" : "var(--vt-text-lighter)" }}>{p.desc}</div>
                 </div>
               ))}
             </div>

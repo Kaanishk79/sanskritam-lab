@@ -101,10 +101,10 @@ function CreativeStudioPage() {
         </div>
 
         {lines.length > 0 && <div>
-            <div className="card" style={{ padding: 20, background: "linear-gradient(135deg,#16213e,#1a1a3e)", color: "#fff", textAlign: "center" }}>
+            <div className="challenge-banner">
               {lines.map((l, i) => <p key={i} style={{ margin: "8px 0" }}>
-                  {l.sa}
-                  <span style={{ display: "block", fontSize: 13, color: "#ffd54f", fontStyle: "italic" }}>{l.iast}</span>
+                  <strong style={{ fontSize: 18 }}>{l.sa}</strong>
+                  <span style={{ display: "block", fontSize: 13, color: "var(--sanskrit-gold)", fontStyle: "italic" }}>{l.iast}</span>
                   {l.gloss && <span style={{ display: "block", fontSize: 12, opacity: 0.6 }}>{l.gloss}</span>}
                   <span className="badge" style={{ marginTop: 4, opacity: 0.8 }}>{l.syllables}/{meter.syllables} {t("syllables")}</span>
                 </p>)}

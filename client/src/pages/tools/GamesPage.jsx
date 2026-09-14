@@ -247,8 +247,8 @@ function GamesPage() {
         {game === "sandhi" && <div>
             {!sDone && sqq && <div>
                 <p style={{ textAlign: "center", margin: "0 0 6px", fontSize: 13, opacity: 0.7 }}>{t("Question")} {si + 1} / {sq.length} · {t("Score")} {sScore}</p>
-                <div className="card" style={{ padding: 20, marginBottom: 14, textAlign: "center", background: "linear-gradient(135deg,#16213e,#1a1a3e)", color: "#fff" }}>
-                  <p style={{ margin: 0, fontSize: 24 }}>
+                <div className="challenge-banner">
+                  <p style={{ margin: 0, fontSize: 24, fontWeight: 700 }}>
                     {sqq.a} + {sqq.b} <span style={{ opacity: 0.6 }}>= ?</span>
                   </p>
                 </div>

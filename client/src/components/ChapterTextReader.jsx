@@ -10,7 +10,9 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
-  FileText
+  FileText,
+  X,
+  Lightbulb,
 } from "lucide-react";
 import { getChapterTextUrl, getChapterPdfUrl, cleanChapterText, ncertTextBookMap } from "../data/ncertBooksTextIndex";
 import { ncertChapterPdfUrl } from "../data/books";
@@ -316,9 +318,10 @@ export default function ChapterTextReader({
             <button
               className="btn btn-sm btn-outline"
               onClick={() => setSelectedWord(null)}
-              style={{ padding: "4px 8px", fontSize: 11 }}
+              style={{ padding: "4px 8px", fontSize: 11, display: "inline-flex", alignItems: "center" }}
+              aria-label={t("Close")}
             >
-              ✕
+              <X size={12} />
             </button>
           </div>
         </div>
@@ -512,8 +515,10 @@ export default function ChapterTextReader({
         </div>
       )}
 
-      <div style={{ fontSize: 11, opacity: 0.6, display: "flex", justifyContent: "space-between" }}>
-        <span>💡 {t("Tip: Click on any Sanskrit word to hear its pronunciation and look up its root/meaning.")}</span>
+      <div style={{ fontSize: 11, opacity: 0.6, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <Lightbulb size={13} /> {t("Tip: Click on any Sanskrit word to hear its pronunciation and look up its root/meaning.")}
+        </span>
         <span>{paragraphs.length} {t("sections")}</span>
       </div>
     </div>

@@ -112,41 +112,42 @@ function AnnotationPage() {
         <label style={{ display: "block", marginBottom: 8, color: "var(--vt-muted)", fontSize: 13 }}>
           {t(`Existing ${activeLayer} annotation`)}
         </label>
-        <div
-    style={{
-      whiteSpace: "pre-wrap",
-      fontSize: 14,
-      lineHeight: 1.6,
-      color: "var(--vt-text)",
-      padding: 12,
-      background: "rgba(0,0,0,0.15)",
-      borderRadius: 6,
-      marginBottom: 16,
-      minHeight: 40
-    }}
-  >
-          {annotations[activeLayer] || `\u2014 ${t("none yet")} \u2014`}
-        </div>
+      <div
+        style={{
+          whiteSpace: "pre-wrap",
+          fontSize: 14,
+          lineHeight: 1.6,
+          color: "var(--vt-text)",
+          padding: 12,
+          background: "var(--vt-bg)",
+          border: "1px solid var(--vt-border)",
+          borderRadius: 6,
+          marginBottom: 16,
+          minHeight: 40
+        }}
+      >
+        {annotations[activeLayer] || `— ${t("none yet")} —`}
+      </div>
 
-        <label style={{ display: "block", marginBottom: 8, color: "var(--vt-muted)", fontSize: 13 }}>
-          {t(`Write ${activeLayer} annotation`)}
-        </label>
-        <textarea
-    value={editors[activeLayer] ?? ""}
-    onChange={(e) => setEditors({ ...editors, [activeLayer]: e.target.value })}
-    style={{
-      width: "100%",
-      minHeight: 150,
-      background: "rgba(0,0,0,0.2)",
-      border: "none",
-      color: "var(--vt-text)",
-      padding: 12,
-      borderRadius: 6,
-      fontSize: 14,
-      lineHeight: 1.6,
-      resize: "vertical"
-    }}
-  />
+      <label style={{ display: "block", marginBottom: 8, color: "var(--vt-muted)", fontSize: 13 }}>
+        {t(`Write ${activeLayer} annotation`)}
+      </label>
+      <textarea
+        value={editors[activeLayer] ?? ""}
+        onChange={(e) => setEditors({ ...editors, [activeLayer]: e.target.value })}
+        style={{
+          width: "100%",
+          minHeight: 150,
+          background: "var(--vt-bg)",
+          border: "1px solid var(--vt-border)",
+          color: "var(--vt-text)",
+          padding: 12,
+          borderRadius: 6,
+          fontSize: 14,
+          lineHeight: 1.6,
+          resize: "vertical"
+        }}
+      />
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
           <button className="btn btn-primary" onClick={saveAnnotation} disabled={!selectedText}>
             {t("Save Annotation")}

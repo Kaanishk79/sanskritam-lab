@@ -95,10 +95,10 @@ function WhoSaidItPage() {
 
         {mode === "quiz" && <>
             {!finished && q && <div>
-                <div className="card" style={{ padding: 20, marginBottom: 16, textAlign: "center", background: "linear-gradient(135deg,#16213e,#1a1a3e)", color: "#fff" }}>
-                  <p style={{ margin: 0, fontSize: 13, opacity: 0.7 }}>{t("Question")} {qi + 1} / {quiz.length}</p>
-                  <p style={{ margin: "10px 0", fontSize: 24 }}>{q.sa}</p>
-                  <p style={{ margin: 0, color: "#ffd54f", fontSize: 14, fontStyle: "italic" }}>{toIAST(q.sa)}</p>
+                <div className="challenge-banner">
+                  <p style={{ margin: 0, fontSize: 13, opacity: 0.75 }}>{t("Question")} {qi + 1} / {quiz.length}</p>
+                  <p style={{ margin: "10px 0", fontSize: 24, fontWeight: 700 }}>{q.sa}</p>
+                  <p style={{ margin: 0, color: "var(--sanskrit-gold)", fontSize: 14, fontStyle: "italic" }}>{toIAST(q.sa)}</p>
                   <button className="btn btn-sm btn-secondary" style={{ marginTop: 12, display: "inline-flex", alignItems: "center", gap: 6 }} onClick={() => speak(q.sa)} disabled={speaking}>
                     <Volume2 size={14} /> <span>{t("Hear the quote")}</span>
                   </button>

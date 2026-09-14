@@ -121,9 +121,9 @@ function SentenceBuilderPage() {
             </div>
           </div>}
 
-        <div className="card" style={{ padding: 20, textAlign: "center", background: "linear-gradient(135deg,#16213e,#1a1a3e)", color: "#fff" }}>
-          <p style={{ margin: 0, fontSize: 13, opacity: 0.8 }}>{t("Build this sentence")} — {t(sentence.en)}</p>
-          <p style={{ margin: "8px 0 0", fontSize: 15, opacity: 0.75 }}>{iastMode ? sentence.iast : sentence.sa.split(" ").map(() => "\u2014").join(" ")}</p>
+        <div className="challenge-banner">
+          <p style={{ margin: 0, fontSize: 13, opacity: 0.85, fontWeight: 600 }}>{t("Build this sentence")} — {t(sentence.en)}</p>
+          <p style={{ margin: "8px 0 0", fontSize: 15, opacity: 0.85 }}>{iastMode ? sentence.iast : sentence.sa.split(" ").map(() => "—").join(" ")}</p>
         </div>
 
         <div style={{ minHeight: 56, border: "2px dashed var(--vt-border)", borderRadius: 10, padding: 10, marginTop: 14, display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-start" }}>

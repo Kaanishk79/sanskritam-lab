@@ -1,5 +1,3 @@
-use wasm_bindgen::prelude::*;
-
 pub mod grammar;
 pub mod dictionary;
 pub mod corpus;
@@ -8,41 +6,8 @@ pub mod viva;
 pub mod ocr;
 pub mod tts;
 
-#[wasm_bindgen]
-pub fn init_sanskrit_engine() -> String {
-    "Sanskritam Lab WASM Engine Initialized".to_string()
-}
-
-#[wasm_bindgen]
-pub fn analyze_token_wasm(word: &str) -> String {
-    let (root, pos, case_info, meaning) = grammar::analyze_token(word);
-    serde_json::json!({
-        "word": word,
-        "root": root,
-        "pos": pos,
-        "case_info": case_info,
-        "meaning": meaning,
-    }).to_string()
-}
-
-#[wasm_bindgen]
-pub fn lookup_dictionary_wasm(query: &str) -> String {
-    let store = dictionary::DictionaryStore::new();
-    if let Some(entry) = store.entries.get(query) {
-        serde_json::to_string(entry).unwrap_or_else(|_| "null".to_string())
-    } else {
-        "null".to_string()
-    }
-}
-
-#[wasm_bindgen]
-pub fn search_corpus_wasm(query: &str) -> String {
-    let store = corpus::CorpusStore::new();
-    let q = query.trim().to_lowercase();
-    let matches: Vec<_> = store.texts.values()
-        .filter(|t| t.content.to_lowercase().contains(&q) || t.title.to_lowercase().contains(&q) || t.translation_en.to_lowercase().contains(&q))
-        .collect();
-    serde_json::to_string(&matches).unwrap_or_else(|_| "[]".to_string())
+pub fn engine_version() -> &'static str {
+    "0.2.0"
 }
 
 #[cfg(test)]
@@ -50,20 +15,30 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_init_engine() {
-        assert_eq!(init_sanskrit_engine(), "Sanskritam Lab WASM Engine Initialized");
+    fn test_engine_version() {
+        assert_eq!(engine_version(), "0.2.0");
     }
 
     #[test]
     fn test_analyze_token() {
-        let res = analyze_token_wasm("रामः");
-        assert!(res.contains("noun"));
-        assert!(res.contains("Rama"));
+        let (root, pos, case_info, meaning) = grammar::analyze_token("रामः");
+        assert_eq!(root, "राम");
+        assert_eq!(pos, "noun");
+        assert_eq!(case_info.as_deref(), Some("प्रथमा एकवचन (Nominative Sg)"));
+        assert_eq!(meaning.as_deref(), Some("Rama"));
     }
 
     #[test]
-    fn test_corpus_search() {
-        let res = search_corpus_wasm("अग्नि");
-        assert!(res.contains("Ṛgveda"));
+    fn test_corpus_store() {
+        let store = corpus::CorpusStore::new();
+        assert!(store.texts.contains_key("rv-1-1"));
+        let rv = &store.texts["rv-1-1"];
+        assert!(rv.content.contains("अग्निमीळे"));
+    }
+
+    #[test]
+    fn test_dictionary_store() {
+        let store = dictionary::DictionaryStore::new();
+        assert!(store.entries.contains_key("विद्या"));
     }
 }

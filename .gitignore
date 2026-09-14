@@ -2,6 +2,7 @@
 node_modules/
 .pnp
 .pnp.js
+__pycache__/
 
 # Build Outputs & Bundles
 dist/

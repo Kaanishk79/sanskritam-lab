@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { devanagariLayouts, insertAtCursor } from "../services/keyboard";
 import { useLanguage } from "../context/LanguageContext";
+import { X } from "lucide-react";
 const tabs = [
   { key: "consonants", label: "\u0935\u094D\u092F\u091E\u094D\u091C\u0928" },
   { key: "vowels", label: "\u0938\u094D\u0935\u0930" },
@@ -53,7 +54,9 @@ function DevanagariKeyboard({ targetRef, onClose }) {
   >
             अा
           </button>
-          <button className="kb-close" onClick={onClose}>✕</button>
+          <button className="kb-close" onClick={onClose} aria-label={t("Close")}>
+            <X size={14} />
+          </button>
         </div>
       </div>
 

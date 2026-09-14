@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BookOpen, School, ArrowLeft, X } from "lucide-react";
+import { BookOpen, School, ArrowLeft, X, FileText } from "lucide-react";
 import { books, chapters, grammarBooks, bookHi, ncertChapterPdfUrl } from "../../data/books";
 import { useLanguage } from "../../context/LanguageContext";
 import { fetchBookChapters, fetchChapterVerses } from "../../services/data";
@@ -267,7 +267,7 @@ function BookshelfPage() {
                             )}
                             {selectedBook.id.startsWith("ncert-") && ncertChapterPdfUrl(selectedBook.id, ch.chapterNumber) && (
                               <div style={{ padding: "10px 14px", background: "var(--bg-secondary)", borderRadius: 8, border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                <span style={{ fontSize: 13 }}>📄 {t("Official NCERT Textbook Chapter PDF")}</span>
+                                <span style={{ fontSize: 13, display: "inline-flex", alignItems: "center", gap: 6 }}><FileText size={14} /> {t("Official NCERT Textbook Chapter PDF")}</span>
                                 <a
                                   className="btn btn-sm btn-primary"
                                   href={ncertChapterPdfUrl(selectedBook.id, ch.chapterNumber)}

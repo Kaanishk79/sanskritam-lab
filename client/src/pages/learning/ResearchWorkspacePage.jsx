@@ -80,7 +80,7 @@ function ResearchWorkspacePage() {
                 </tr>
               </thead>
               <tbody>
-                {manuscripts.map((ms) => <tr key={ms.siglum} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                {manuscripts.map((ms) => <tr key={ms.siglum} style={{ borderBottom: "1px solid var(--vt-border)" }}>
                     <td style={{ padding: "8px 12px", fontWeight: 600, color: "var(--sanskrit-gold)" }}>{ms.siglum}</td>
                     <td style={{ padding: "8px 12px", color: "var(--vt-muted)" }}>{ms.date}</td>
                     {ms.readings.map((r, i) => <td key={i} style={{
@@ -104,7 +104,7 @@ function ResearchWorkspacePage() {
           <div style={{ fontFamily: "'Noto Sans Devanagari', serif", fontSize: 18, marginBottom: 16, color: "var(--vt-text)" }}>
             {baseText}
           </div>
-          <div style={{ background: "rgba(0,0,0,0.2)", borderRadius: 8, padding: 16, fontSize: 14, lineHeight: 2 }}>
+          <div style={{ background: "var(--vt-bg)", border: "1px solid var(--vt-border)", borderRadius: 8, padding: 16, fontSize: 14, lineHeight: 2 }}>
             <div><strong style={{ color: "var(--sanskrit-gold)" }}>1</strong> अथ धर्मं A B : अथ धम्मं C</div>
             <div><strong style={{ color: "var(--sanskrit-gold)" }}>2</strong> ते च A B : तु C</div>
             <div><strong style={{ color: "var(--sanskrit-gold)" }}>3</strong> मया A C : तया B</div>
@@ -125,7 +125,8 @@ function ResearchWorkspacePage() {
     fontFamily: "'Noto Sans Devanagari', serif",
     fontSize: 28,
     padding: 16,
-    background: "rgba(255,255,255,0.03)",
+    background: "var(--vt-bg)",
+    border: "1px solid var(--vt-border)",
     borderRadius: 8,
     color: "var(--vt-text)"
   }}>
@@ -138,7 +139,8 @@ function ResearchWorkspacePage() {
     fontFamily: "'Noto Sans Devanagari', serif",
     fontSize: 28,
     padding: 16,
-    background: "rgba(255,255,255,0.03)",
+    background: "var(--vt-bg)",
+    border: "1px solid var(--vt-border)",
     borderRadius: 8,
     fontStyle: "italic",
     color: "var(--vt-text)"
@@ -157,7 +159,7 @@ function ResearchWorkspacePage() {
     style={{
       width: "100%",
       minHeight: 200,
-      background: "rgba(255,255,255,0.03)",
+      background: "var(--vt-bg)",
       color: "var(--vt-text)",
       border: "1px solid var(--vt-border)",
       borderRadius: 6,

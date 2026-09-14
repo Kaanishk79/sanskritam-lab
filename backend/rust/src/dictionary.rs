@@ -1,4 +1,3 @@
-#[cfg(feature = "server")]
 use actix_web::{web, HttpResponse};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -168,7 +167,6 @@ impl DictionaryStore {
     }
 }
 
-#[cfg(feature = "server")]
 pub async fn lookup(query: web::Query<LookupQuery>, dict: web::Data<DictionaryStore>) -> HttpResponse {
     let target = query.word.trim();
     if let Some(entry) = dict.entries.get(target) {
@@ -181,7 +179,6 @@ pub async fn lookup(query: web::Query<LookupQuery>, dict: web::Data<DictionarySt
     }
 }
 
-#[cfg(feature = "server")]
 pub async fn search_dictionary(query: web::Query<SearchQuery>, dict: web::Data<DictionaryStore>) -> HttpResponse {
     let q = query.q.trim().to_lowercase();
     let matches: Vec<&DictionaryEntry> = dict.entries.values().filter(|e| {
@@ -194,7 +191,6 @@ pub async fn search_dictionary(query: web::Query<SearchQuery>, dict: web::Data<D
     HttpResponse::Ok().json(matches)
 }
 
-#[cfg(feature = "server")]
 pub async fn compound_split(body: web::Json<CompoundSplitRequest>) -> HttpResponse {
     let compound = body.compound.trim();
 

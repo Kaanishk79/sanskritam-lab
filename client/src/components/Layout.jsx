@@ -261,7 +261,7 @@ function Layout() {
             <span /><span /><span />
           </button>
           <span className="mobile-title">संस्कृतम्</span>
-          <button className="theme-btn" onClick={toggle}>{theme === "dark" ? "\u2600\uFE0F" : "\u{1F319}"}</button>
+          <button className="theme-btn" onClick={toggle} aria-label={t("Toggle theme")}>{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}</button>
         </header>
 
         <main className="main-content">

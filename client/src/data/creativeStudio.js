@@ -6,7 +6,7 @@ const METERS = [
 const VERSE_THEMES = [
   {
     id: "nature",
-    emoji: "\u{1F333}",
+    icon: "tree",
     title: "\u092A\u094D\u0930\u0915\u0943\u0924\u093F\u0903 \u2014 Nature",
     words: [
       { sa: "\u0935\u0943\u0915\u094D\u0937\u093E\u0903", iast: "v\u1E5Bk\u1E63\u0101\u1E25", en: "trees" },
@@ -27,7 +27,7 @@ const VERSE_THEMES = [
   },
   {
     id: "learning",
-    emoji: "\u{1F4DA}",
+    icon: "books",
     title: "\u0935\u093F\u0926\u094D\u092F\u093E \u2014 Learning",
     words: [
       { sa: "\u0935\u093F\u0926\u094D\u092F\u093E", iast: "vidy\u0101", en: "knowledge" },
@@ -48,7 +48,7 @@ const VERSE_THEMES = [
   },
   {
     id: "peace",
-    emoji: "\u{1F54A}\uFE0F",
+    icon: "om",
     title: "\u0936\u093E\u0928\u094D\u0924\u093F\u0903 \u2014 Peace",
     words: [
       { sa: "\u0936\u093E\u0928\u094D\u0924\u093F\u0903", iast: "\u015B\u0101nti\u1E25", en: "peace" },
@@ -69,7 +69,7 @@ const VERSE_THEMES = [
   },
   {
     id: "cosmos",
-    emoji: "\u{1F30C}",
+    icon: "compass",
     title: "\u092C\u094D\u0930\u0939\u094D\u092E\u093E\u0923\u094D\u0921\u092E\u094D \u2014 Cosmos",
     words: [
       { sa: "\u0906\u0915\u093E\u0936\u092E\u094D", iast: "\u0101k\u0101\u015Bam", en: "sky" },

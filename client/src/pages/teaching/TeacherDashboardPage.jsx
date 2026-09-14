@@ -155,9 +155,9 @@ function TeacherDashboardPage() {
       </div>
 
       <div className="card" style={{ padding: 12, marginBottom: 16, borderColor: "rgba(255,140,0,0.4)", background: "rgba(255,140,0,0.05)" }}>
-        <span style={{ fontSize: 13, color: "#ffb26b", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-          <FlaskConical size={14} />
-          <span>{t("Preview \u2014 sample data below. Create a teacher account and connect your school to see your real students here.")}</span>
+        <span style={{ fontSize: 13, color: "var(--vt-text)", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+          <FlaskConical size={14} color="var(--vt-orange)" />
+          <span>{t("Preview — sample data below. Create a teacher account and connect your school to see your real students here.")}</span>
           <button className="btn btn-sm btn-primary" style={{ marginLeft: 8 }} onClick={() => navigate("/auth/signup")}>{t("Create Teacher Account")}</button>
         </span>
       </div>

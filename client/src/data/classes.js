@@ -7,7 +7,7 @@ const classLevels = [
     govClassMax: 2,
     track: "child",
     description: "Alphabet, basic words, simple greetings, colors, numbers 1-20, family terms",
-    icon: "\u{1F58D}\uFE0F",
+    icon: "pencil",
     color: "#f39c12",
     sortOrder: 1,
     ncertBookId: "govt-class1-2"
@@ -20,7 +20,7 @@ const classLevels = [
     govClassMax: 5,
     track: "child",
     description: "Nouns, present tense, simple sentences, stories, basic grammar",
-    icon: "\u{1F4D7}",
+    icon: "book",
     color: "#e67e22",
     sortOrder: 2,
     ncertBookId: "govt-class3-5"
@@ -33,7 +33,7 @@ const classLevels = [
     govClassMax: 6,
     track: "teen",
     description: "Deepakam Pratham Bhag: alphabet, vocabulary, simple stories, numbers",
-    icon: "\u{1F4D8}",
+    icon: "book",
     color: "#2ecc71",
     sortOrder: 3,
     ncertBookId: "ncert-deepakam-6"
@@ -46,7 +46,7 @@ const classLevels = [
     govClassMax: 7,
     track: "teen",
     description: "Deepakam (Saptam Kakshayaya): subh\u0101\u1E63itas, service, seasonal routine, brave stories",
-    icon: "\u{1F4D8}",
+    icon: "book",
     color: "#27ae60",
     sortOrder: 4,
     ncertBookId: "ncert-deepakam-7"
@@ -59,7 +59,7 @@ const classLevels = [
     govClassMax: 8,
     track: "teen",
     description: "Deepakam (Ashtam Kakshayaya): n\u012Bti \u015Blokas, Digital India, Gita, pronunciation",
-    icon: "\u{1F4D8}",
+    icon: "book",
     color: "#1abc9c",
     sortOrder: 5,
     ncertBookId: "ncert-deepakam-8"
@@ -72,7 +72,7 @@ const classLevels = [
     govClassMax: 9,
     track: "teen",
     description: "Shemushi (Prathamo Bhaga): bh\u0101rat\u012Bvasantag\u012Bti\u1E25, godohanam, j\u0101\u1E6D\u0101yo\u1E25 \u015Bauryam, pary\u0101vara\u1E47am",
-    icon: "\u{1F4D5}",
+    icon: "book",
     color: "#2980b9",
     sortOrder: 6,
     ncertBookId: "ncert-shemushi-9"
@@ -85,7 +85,7 @@ const classLevels = [
     govClassMax: 10,
     track: "teen",
     description: "Shemushi (Dwitiyo Bhaga): \u015Bucipary\u0101vara\u1E47am, subh\u0101\u1E63it\u0101ni, bh\u016Bkampavibh\u012B\u1E63ik\u0101, anyoktaya\u1E25",
-    icon: "\u{1F4D5}",
+    icon: "book",
     color: "#3498db",
     sortOrder: 7,
     ncertBookId: "ncert-shemushi-10"
@@ -98,7 +98,7 @@ const classLevels = [
     govClassMax: 11,
     track: "undergrad",
     description: "Bhaswati (Bhag 1) & Shashwati (Bhag 1): ku\u015Balapra\u015B\u0101sanam, s\u016Bktisudh\u0101, ved\u0101m\u1E5Btam",
-    icon: "\u{1F4D9}",
+    icon: "book",
     color: "#8e44ad",
     sortOrder: 8,
     ncertBookId: "ncert-bhaswati-11"
@@ -111,7 +111,7 @@ const classLevels = [
     govClassMax: 12,
     track: "undergrad",
     description: "Bhaswati (Bhag 2) & Shashwati (Bhag 2): anu\u015B\u0101sanam, mad\u0101las\u0101, vidyay\u0101m\u1E5Btama\u015Bnute",
-    icon: "\u{1F4D9}",
+    icon: "book",
     color: "#9b59b6",
     sortOrder: 9,
     ncertBookId: "ncert-bhaswati-12"
@@ -124,7 +124,7 @@ const classLevels = [
     govClassMax: 13,
     track: "undergrad",
     description: "History of Sanskrit Literature, Prose (K\u0101dambar\u012B), Poetry (Raghuva\u1E43\u015Ba), Laghusiddh\u0101ntakaumud\u012B",
-    icon: "\u{1F393}",
+    icon: "teacher",
     color: "#e74c3c",
     sortOrder: 10,
     ncertBookId: "govt-ba1-literature"
@@ -137,7 +137,7 @@ const classLevels = [
     govClassMax: 14,
     track: "undergrad",
     description: "Drama (\u015Aakuntala, Svapnav\u0101savadattam), Poetics (K\u0101vyaprak\u0101\u015Ba), Advanced Grammar",
-    icon: "\u{1F3AD}",
+    icon: "theater",
     color: "#c0392b",
     sortOrder: 11,
     ncertBookId: "govt-ba2-drama"
@@ -150,7 +150,7 @@ const classLevels = [
     govClassMax: 15,
     track: "graduate",
     description: "Philosophy (G\u012Bt\u0101, Upani\u1E63ads, Dar\u015Banas), Vedic Studies, Specialization",
-    icon: "\u{1F549}\uFE0F",
+    icon: "om",
     color: "#d35400",
     sortOrder: 12,
     ncertBookId: "govt-ba3-philosophy"
@@ -163,7 +163,7 @@ const classLevels = [
     govClassMax: 16,
     track: "graduate",
     description: "Vedic Literature, Linguistics, Epic & Pur\u0101\u1E47as, Classical Poetry, A\u1E63\u1E6D\u0101dhy\u0101y\u012B",
-    icon: "\u{1F52C}",
+    icon: "search",
     color: "#16a085",
     sortOrder: 13,
     ncertBookId: "govt-ma1-linguistics"
@@ -176,7 +176,7 @@ const classLevels = [
     govClassMax: 17,
     track: "phd",
     description: "Advanced Poetics, Dhvany\u0101loka, S\u0101hityadarpa\u1E47a, Research Methods, Dissertation",
-    icon: "\u{1F4DD}",
+    icon: "pencil",
     color: "#2c3e50",
     sortOrder: 14,
     ncertBookId: "govt-ma2-poetics"
@@ -189,7 +189,7 @@ const classLevels = [
     govClassMax: 18,
     track: "phd",
     description: "Textual Criticism, Paleography, Manuscriptology, Thesis Proposal & Defense",
-    icon: "\u{1F4D0}",
+    icon: "grammar",
     color: "#7f8c8d",
     sortOrder: 15,
     ncertBookId: "govt-mphil-criticism"
@@ -202,7 +202,7 @@ const classLevels = [
     govClassMax: 19,
     track: "phd",
     description: "Thesis Composition, Publication Ethics, Peer Review, Viva Voce",
-    icon: "\u{1F393}",
+    icon: "teacher",
     color: "#34495e",
     sortOrder: 16,
     ncertBookId: "govt-phd-thesis"
