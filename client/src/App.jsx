@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import SchoolOnly from "./components/SchoolOnly";
 import PageLoader from "./components/PageLoader";
+import ScrollToTop from "./components/ScrollToTop";
 import { KeyboardProvider } from "./context/KeyboardContext";
 import "./App.css";
 
@@ -67,6 +68,7 @@ const JeopardyBuilderPage = lazy(() => import("./pages/tools/JeopardyBuilderPage
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <KeyboardProvider>
         <Suspense fallback={<PageLoader />}>
           <Routes>

@@ -20,7 +20,6 @@ import { tracks } from "../../data/tracks";
 import { DynamicIcon } from "../../components/icons";
 import { useLanguage } from "../../context/LanguageContext";
 import { useRole } from "../../context/RoleContext";
-import ShlokaRecitationSection from "../../components/ShlokaRecitationSection";
 import ExplorePanel from "../../components/ExplorePanel";
 
 // Complete directory of all program sections available across SanskritLab
@@ -535,7 +534,7 @@ function Dashboard() {
             <div className="institutional-hero-actions">
               <button
                 className="btn btn-primary"
-                onClick={() => scrollToSection("shlokas")}
+                onClick={() => navigate("/tools/shloka")}
               >
                 <Scroll size={16} />
                 <span>{hi ? "श्लोक श्रवणम्" : "Listen to Shlokas"}</span>
@@ -661,9 +660,6 @@ function Dashboard() {
           </div>
         )}
       </section>
-
-      {/* ─── 3. SEPARATE DEDICATED SANSKRIT SHLOKA SECTION WITH RECITATION FEATURE ─── */}
-      <ShlokaRecitationSection onExploreWord={(word) => setExploreWord(word)} />
 
       {/* ─── NCERT CURRICULUM BANNER ─── */}
       <section className="section" style={{ paddingTop: 12, paddingBottom: 16 }}>
