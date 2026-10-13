@@ -118,6 +118,9 @@ export default function App() {
               <Route path="tools/sandhi" element={<SandhiToolPage />} />
               <Route path="tools/dhatu" element={<DhatuPage />} />
               <Route path="tools/shloka" element={<ShlokaPage />} />
+              <Route path="tools/shlokas" element={<ShlokaPage />} />
+              <Route path="shloka" element={<Navigate to="/tools/shloka" replace />} />
+              <Route path="shlokas" element={<Navigate to="/tools/shloka" replace />} />
               <Route path="tools/jeopardy" element={<JeopardyHomePage />} />
               <Route path="tools/jeopardy/play" element={<JeopardyPlayPage />} />
               <Route path="tools/jeopardy/test" element={<JeopardyTestPage />} />

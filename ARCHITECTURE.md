@@ -131,14 +131,14 @@ client/src/
 │   ├── monier_core.json # 59,995-entry Monier-Williams Sanskrit-English lexicon
 │   ├── lessons.js       # Graded curriculum units (levels 0 to 5)
 │   ├── books.js         # Classical literature (Gita, Ramayana, Hitopadesha, etc.)
-│   ├── shlokas.js       # Sacred verses with meters, audio, and translations
+│   ├── shlokas.js       # 70+ verses across 10 canonical scriptures with meters, audio, and translations
 │   ├── dhatus.js        # Verbal roots with gaṇa, pada, and meanings
 │   ├── conceptExplorer.js # Indian philosophical darśanas and definitions
 │   ├── tracks.js        # Progression metadata (Child → PhD)
 │   └── ncertData.js     # NCERT classes 6–12 Sanskrit textbooks
 ├── pages/               # Route-level view controllers
 │   ├── dashboard/       # Institutional home, hero banner, program directory
-│   ├── tools/           # Lexicon, universal search, sandhi, dhatus, etymology
+│   ├── tools/           # Sanskrit Shlokas (/tools/shloka), Lexicon, Sandhi, Dhatus, Etymology, Jeopardy
 │   ├── research/        # Manuscript OCR, historical corpus, critical apparatus
 │   ├── learning/        # Lessons, gamified skill tree, assessment, Jeopardy
 │   ├── viva/            # AI oral examiner, language pronunciation lab

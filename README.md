@@ -37,6 +37,22 @@ SanskritLab is an interactive, full-stack platform for Sanskrit studies spanning
   - **ऊष्माणः (Sibilants & Aspirate)**: `श` (2.4k), `ष`, `स` (6.8k), `ह` (1.0k)
 - **High-Performance Navigation**: Instant phonetic group tabs, letter pill buttons with live word counts, responsive pagination (30/60/120/240 per page), direct sub-search within letters, and audio pronunciation.
 
+### 🕉️ Dedicated Shloka Tool Page: संस्कृत श्लोकाः (`/tools/shloka`)
+- **70+ Authenticated Verses with Full Meanings**: Classical shlokas with Devanāgarī, Roman IAST transliteration, English translation, Hindi translation, word-by-word padachheda, and audio recitation.
+- **Dedicated "By Book" (ग्रन्थानुरूपम्) Browser**:
+  - 📜 **श्रीमद्भगवद्गीता (Bhagavad Gītā)** (14 verses on karma, atman, dharma, and devotion)
+  - 🏹 **वाल्मीकि रामायणम् (Vālmīki Rāmāyaṇa)** (6 verses including the Ādi-śloka, virtue of Rama, and patriotism)
+  - ☀️ **उपनिषदः (The Upaniṣads)** (10 verses from Īśā, Bṛhadāraṇyaka, Kaṭha, Muṇḍaka, and Taittirīya)
+  - 🕊️ **वेदाः (The Vedas)** (6 sacred hymns from Ṛgveda and Yajurveda including Gāyatrī, Mahāmṛtyuñjaya, and Saṃjñāna)
+  - 🌿 **हितोपदेशः (Hitopadeśa)** (5 verses on humility, knowledge, true friendship, and enterprise)
+  - 🦁 **पञ्चतन्त्रम् (Pañcatantra)** (5 verses on intellect, prudence, deliberate action, and friendship)
+  - 👑 **नीतिशतकम् (Bhartṛhari's Nītiśatakam)** (6 verses on learning, modesty, speech as eternal ornament, and perseverance)
+  - ⚖️ **चाणक्यनीतिः (Cāṇakya Nīti)** (7 verses on scholarship, equality, discipline, and daily wisdom)
+  - 🏛️ **महाभारतम् एवं विदुरनीतिः (Mahābhārata & Vidura Nīti)** (5 verses on non-violence, sage qualities, and virtue)
+  - 🌸 **स्तोत्राणि सुभाषितानि च (Classical Stotras & Prayers)** (7 daily verses including Gaṇeśa, Sarasvatī, and Guru invocations)
+- **Interactive Sanskrit Exploration**: Click any word in any verse to inspect its root, grammar, and Monier-Williams definition in the Explore Panel.
+
+
 
 ### 🔬 Research & Digitization Suite
 - **Manuscript OCR** — Convert scanned Devanāgarī & Grantha manuscripts to Unicode text.

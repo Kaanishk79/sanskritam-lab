@@ -381,8 +381,8 @@ const allProgramSections = [
     categoryLabel: "AI & Linguistic Tools",
     categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
     icon: "shloka",
-    title: "Shloka Explorer Studio",
-    desc: "Annotated verses with word-by-word sandhi breakdown, metrical analysis, and audio recitation.",
+    title: "संस्कृत श्लोकाः (Shloka Explorer)",
+    desc: "70+ canonical verses across 10 sacred scriptures (Gita, Upanishads, Ramayana, Hitopadesha, etc.) with word breakdown, Hindi/English meanings, and audio recitation.",
     link: "/tools/shloka"
   },
   {

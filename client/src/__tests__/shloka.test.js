@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { SHLOKAS, SHLOKA_CATEGORIES } from "../data/shlokas";
+import { SHLOKAS, SHLOKA_CATEGORIES, SHLOKA_BOOKS } from "../data/shlokas";
 import { shlokaReciter } from "../services/recitationAudio";
 
 describe("Sanskrit Shloka Recitation Dataset & Categories", () => {
@@ -14,17 +14,37 @@ describe("Sanskrit Shloka Recitation Dataset & Categories", () => {
     expect(categoryIds).toContain("daily");
   });
 
-  it("should contain shlokas belonging to each required category", () => {
-    const required = ["devotion", "knowledge", "wisdom", "peace", "morals", "daily"];
-    for (const cat of required) {
-      const inCat = SHLOKAS.filter((s) => s.category === cat);
-      expect(inCat.length).toBeGreaterThan(0);
+  it("should contain at least 50 classical shlokas with complete translations", () => {
+    expect(SHLOKAS.length).toBeGreaterThanOrEqual(50);
+  });
+
+  it("should define canonical scripture books in SHLOKA_BOOKS", () => {
+    expect(SHLOKA_BOOKS.length).toBeGreaterThanOrEqual(10);
+    const bookIds = SHLOKA_BOOKS.map((b) => b.id);
+    expect(bookIds).toContain("gita");
+    expect(bookIds).toContain("ramayana");
+    expect(bookIds).toContain("upanishads");
+    expect(bookIds).toContain("vedas");
+    expect(bookIds).toContain("hitopadesha");
+    expect(bookIds).toContain("panchatantra");
+    expect(bookIds).toContain("nitisatakam");
+    expect(bookIds).toContain("chanakya");
+    expect(bookIds).toContain("mahabharata");
+    expect(bookIds).toContain("stotras_subhashita");
+  });
+
+  it("should have shlokas categorized into each canonical book", () => {
+    for (const b of SHLOKA_BOOKS) {
+      const inBook = SHLOKAS.filter((s) => s.book === b.id);
+      expect(inBook.length).toBeGreaterThan(0);
     }
   });
 
   it("should verify each shloka contains accurate Devanagari, IAST, translation, and source", () => {
     for (const s of SHLOKAS) {
       expect(s.id).toBeDefined();
+      expect(s.book).toBeTruthy();
+      expect(s.bookTitle).toBeTruthy();
       expect(s.dev).toBeTruthy();
       expect(s.iast).toBeTruthy();
       expect(s.translation).toBeTruthy();

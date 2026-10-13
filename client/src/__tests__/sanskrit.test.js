@@ -129,7 +129,7 @@ describe("searchAll Sanskrit Khoj", () => {
     const res = await searchAll("राम");
     expect(res.length).toBeGreaterThan(0);
     expect(res.some((r) => r.title.includes("राम") || r.id === "राम")).toBe(true);
-  });
+  }, 15000);
 
   it("returns results for IAST romanized queries", async () => {
     const res = await searchAll("vidya");

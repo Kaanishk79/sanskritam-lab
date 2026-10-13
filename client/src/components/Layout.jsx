@@ -124,7 +124,7 @@ const navSections = [
       { to: "/tools/transliterate", icon: <Languages size={18} />, label: "Transliteration" },
       { to: "/tools/sandhi", icon: <Volume2 size={18} />, label: "Sandhi Tool" },
       { to: "/tools/dhatu", icon: <Sprout size={18} />, label: "Dh\u0101tu Explorer" },
-      { to: "/tools/shloka", icon: <ShlokaIcon size={18} />, label: "Shloka Explorer" },
+      { to: "/tools/shloka", icon: <ShlokaIcon size={18} />, label: "संस्कृत श्लोकाः (Shlokas)" },
       { to: "/tools/jeopardy", icon: <Trophy size={18} />, label: "Sanskrit Jeopardy" }
     ]
   },
