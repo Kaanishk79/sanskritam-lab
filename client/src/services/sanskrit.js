@@ -492,11 +492,30 @@ function dayOfYear(d = /* @__PURE__ */ new Date()) {
   const start = new Date(d.getFullYear(), 0, 0);
   return Math.floor((d.getTime() - start.getTime()) / 864e5);
 }
+let cachedWordOfDay = null;
 async function wordOfDay() {
-  const { data } = await supabase.from("dictionary").select("word, meanings, meanings_hi").order("id").limit(200);
-  if (!data || data.length === 0) return null;
-  const row = data[dayOfYear() % data.length];
-  return { word: row.word, meanings: row.meanings || [], meaningsHi: row.meanings_hi || [], iast: toIAST(row.word) };
+  if (cachedWordOfDay) return cachedWordOfDay;
+  try {
+    const { data } = await supabase.from("dictionary").select("word, meanings, meanings_hi").order("id").limit(200);
+    if (data && data.length > 0) {
+      const row = data[dayOfYear() % data.length];
+      cachedWordOfDay = { word: row.word, meanings: row.meanings || [], meaningsHi: row.meanings_hi || [], iast: toIAST(row.word) };
+      return cachedWordOfDay;
+    }
+  } catch {
+    /* Supabase unavailable — fall through to local fallback */
+  }
+  // Local fallback: pick a word from the Monier-Williams lexicon loaded into client memory
+  const mod = await import("../data/monier_core.json");
+  const monier = mod.default || mod;
+  if (monier && monier.length) {
+    const row = monier[dayOfYear() % monier.length];
+    cachedWordOfDay = { word: row.word, meanings: row.meanings || [], meaningsHi: row.meanings_hi || [], iast: row.iast || toIAST(row.word) };
+    return cachedWordOfDay;
+  }
+  // Absolute default if nothing else works
+  cachedWordOfDay = { word: "ॐ", meanings: ["the sacred syllable"], meaningsHi: ["ॐ"], iast: "om" };
+  return cachedWordOfDay;
 }
 const PHRASES_OF_DAY = [
   { dev: "\u0938\u0924\u094D\u092F\u092E\u0947\u0935 \u091C\u092F\u0924\u0947", iast: "satyameva jayate", meaning: "Truth alone triumphs", meaningHi: "\u0938\u0924\u094D\u092F \u0915\u0940 \u0938\u0926\u093E \u0935\u093F\u091C\u092F \u0939\u094B\u0924\u0940 \u0939\u0948" },
