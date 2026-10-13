@@ -77,10 +77,11 @@ function FlashcardPage() {
         setSrsState(state);
       }
       syncSRSFromDb().then((dbState) => {
-        if (dbState) {
+        if (live && dbState) {
           const merged = { ...dbState, cards: initCards(fc, dbState.cards) };
           setSrsState(merged);
           saveSRS(merged);
+          persistSRSToDb(merged);
         }
       });
     });
@@ -92,9 +93,10 @@ function FlashcardPage() {
     };
   }, []);
   const stats = getStats(srsState.cards);
-  const startReview = () => {
-    const due = getDueCards(srsState.cards, deck);
-    const newc = getNewCards(srsState.cards, deck);
+  const startReview = (overrideDeck) => {
+    const targetDeck = overrideDeck !== undefined ? overrideDeck : deck;
+    const due = getDueCards(srsState.cards, targetDeck);
+    const newc = getNewCards(srsState.cards, targetDeck);
     const all = [...due, ...newc];
     if (all.length === 0) return;
     setCurrentCard(all[0]);
@@ -186,7 +188,7 @@ function FlashcardPage() {
     const due = getDueCards(srsState.cards, d.id).length;
     return <div key={d.id} className="card deck-card" onClick={() => {
       setDeck(d.id);
-      startReview();
+      startReview(d.id);
     }}>
                   <div className="deck-icon" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
                     <DynamicIcon name={d.icon} size={28} />

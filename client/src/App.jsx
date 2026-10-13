@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import SchoolOnly from "./components/SchoolOnly";
 import PageLoader from "./components/PageLoader";
@@ -124,9 +124,9 @@ export default function App() {
               <Route path="tools/jeopardy/prep" element={<JeopardyPrepPage />} />
               <Route path="tools/jeopardy/news" element={<JeopardyNewsPage />} />
               <Route path="tools/jeopardy/builder" element={<SchoolOnly><JeopardyBuilderPage /></SchoolOnly>} />
-              <Route path="auth" element={<RolePickPage />} />
-              <Route path="auth/login" element={<LoginPage />} />
-              <Route path="auth/signup" element={<SignupPage />} />
+              <Route path="auth" element={<Navigate to="/" replace />} />
+              <Route path="auth/login" element={<Navigate to="/" replace />} />
+              <Route path="auth/signup" element={<Navigate to="/" replace />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Routes>

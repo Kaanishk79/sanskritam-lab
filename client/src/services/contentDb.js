@@ -271,14 +271,20 @@ async function loadManuscripts() {
 async function loadShlokas() {
   const rows = await loadRows("shlokas");
   if (!rows.length) return SHLOKAS;
-  return rows.map((r) => ({
-    dev: String(r.dev),
-    iast: String(r.iast),
-    translation: String(r.translation),
-    source: String(r.source)
-  })).map((s) => {
-    const loc = SHLOKAS.find((x) => x.dev === s.dev);
-    return loc ? { ...s, translationHi: loc.translationHi } : s;
+  return rows.map((r) => {
+    const loc = SHLOKAS.find((x) => x.dev === r.dev || x.id === r.id);
+    return {
+      id: String(r.id || loc?.id || Math.random()),
+      dev: String(r.dev),
+      iast: String(r.iast || loc?.iast || ""),
+      translation: String(r.translation || loc?.translation || ""),
+      translationHi: String(r.translation_hi || loc?.translationHi || ""),
+      source: String(r.source || loc?.source || ""),
+      category: String(r.category || loc?.category || "wisdom"),
+      categoryLabel: loc?.categoryLabel || "Wisdom & Life Lessons",
+      categoryLabelHi: loc?.categoryLabelHi || "सुभाषितानि नीतिश्च",
+      words: r.words || loc?.words || []
+    };
   });
 }
 async function loadDhatus() {

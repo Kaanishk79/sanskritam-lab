@@ -123,66 +123,77 @@ function SignupPage() {
         if (teacherUsername.trim()) meta.teacher_username = teacherUsername.trim().toLowerCase();
         if (selectedSchool) meta.school_id = selectedSchool.id;
       }
-      const user2 = await signUp(email, password, name, {
+      const res = await signUp(email, password, name, {
         accountType,
         schoolId: selectedSchool?.id,
         username: teacherUsername.trim() || void 0
       });
+      const hasSession = Boolean(res?.session?.access_token);
+
       if (accountType === "institution" && schoolName.trim()) {
-        try {
-          localStorage.setItem(
-            PENDING_SCHOOL_KEY,
-            JSON.stringify({ name: schoolName, city: schoolCity, state: schoolState, school_type: schoolType, email })
-          );
-        } catch {
-        }
-      }
-      if (accountType === "teacher" && (teacherUsername.trim() || selectedSchool)) {
-        try {
-          localStorage.setItem(
-            PENDING_TEACHER_KEY,
-            JSON.stringify({
-              email,
-              name,
-              auth_username: teacherUsername.trim() || void 0,
-              school_id: selectedSchool?.id
-            })
-          );
-        } catch {
-        }
-      }
-      if (accountType === "institution" && schoolName.trim()) {
-        try {
-          await schoolsApi.create({
-            name: schoolName,
-            city: schoolCity,
-            state: schoolState,
-            school_type: schoolType || "Senior Secondary School"
-          });
-          localStorage.removeItem(PENDING_SCHOOL_KEY);
-        } catch {
-        }
-      }
-      if (accountType === "teacher" && (teacherUsername.trim() || selectedSchool)) {
-        try {
-          await updateAccountMeta({
-            account_type: "teacher",
-            teacher_username: teacherUsername.trim() || void 0,
-            school_id: selectedSchool?.id
-          });
-          if (selectedSchool && user2) {
-            await supabase.from("teachers").insert({
-              school_id: selectedSchool.id,
-              name,
-              email,
-              auth_username: teacherUsername.trim() || null,
-              user_id: user2.id,
-              status: "active"
-            });
+        const schoolPayload = {
+          name: schoolName.trim(),
+          city: schoolCity.trim(),
+          state: schoolState.trim(),
+          school_type: schoolType || "Senior Secondary School",
+          owner_email: email
+        };
+        if (hasSession) {
+          try {
+            const createdSchool = await schoolsApi.create(schoolPayload);
+            if (createdSchool?.id) {
+              await updateAccountMeta({ school_id: createdSchool.id });
+            }
+            localStorage.removeItem(PENDING_SCHOOL_KEY);
+          } catch (e) {
+            console.error("[SignupPage] School creation error:", e);
           }
-          localStorage.removeItem(PENDING_TEACHER_KEY);
-        } catch {
+        } else {
+          try {
+            localStorage.setItem(PENDING_SCHOOL_KEY, JSON.stringify(schoolPayload));
+          } catch {
+            // Storage access blocked or unavailable
+          }
+          setNeedsConfirmation(true);
+          return;
         }
+      }
+
+      if (accountType === "teacher" && (teacherUsername.trim() || selectedSchool)) {
+        const teacherPayload = {
+          name,
+          email,
+          auth_username: teacherUsername.trim() || void 0,
+          school_id: selectedSchool?.id
+        };
+        if (hasSession) {
+          try {
+            if (selectedSchool) {
+              await schoolsApi.teacherRegister(selectedSchool.id, teacherPayload);
+            }
+            await updateAccountMeta({
+              account_type: "teacher",
+              teacher_username: teacherUsername.trim() || void 0,
+              school_id: selectedSchool?.id
+            });
+            localStorage.removeItem(PENDING_TEACHER_KEY);
+          } catch (e) {
+            console.error("[SignupPage] Teacher link error:", e);
+          }
+        } else {
+          try {
+            localStorage.setItem(PENDING_TEACHER_KEY, JSON.stringify(teacherPayload));
+          } catch {
+            // Storage access blocked or unavailable
+          }
+          setNeedsConfirmation(true);
+          return;
+        }
+      }
+
+      if (!hasSession) {
+        setNeedsConfirmation(true);
+        return;
       }
       navigate("/");
     } catch (err) {

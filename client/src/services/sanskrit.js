@@ -1,4 +1,23 @@
 import { supabase } from "./supabase";
+import { lessons as localLessons } from "../data/lessons";
+import { books as localBooks } from "../data/books";
+import { SHLOKAS } from "../data/shlokas";
+import { DHATUS as LOCAL_DHATUS } from "../data/dhatus";
+import { CONCEPTS as LOCAL_CONCEPTS } from "../data/conceptExplorer";
+
+let cachedMonierCore = null;
+async function getMonierCore() {
+  if (!cachedMonierCore) {
+    try {
+      const mod = await import("../data/monier_core.json");
+      cachedMonierCore = mod.default || mod;
+    } catch {
+      cachedMonierCore = [];
+    }
+  }
+  return cachedMonierCore;
+}
+
 const DEV_VOWELS = [
   ["\u0905", "a"],
   ["\u0906", "\u0101"],
@@ -528,61 +547,209 @@ const DAILY_CHALLENGE_QUESTIONS = [
   { prompt: "\u0917\u0941\u0930\u0941 means?", promptHi: "\u0917\u0941\u0930\u0941 \u0915\u093E \u0905\u0930\u094D\u0925?", options: ["Student", "Teacher", "Parent", "Friend"], optionsHi: ["\u091B\u093E\u0924\u094D\u0930", "\u0936\u093F\u0915\u094D\u0937\u0915", "\u0905\u092D\u093F\u092D\u093E\u0935\u0915", "\u092E\u093F\u0924\u094D\u0930"], correct: 1, explanation: "\u0917\u0941\u0930\u0941 = teacher (lit. heavy with knowledge).", explanationHi: "\u0917\u0941\u0930\u0941 = \u0936\u093F\u0915\u094D\u0937\u0915 (\u0936\u092C\u094D\u0926\u0936\u0903 \u091C\u094D\u091E\u093E\u0928 \u0938\u0947 \u092D\u093E\u0930\u0940)\u0964" },
   { prompt: "\u0938\u094D\u0935\u093E\u0917\u0924\u092E\u094D means?", promptHi: "\u0938\u094D\u0935\u093E\u0917\u0924\u092E\u094D \u0915\u093E \u0905\u0930\u094D\u0925?", options: ["Farewell", "Welcome", "Thanks", "Blessing"], optionsHi: ["\u0935\u093F\u0926\u093E\u0908", "\u0938\u094D\u0935\u093E\u0917\u0924", "\u0927\u0928\u094D\u092F\u0935\u093E\u0926", "\u0906\u0936\u0940\u0930\u094D\u0935\u093E\u0926"], correct: 1, explanation: "\u0938\u094D\u0935\u093E\u0917\u0924\u092E\u094D = welcome.", explanationHi: "\u0938\u094D\u0935\u093E\u0917\u0924\u092E\u094D = \u0938\u094D\u0935\u093E\u0917\u0924 \u0939\u0948\u0964" }
 ];
-async function searchAll(q, limit = 8) {
-  const query = q.trim();
+async function searchAll(q, limit = 16) {
+  const query = (q || "").trim();
   if (!query) return [];
+  const qLower = query.toLowerCase();
+  const devQuery = toDevanagari(query);
+  const iastQuery = toIAST(query).toLowerCase();
+
   const results = [];
-  const [dict, dictEn, lessons, texts, corpus] = await Promise.all([
-    supabase.from("dictionary").select("word, meanings, meanings_hi").ilike("word", `%${query}%`).limit(limit),
-    supabase.from("dictionary").select("word, meanings, meanings_hi").contains("meanings", [query]).limit(limit),
-    supabase.from("lessons").select("id, title, level").ilike("title", `%${query}%`).limit(limit),
-    supabase.from("texts").select("id, title, author").ilike("title", `%${query}%`).limit(limit),
-    supabase.from("corpus_texts").select("id, title").ilike("title", `%${query}%`).limit(limit)
-  ]);
-  const seen = /* @__PURE__ */ new Set();
-  if (dict.data) {
-    for (const d of dict.data) {
-      seen.add(d.word);
+  const seen = new Set();
+
+  // 1. Lessons
+  for (const l of localLessons) {
+    const titleLower = (l.title || "").toLowerCase();
+    const subLower = (l.subtitle || "").toLowerCase();
+    if (
+      titleLower.includes(qLower) ||
+      subLower.includes(qLower) ||
+      (devQuery && (l.title || "").includes(devQuery)) ||
+      (iastQuery && titleLower.includes(iastQuery))
+    ) {
       results.push({
-        kind: "dictionary",
-        id: d.word,
-        title: d.word,
-        sub: (d.meanings || []).slice(0, 2).join(" \xB7 "),
-        subHi: (d.meanings_hi || []).slice(0, 2).join(" \xB7 ") || void 0,
-        extra: toIAST(d.word)
+        kind: "lesson",
+        id: l.id,
+        title: l.title,
+        sub: l.subtitle || `Level ${l.level} · ${l.track || "Sanskrit"} Lesson`,
+        subHi: `स्तर ${l.level} · पाठ`
       });
+      if (results.filter(r => r.kind === "lesson").length >= 3) break;
     }
   }
-  if (dictEn.data) {
-    for (const d of dictEn.data) {
-      if (seen.has(d.word)) continue;
-      seen.add(d.word);
+
+  // 2. Classical Texts & Books
+  for (const b of localBooks) {
+    const titleLower = (b.title || "").toLowerCase();
+    const titleSa = b.titleSanskrit || "";
+    const authorLower = (b.author || "").toLowerCase();
+    if (
+      titleLower.includes(qLower) ||
+      titleSa.includes(query) ||
+      (devQuery && titleSa.includes(devQuery)) ||
+      authorLower.includes(qLower) ||
+      (b.desc && b.desc.toLowerCase().includes(qLower))
+    ) {
       results.push({
-        kind: "dictionary",
-        id: d.word,
-        title: `${d.word} \u2014 ${(d.meanings || [])[0] || ""}`,
-        sub: (d.meanings || []).slice(1, 3).join(" \xB7 ") || "English meaning match",
-        subHi: (d.meanings_hi || []).slice(1, 3).join(" \xB7 ") || void 0,
-        extra: toIAST(d.word)
+        kind: "text",
+        id: b.id,
+        title: b.titleSanskrit ? `${b.title} (${b.titleSanskrit})` : b.title,
+        sub: b.author ? `${b.author} · ${b.category || "Classical Text"}` : (b.desc?.slice(0, 75) || "Classical Sanskrit Work"),
+        subHi: b.titleSanskrit || "संस्कृत ग्रन्थः"
       });
+      if (results.filter(r => r.kind === "text").length >= 3) break;
     }
   }
-  if (lessons.data) {
-    for (const l of lessons.data) {
-      results.push({ kind: "lesson", id: l.id, title: l.title, sub: `Level ${l.level} lesson`, subHi: `\u0938\u094D\u0924\u0930 ${l.level} \xB7 \u092A\u093E\u0920` });
+
+  // 3. Sacred Shlokas & Verses
+  for (const s of SHLOKAS) {
+    const dev = s.dev || "";
+    const iast = (s.iast || "").toLowerCase();
+    const trans = (s.translation || "").toLowerCase();
+    const src = (s.source || "").toLowerCase();
+    if (
+      dev.includes(query) ||
+      (devQuery && dev.includes(devQuery)) ||
+      iast.includes(qLower) ||
+      iast.includes(iastQuery) ||
+      trans.includes(qLower) ||
+      src.includes(qLower)
+    ) {
+      const firstLine = dev.split("।")[0]?.trim() || dev.slice(0, 32);
+      results.push({
+        kind: "shloka",
+        id: s.id,
+        title: firstLine,
+        sub: `${s.source} — ${s.translation.slice(0, 70)}…`,
+        subHi: s.translationHi ? `${s.source} — ${s.translationHi.slice(0, 70)}…` : void 0,
+        extra: s.source
+      });
+      if (results.filter(r => r.kind === "shloka").length >= 3) break;
     }
   }
-  if (texts.data) {
-    for (const tx of texts.data) {
-      results.push({ kind: "text", id: tx.id, title: tx.title, sub: tx.author || "Sanskrit text", subHi: tx.author || "\u0938\u0902\u0938\u094D\u0915\u0943\u0924 \u0917\u094D\u0930\u0902\u0925" });
+
+  // 4. Dhātu Verbal Roots
+  for (const dh of LOCAL_DHATUS) {
+    const root = dh.root || "";
+    const iast = (dh.iast || "").toLowerCase();
+    const meaning = (dh.meaning || "").toLowerCase();
+    if (
+      root.includes(query) ||
+      (devQuery && root.includes(devQuery)) ||
+      iast.includes(qLower) ||
+      meaning.includes(qLower)
+    ) {
+      results.push({
+        kind: "dhatu",
+        id: dh.root,
+        title: `${dh.root} (${dh.iast})`,
+        sub: `Root: ${dh.meaning} · Gana: ${dh.gana || ""}`,
+        subHi: `धातु: ${dh.meaning}`,
+        extra: "धातु"
+      });
+      if (results.filter(r => r.kind === "dhatu").length >= 2) break;
     }
   }
-  if (corpus.data) {
-    for (const c of corpus.data) {
-      results.push({ kind: "corpus", id: c.id, title: c.title, sub: "Corpus text", subHi: "\u0915\u094B\u0936 \u092E\u0947\u0902 \u092A\u093E\u0920" });
+
+  // 5. Concepts
+  for (const c of LOCAL_CONCEPTS) {
+    const sa = c.sa || "";
+    const en = (c.en || "").toLowerCase();
+    const def = (c.def || "").toLowerCase();
+    if (
+      sa.includes(query) ||
+      (devQuery && sa.includes(devQuery)) ||
+      en.includes(qLower) ||
+      def.includes(qLower)
+    ) {
+      results.push({
+        kind: "concept",
+        id: c.en,
+        title: `${c.sa} (${c.en})`,
+        sub: c.def || "Sanskrit Concept",
+        subHi: c.defHi || c.sa
+      });
+      if (results.filter(r => r.kind === "concept").length >= 2) break;
     }
   }
-  return results.slice(0, 12);
+
+  // 6. Monier-Williams Sanskrit Dictionary
+  try {
+    const monier = await getMonierCore();
+    if (monier && monier.length) {
+      const scoredDict = [];
+      for (let i = 0; i < monier.length; i++) {
+        const entry = monier[i];
+        const word = entry.word || "";
+        const iast = (entry.iast || "").toLowerCase();
+        let score = 0;
+
+        if (word === query || (devQuery && word === devQuery) || iast === qLower || iast === iastQuery) {
+          score = 100;
+        } else if (word.startsWith(query) || (devQuery && word.startsWith(devQuery)) || iast.startsWith(qLower) || iast.startsWith(iastQuery)) {
+          score = 80;
+        } else if (word.includes(query) || (devQuery && word.includes(devQuery)) || iast.includes(qLower)) {
+          score = 60;
+        } else if (entry.meanings?.some(m => m.toLowerCase() === qLower)) {
+          score = 50;
+        } else if (entry.meanings?.some(m => m.toLowerCase().includes(qLower))) {
+          score = 40;
+        } else if (entry.raw_def && entry.raw_def.toLowerCase().includes(qLower)) {
+          score = 25;
+        }
+
+        if (score > 0) {
+          scoredDict.push({ entry, score });
+          if (scoredDict.length >= 60) break;
+        }
+      }
+
+      scoredDict.sort((a, b) => b.score - a.score || a.entry.word.length - b.entry.word.length);
+
+      for (const { entry } of scoredDict.slice(0, 8)) {
+        if (!seen.has(entry.word)) {
+          seen.add(entry.word);
+          results.push({
+            kind: "dictionary",
+            id: entry.word,
+            title: entry.word,
+            sub: (entry.meanings && entry.meanings.length ? entry.meanings : [entry.raw_def]).filter(Boolean).slice(0, 2).join(" · "),
+            subHi: (entry.meanings_hi || []).slice(0, 2).join(" · ") || void 0,
+            extra: entry.iast || toIAST(entry.word)
+          });
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("Local Monier search fallback error:", err);
+  }
+
+  // 7. Optional Supabase remote queries if connected
+  if (import.meta.env?.VITE_SUPABASE_URL) {
+    try {
+      const [dictR, lessonsR] = await Promise.all([
+        supabase.from("dictionary").select("word, meanings, meanings_hi").ilike("word", `%${query}%`).limit(3),
+        supabase.from("lessons").select("id, title, level").ilike("title", `%${query}%`).limit(2)
+      ]);
+      if (dictR?.data) {
+        for (const d of dictR.data) {
+          if (!seen.has(d.word)) {
+            seen.add(d.word);
+            results.push({
+              kind: "dictionary",
+              id: d.word,
+              title: d.word,
+              sub: (d.meanings || []).slice(0, 2).join(" · "),
+              subHi: (d.meanings_hi || []).slice(0, 2).join(" · ") || void 0,
+              extra: toIAST(d.word)
+            });
+          }
+        }
+      }
+    } catch {}
+  }
+
+  return results.slice(0, limit);
 }
 export {
   DAILY_CHALLENGE_QUESTIONS,

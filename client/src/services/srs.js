@@ -1,18 +1,31 @@
 const STORAGE_KEY = "sanskritlab-srs";
+
 function getDefaultSRSState() {
   return { cards: {}, currentDeck: "all" };
 }
+
 function loadSRS() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch {
+    if (typeof localStorage !== "undefined") {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    }
+  } catch (e) {
+    console.warn("[srs] Failed to load SRS state:", e);
   }
   return getDefaultSRSState();
 }
+
 function saveSRS(state) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+  } catch (e) {
+    console.warn("[srs] Failed to save SRS state (quota exceeded or disabled):", e);
+  }
 }
+
 function initCards(flashcards, existing) {
   const result = { ...existing };
   for (const fc of flashcards) {
@@ -29,23 +42,30 @@ function initCards(flashcards, existing) {
   }
   return result;
 }
+
 function getDueCards(cards, deckId) {
   const now = Date.now();
-  return Object.values(cards).filter((c) => {
-    if (c.nextReview > now) return false;
-    if (deckId && deckId !== "all" && c.card.deckId !== deckId) return false;
-    return true;
-  }).sort((a, b) => a.nextReview - b.nextReview);
+  return Object.values(cards || {})
+    .filter((c) => {
+      if (!c || !c.card) return false;
+      if (c.nextReview > now) return false;
+      if (deckId && deckId !== "all" && c.card.deckId !== deckId) return false;
+      return true;
+    })
+    .sort((a, b) => a.nextReview - b.nextReview);
 }
+
 function getNewCards(cards, deckId) {
-  return Object.values(cards).filter((c) => {
+  return Object.values(cards || {}).filter((c) => {
+    if (!c || !c.card) return false;
     if (c.repetitions > 0) return false;
     if (deckId && deckId !== "all" && c.card.deckId !== deckId) return false;
     return true;
   });
 }
+
 function getStats(cards) {
-  const values = Object.values(cards);
+  const values = Object.values(cards || {}).filter((c) => c && c.card);
   const due = getDueCards(cards);
   const newCards = getNewCards(cards);
   const mature = values.filter((c) => c.interval >= 21);
@@ -59,7 +79,8 @@ function getStats(cards) {
     reviewed: values.filter((c) => c.repetitions > 0).length
   };
 }
-function gradeCard(cards, cardId, quality) {
+
+function gradeCard(cards, cardId, quality, currentDeck) {
   const result = { ...cards };
   const sc = result[cardId];
   if (!sc) return result;
@@ -86,9 +107,16 @@ function gradeCard(cards, cardId, quality) {
     nextReview: Date.now() + interval * 864e5,
     lastReviewed: Date.now()
   };
-  saveSRS({ ...loadSRS(), cards: result });
+
+  const prev = loadSRS();
+  saveSRS({
+    ...prev,
+    currentDeck: currentDeck !== undefined ? currentDeck : prev.currentDeck,
+    cards: result
+  });
   return result;
 }
+
 export {
   getDefaultSRSState,
   getDueCards,

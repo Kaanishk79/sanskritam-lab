@@ -37,7 +37,8 @@ import {
   Menu,
   X,
   User,
-  Globe
+  Globe,
+  ExternalLink
 } from "lucide-react";
 import { OmIcon, PalmLeafIcon, TempleIcon, ShlokaIcon } from "./icons";
 import { useTheme } from "../context/ThemeContext";
@@ -160,7 +161,9 @@ function Layout() {
       <nav className={`sidebar${sidebarOpen ? " open" : ""}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
-            <div className="sidebar-logo"><OmIcon size={22} /></div>
+            <div className="sidebar-logo" style={{ overflow: "hidden", padding: 0, background: "none" }}>
+              <img src="/favicon.svg" alt="SanskritLab Logo" style={{ width: "100%", height: "100%", borderRadius: "inherit" }} />
+            </div>
             <div className="sidebar-brand-text">
               <h1>संस्कृतम्</h1>
               <div className="subtitle">SanskritLab</div>
@@ -194,8 +197,12 @@ function Layout() {
         <div className="top-nav">
           <div className="top-nav-left">
             <button className="top-nav-hamburger" onClick={() => setSidebarOpen(true)} aria-label="Open menu"><Menu size={22} /></button>
-            <div className="top-nav-logo" onClick={() => navigate("/")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}>
-              <OmIcon size={20} />
+            <div className="top-nav-logo" onClick={() => navigate("/")} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>
+              <img
+                src="/favicon.svg"
+                alt="SanskritLab Logo"
+                style={{ width: 28, height: 28, borderRadius: 7, boxShadow: "0 2px 8px rgba(0,0,0,0.22)", flexShrink: 0 }}
+              />
               <span>संस्कृतम् <strong>Lab</strong></span>
             </div>
             <div className="top-nav-links">
@@ -239,17 +246,6 @@ function Layout() {
                     {o.icon} <span>{t(o.label)}</span>
                   </button>)}
               </div>}
-            {user ? <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginLeft: 8 }}>
-                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: "#fff", background: "rgba(255,140,0,0.15)", padding: "4px 10px", borderRadius: 8, display: "inline-flex", alignItems: "center", gap: 6 }}>
-                  {user.accountType === "institution" ? <School size={14} /> : user.accountType === "teacher" ? <GraduationCap size={14} /> : <User size={14} />} {user.displayName}
-                </span>
-                <button className="btn btn-sm btn-outline" onClick={handleSignOut}>{t("Sign Out")}</button>
-              </div> : guest ? <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginLeft: 8 }}>
-                <span className="user-chip" style={{ fontSize: 13, fontWeight: 600, color: "#fff", background: "rgba(255,140,0,0.15)", padding: "4px 10px", borderRadius: 8, display: "inline-flex", alignItems: "center", gap: 6 }}>
-                  <User size={14} /> <span>{t("Guest")}</span>
-                </span>
-                <button className="btn btn-sm btn-outline" onClick={handleSignOut}>{t("Leave Guest")}</button>
-              </div> : <button className="btn btn-sm btn-outline" style={{ marginLeft: 8 }} onClick={() => navigate("/auth")}>{t("Sign In")}</button>}
           </div>
         </div>
 
@@ -260,7 +256,10 @@ function Layout() {
           <button className="hamburger" onClick={() => setSidebarOpen(true)} aria-label={t("Open navigation")}>
             <span /><span /><span />
           </button>
-          <span className="mobile-title">संस्कृतम्</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, cursor: "pointer" }} onClick={() => navigate("/")}>
+            <img src="/favicon.svg" alt="SanskritLab Logo" style={{ width: 24, height: 24, borderRadius: 6, flexShrink: 0 }} />
+            <span className="mobile-title">संस्कृतम्</span>
+          </div>
           <button className="theme-btn" onClick={toggle} aria-label={t("Toggle theme")}>{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}</button>
         </header>
 
@@ -296,16 +295,80 @@ function Layout() {
               <a onClick={() => navigate("/visualization/timeline")}>{t("Timeline")}</a>
             </div>
             <div className="footer-col">
-              <h4>{t("More")}</h4>
-              <a onClick={() => navigate("/")}>{t("Home")}</a>
+              <h4>{t("Affiliations & Links")}</h4>
+              <a href="https://sainikschoolambikapur.org.in" target="_blank" rel="noopener noreferrer">
+                Sainik School Ambikapur ↗
+              </a>
+              <a href="https://www.youtube.com/@sourabhjain32" target="_blank" rel="noopener noreferrer">
+                Sanskrit Online Pathshala ↗
+              </a>
               <a onClick={() => navigate("/learning/child")}>{t("Kids Mode")}</a>
-              <a onClick={() => navigate("/visualization/grammar")}>{t("Grammar Maps")}</a>
               <a onClick={() => navigate("/visualization/3d")}>{t("3D Viewer")}</a>
             </div>
           </div>
+
+          {/* Hyperlinks for Sainik School Ambikapur & Sanskrit Online Pathshala */}
+          <div
+            className="footer-institutional-links"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 16,
+              flexWrap: "wrap",
+              margin: "16px auto 24px",
+              maxWidth: 720
+            }}
+          >
+            <a
+              href="https://sainikschoolambikapur.org.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "8px 18px",
+                borderRadius: 50,
+                background: "var(--vt-orange-light)",
+                color: "var(--vt-orange-dark)",
+                border: "1px solid rgba(255, 106, 0, 0.3)",
+                fontSize: 13.5,
+                fontWeight: 600,
+                textDecoration: "none",
+                transition: "all 0.2s"
+              }}
+            >
+              <ExternalLink size={15} />
+              <span>Sainik School Ambikapur</span>
+            </a>
+            <a
+              href="https://www.youtube.com/@sourabhjain32"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                padding: "8px 18px",
+                borderRadius: 50,
+                background: "rgba(220, 38, 38, 0.08)",
+                color: "#dc2626",
+                border: "1px solid rgba(220, 38, 38, 0.3)",
+                fontSize: 13.5,
+                fontWeight: 600,
+                textDecoration: "none",
+                transition: "all 0.2s"
+              }}
+            >
+              <ExternalLink size={15} />
+              <span>Sanskrit Online Pathshala</span>
+            </a>
+          </div>
+
           <div className="footer-bottom">
-            <span>{t("\xA9 2026 SanskritLab. Open source.")}</span>
-            <span>{t("Made with \u2764\uFE0F for Sanskrit")}</span>
+            <span>{t("© 2026 SanskritLab. Open source.")}</span>
+            <span>{t("Made with ❤️ for Sanskrit")}</span>
           </div>
         </footer>
       </div>

@@ -42,8 +42,11 @@ async fn health() -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    let port = std::env::var("PORT").unwrap_or_else(|_| "8080".to_string());
+    let bind_addr = format!("127.0.0.1:{}", port);
+
     println!("============================================================");
-    println!(" SanskritLab Unified Rust Backend running on http://127.0.0.1:8080");
+    println!(" SanskritLab Unified Rust Backend running on http://{}", bind_addr);
     println!("============================================================");
 
     let corpus_data = web::Data::new(corpus::CorpusStore::new());
@@ -102,7 +105,7 @@ async fn main() -> std::io::Result<()> {
                     .route("/synthesize", web::post().to(tts::synthesize))
             )
     })
-    .bind("127.0.0.1:8080")?
+    .bind(&bind_addr)?
     .run()
     .await
 }

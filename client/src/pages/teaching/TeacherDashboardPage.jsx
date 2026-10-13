@@ -145,7 +145,7 @@ function TeacherDashboardPage() {
         </div>
         <h3>{t("Teacher Dashboard")}</h3>
         <p>{t("No school linked to this account yet.")}</p>
-        {canSwitch ? <button className="btn btn-primary" onClick={() => navigate("/teaching/school")}>{t("Go to Institution HQ")}</button> : <button className="btn btn-primary" onClick={() => navigate("/auth/signup")}>{t("Create Institution Account")}</button>}
+        <button className="btn btn-primary" onClick={() => navigate("/teaching/school")}>{t("Go to Institution HQ")}</button>
       </div>;
   }
   return <div className="page-container">
@@ -155,10 +155,9 @@ function TeacherDashboardPage() {
       </div>
 
       <div className="card" style={{ padding: 12, marginBottom: 16, borderColor: "rgba(255,140,0,0.4)", background: "rgba(255,140,0,0.05)" }}>
-        <span style={{ fontSize: 13, color: "var(--vt-text)", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+        <span style={{ fontSize: 13, color: "var(--vt-text)", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
           <FlaskConical size={14} color="var(--vt-orange)" />
-          <span>{t("Preview — sample data below. Create a teacher account and connect your school to see your real students here.")}</span>
-          <button className="btn btn-sm btn-primary" style={{ marginLeft: 8 }} onClick={() => navigate("/auth/signup")}>{t("Create Teacher Account")}</button>
+          <span>{t("Interactive Lesson Planning & Student Analytics Workbench.")}</span>
         </span>
       </div>
 

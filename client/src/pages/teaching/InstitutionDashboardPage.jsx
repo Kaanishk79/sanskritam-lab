@@ -82,27 +82,6 @@ function InstitutionDashboardPage() {
       setBusy("");
     }
   };
-  if (!user) {
-    return <div className="card" style={{ padding: 32, textAlign: "center", maxWidth: 480, margin: "40px auto" }}>
-        <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: 12 }}>
-          <School size={44} color="var(--vt-orange)" />
-        </div>
-        <h3>{t("Institution Portal")}</h3>
-        <p>{t("Sign in with an institution account to manage your school.")}</p>
-        <button className="btn btn-primary" onClick={() => navigate("/auth/login")}>{t("Sign In")}</button>
-        <button className="btn btn-secondary" style={{ marginLeft: 8 }} onClick={() => navigate("/auth/signup")}>{t("Create Institution Account")}</button>
-      </div>;
-  }
-  if (user.accountType !== "institution") {
-    return <div className="card" style={{ padding: 32, textAlign: "center", maxWidth: 480, margin: "40px auto" }}>
-        <div style={{ display: "inline-flex", justifyContent: "center", marginBottom: 12 }}>
-          <School size={44} color="var(--vt-orange)" />
-        </div>
-        <h3>{t("Institution Portal")}</h3>
-        <p>{t("This account is a learner account. Create a new account as an Institution to manage a school.")}</p>
-        <button className="btn btn-primary" onClick={() => navigate("/auth/signup")}>{t("Sign Up as Institution")}</button>
-      </div>;
-  }
   if (schoolLoading && !school) {
     return <div className="card" style={{ padding: 32, textAlign: "center" }}>{t("Loading your school...")}</div>;
   }

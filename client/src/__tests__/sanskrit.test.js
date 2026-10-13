@@ -4,7 +4,8 @@ import {
   toDevanagari,
   tryJoinSandhi,
   endsWithVowel,
-  startsWithVowel
+  startsWithVowel,
+  searchAll
 } from "../services/sanskrit";
 
 describe("toIAST Transliteration", () => {
@@ -122,3 +123,32 @@ describe("Sandhi Engine (tryJoinSandhi)", () => {
     expect(r3.result).toBe("दिग्गजः");
   });
 });
+
+describe("searchAll Sanskrit Khoj", () => {
+  it("returns results for Devanagari Sanskrit queries", async () => {
+    const res = await searchAll("राम");
+    expect(res.length).toBeGreaterThan(0);
+    expect(res.some((r) => r.title.includes("राम") || r.id === "राम")).toBe(true);
+  });
+
+  it("returns results for IAST romanized queries", async () => {
+    const res = await searchAll("vidya");
+    expect(res.length).toBeGreaterThan(0);
+    expect(res.some((r) => r.kind === "dictionary" || r.kind === "lesson")).toBe(true);
+  });
+
+  it("returns results for grammatical and text topics like sandhi and Gita", async () => {
+    const sandhiRes = await searchAll("sandhi");
+    expect(sandhiRes.length).toBeGreaterThan(0);
+
+    const gitaRes = await searchAll("Gita");
+    expect(gitaRes.length).toBeGreaterThan(0);
+    expect(gitaRes.some((r) => r.kind === "dictionary" || r.kind === "text" || r.kind === "shloka")).toBe(true);
+  });
+
+  it("returns empty array for whitespace", async () => {
+    const res = await searchAll("   ");
+    expect(res).toEqual([]);
+  });
+});
+

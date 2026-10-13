@@ -17,6 +17,21 @@ import { toIAST, toDevanagari } from "../services/sanskrit";
 import { speakWithFallback } from "../services/speech";
 import { useLanguage } from "../context/LanguageContext";
 
+import { SHLOKAS } from "../data/shlokas";
+
+let cachedMonier = null;
+async function getMonier() {
+  if (!cachedMonier) {
+    try {
+      const mod = await import("../data/monier_core.json");
+      cachedMonier = mod.default || mod;
+    } catch {
+      cachedMonier = [];
+    }
+  }
+  return cachedMonier;
+}
+
 const POS_HI = {
   noun: "संज्ञा",
   verb: "क्रिया",
@@ -57,28 +72,82 @@ function ExplorePanel({ word, onClose }) {
 
     const doSearch = async () => {
       const iast2 = toIAST(w);
-      const [dictR, relR, textsR, corpusR] = await Promise.all([
-        supabase.from("dictionary").select("*").or(`word.eq.${w},iast.ilike.${iast2}`).limit(1).maybeSingle(),
-        supabase.from("dictionary").select("word, meanings, meanings_hi, pos").ilike("word", `%${w}%`).neq("word", w).limit(6),
-        supabase.from("texts").select("id, title, content").ilike("content", `%${w}%`).limit(3),
-        supabase.from("corpus_texts").select("id, title, content").ilike("content", `%${w}%`).limit(3),
-      ]);
+      const devW = toDevanagari(w);
+      let row = null;
+      let relData = [];
+      let textRefs = [];
+      let corpusRefs = [];
+
+      if (import.meta.env?.VITE_SUPABASE_URL) {
+        try {
+          const [dictR, relR, textsR, corpusR] = await Promise.all([
+            supabase.from("dictionary").select("*").or(`word.eq.${w},iast.ilike.${iast2}`).limit(1).maybeSingle(),
+            supabase.from("dictionary").select("word, meanings, meanings_hi, pos").ilike("word", `%${w}%`).neq("word", w).limit(6),
+            supabase.from("texts").select("id, title, content").ilike("content", `%${w}%`).limit(3),
+            supabase.from("corpus_texts").select("id, title, content").ilike("content", `%${w}%`).limit(3),
+          ]);
+          if (!alive) return;
+          row = dictR?.data || null;
+          relData = relR?.data || [];
+          textRefs = (textsR?.data || []).slice(0, 3).map((x) => ({
+            id: x.id,
+            title: x.title,
+            snippet: makeSnippet(x.content, w),
+            source: "texts",
+          }));
+          corpusRefs = (corpusR?.data || []).slice(0, 3).map((x) => ({
+            id: x.id,
+            title: x.title,
+            snippet: makeSnippet(x.content, w),
+            source: "corpus",
+          }));
+        } catch {}
+      }
+
+      // Local Monier-Williams fallback
+      if (!row) {
+        try {
+          const monier = await getMonier();
+          const qLower = w.toLowerCase();
+          const found = monier.find(
+            (m) => m.word === w || (devW && m.word === devW) || (m.iast && m.iast.toLowerCase() === qLower) || (m.iast && m.iast.toLowerCase() === iast2.toLowerCase())
+          );
+          if (found) {
+            row = {
+              word: found.word,
+              iast: found.iast || iast2,
+              pos: found.pos,
+              meanings: found.meanings?.length ? found.meanings : [found.raw_def].filter(Boolean),
+              meanings_hi: found.meanings_hi,
+              root: found.root
+            };
+          }
+          if (!relData.length && monier.length) {
+            relData = monier
+              .filter((m) => m.word !== w && (m.word.startsWith(w) || (devW && m.word.startsWith(devW))))
+              .slice(0, 6)
+              .map((m) => ({ word: m.word, iast: m.iast, meanings: m.meanings, pos: m.pos }));
+          }
+        } catch {}
+      }
+
+      // Local Shlokas text references fallback
+      if (!textRefs.length && SHLOKAS.length) {
+        textRefs = SHLOKAS.filter(
+          (s) => s.dev.includes(w) || (devW && s.dev.includes(devW)) || s.iast.toLowerCase().includes(w.toLowerCase())
+        )
+          .slice(0, 3)
+          .map((s) => ({
+            id: s.id,
+            title: s.source,
+            snippet: s.dev,
+            source: "shlokas"
+          }));
+      }
+
       if (!alive) return;
-      const row = dictR.data;
       setEntry(row);
-      setRelated(relR.data || []);
-      const textRefs = (textsR.data || []).slice(0, 3).map((x) => ({
-        id: x.id,
-        title: x.title,
-        snippet: makeSnippet(x.content, w),
-        source: "texts",
-      }));
-      const corpusRefs = (corpusR.data || []).slice(0, 3).map((x) => ({
-        id: x.id,
-        title: x.title,
-        snippet: makeSnippet(x.content, w),
-        source: "corpus",
-      }));
+      setRelated(relData);
       setRefs(textRefs);
       setExamples(corpusRefs);
 

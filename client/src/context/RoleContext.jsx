@@ -1,10 +1,13 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { getAuthState, onAuthChange, updateAccountMeta } from "../services/auth";
 import { schoolsApi } from "../services/schools";
+
 const RoleContext = createContext(null);
 const ROLE_KEY = "sanskritlab-view-role";
 const GUEST_KEY = "sanskritlab-guest";
 const PENDING_TEACHER_KEY = "sanskritlab-pending-teacher";
+const PENDING_SCHOOL_KEY = "sanskritlab-pending-school";
+
 function RoleProvider({ children }) {
   const [user, setUser] = useState(() => getAuthState().user);
   const [role, setRoleState] = useState("learner");
@@ -18,6 +21,7 @@ function RoleProvider({ children }) {
   const [school, setSchool] = useState(null);
   const [schoolLoading, setSchoolLoading] = useState(false);
   const sessionUserRef = useRef(user);
+
   useEffect(() => {
     const unsub = onAuthChange((s) => {
       setUser(s.user);
@@ -26,8 +30,10 @@ function RoleProvider({ children }) {
     });
     return unsub;
   }, []);
+
   const isInstitution = user?.accountType === "institution";
   const canSwitch = isInstitution;
+
   useEffect(() => {
     let stored = null;
     try {
@@ -43,7 +49,8 @@ function RoleProvider({ children }) {
       setRoleState("learner");
     }
   }, [user?.id, isInstitution]);
-  const loadSchool = async (u) => {
+
+  const loadSchool = useCallback(async (u) => {
     if (!u) {
       setSchool(null);
       return;
@@ -59,20 +66,24 @@ function RoleProvider({ children }) {
         if (pendingRaw) {
           try {
             const pending = JSON.parse(pendingRaw);
-            await schoolsApi.teacherRegister(pending.school_id, {
-              name: u.displayName,
-              auth_username: pending.username || u.username
-            });
-            await updateAccountMeta({
-              school_id: pending.school_id,
-              ...pending.username ? { username: pending.username } : {}
-            });
+            if (pending?.school_id) {
+              await schoolsApi.teacherRegister(pending.school_id, {
+                name: u.displayName,
+                auth_username: pending.username || u.username
+              });
+              await updateAccountMeta({
+                school_id: pending.school_id,
+                ...pending.username ? { username: pending.username } : {}
+              });
+            }
             localStorage.removeItem(PENDING_TEACHER_KEY);
           } catch (e) {
             console.error("Pending teacher link failed", e);
+            localStorage.removeItem(PENDING_TEACHER_KEY);
           }
         }
       }
+
       let detail = null;
       if (u.accountType === "teacher" || u.accountType === "student") {
         if (u.schoolId) {
@@ -88,36 +99,42 @@ function RoleProvider({ children }) {
             try {
               await updateAccountMeta({ school_id: found.id });
             } catch {
+              // optional meta update
             }
           } else {
-            const pendingRaw = localStorage.getItem("sanskritlab-pending-school");
+            const pendingRaw = localStorage.getItem(PENDING_SCHOOL_KEY);
             if (pendingRaw) {
               try {
                 const pending = JSON.parse(pendingRaw);
                 const created = await schoolsApi.create(pending);
-                localStorage.removeItem("sanskritlab-pending-school");
+                localStorage.removeItem(PENDING_SCHOOL_KEY);
                 await updateAccountMeta({ school_id: created.id });
                 detail = await schoolsApi.get(created.id);
               } catch (e) {
                 console.error("Pending school creation failed", e);
+                localStorage.removeItem(PENDING_SCHOOL_KEY);
               }
             }
           }
         }
       }
       setSchool(detail);
-    } catch {
+    } catch (err) {
+      console.warn("[RoleContext] loadSchool error:", err);
       setSchool(null);
     } finally {
       setSchoolLoading(false);
     }
-  };
+  }, []);
+
   useEffect(() => {
     void loadSchool(user);
-  }, [user?.id, user?.schoolId]);
+  }, [user?.id, user?.schoolId, loadSchool]);
+
   const refreshSchool = async () => {
     if (sessionUserRef.current) await loadSchool(sessionUserRef.current);
   };
+
   const setRole = (r) => {
     if (!canSwitch) return;
     setRoleState(r);
@@ -127,6 +144,7 @@ function RoleProvider({ children }) {
       console.warn("Could not persist role:", e);
     }
   };
+
   const beginGuest = () => {
     try {
       localStorage.setItem(GUEST_KEY, "1");
@@ -135,6 +153,7 @@ function RoleProvider({ children }) {
     }
     setGuest(true);
   };
+
   const endGuest = () => {
     try {
       localStorage.removeItem(GUEST_KEY);
@@ -143,16 +162,31 @@ function RoleProvider({ children }) {
     }
     setGuest(false);
   };
-  return <RoleContext.Provider value={{ user, role, setRole, canSwitch, school, schoolLoading, refreshSchool, guest, beginGuest, endGuest }}>
+
+  return (
+    <RoleContext.Provider
+      value={{
+        user,
+        role,
+        setRole,
+        canSwitch,
+        school,
+        schoolLoading,
+        refreshSchool,
+        guest,
+        beginGuest,
+        endGuest
+      }}
+    >
       {children}
-    </RoleContext.Provider>;
+    </RoleContext.Provider>
+  );
 }
+
 function useRole() {
   const ctx = useContext(RoleContext);
   if (!ctx) throw new Error("useRole must be used within RoleProvider");
   return ctx;
 }
-export {
-  RoleProvider,
-  useRole
-};
+
+export { RoleProvider, useRole };

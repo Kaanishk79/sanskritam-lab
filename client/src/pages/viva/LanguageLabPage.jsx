@@ -353,8 +353,7 @@ function LanguageLabPage() {
           </div>
           <p className="lab-report-note">
             {t("Are you a teacher or school?")}{" "}
-            <a href="#/auth/signup?type=institution">{t("Register your school")}</a>{" "}
-            {t("or")} <a href="#/auth">{t("sign in")}</a> {t("to manage your own lab.")}
+            <a href="#/teaching/school">{t("Manage your school and lab")}</a>
           </p>
         </div> : <>
       <div className="lab-tabs">

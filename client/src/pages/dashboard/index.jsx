@@ -1,230 +1,794 @@
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Sparkles, ArrowRight, BookMarked, Award, Star } from "lucide-react";
+import {
+  Sparkles,
+  ArrowRight,
+  BookMarked,
+  Award,
+  Star,
+  Search,
+  BookOpen,
+  Scroll,
+  Layers,
+  GraduationCap,
+  Bot,
+  Mic,
+  Compass
+} from "lucide-react";
+import institutionHeroImg from "../../assets/images.png";
 import { tracks } from "../../data/tracks";
 import { DynamicIcon } from "../../components/icons";
 import { useLanguage } from "../../context/LanguageContext";
 import { useRole } from "../../context/RoleContext";
-const features = [
-  { icon: "search", title: "Sanskrit Search", desc: "Search words, lessons, texts and topics in Sanskrit or English with live suggestions.", link: "/search" },
-  { icon: "sparkles", title: "Explore Mode", desc: "Click any word \u2014 \u0930\u093E\u092E \u2014 and see meaning, grammar, pronunciation, related words and text references.", link: "/explore" },
-  { icon: "book", title: "Sanskrit Dictionary", desc: "Word meaning, Devanagari, transliteration, English meanings, examples and related words.", link: "/dictionary" },
-  { icon: "sun", title: "Daily Sanskrit", desc: "Word, phrase and verse of the day plus a 5-minute challenge \u2014 every day.", link: "/daily" },
-  { icon: "manuscript", title: "Manuscript Digitization", desc: "Convert scanned Devan\u0101gar\u012B & Grantha manuscripts into searchable Unicode with OCR.", link: "/research/ocr" },
-  { icon: "temple", title: "Smart Corpus & Search", desc: "Explore texts by time period with semantic search and dictionary integration.", link: "/research/corpus" },
-  { icon: "temple", title: "Layered Annotation", desc: "Add grammar breakdowns, commentaries, and translations to any text.", link: "/research/annotate" },
-  { icon: "shloka", title: "Shloka Explorer", desc: "Classical verses with translation alongside \u2014 click any word to see its meaning.", link: "/tools/shloka" },
-  { icon: "alphabet", title: "Transliteration Tool", desc: "Live Devanagari \u21C4 IAST conversion in both directions.", link: "/tools/transliterate" },
-  { icon: "audio", title: "Sandhi Tool", desc: "Join words and see the exact sandhi rule \u2014 Gu\u1E47a, V\u1E5Bddhi, Ya\u1E47, Visarga \u2014 explained.", link: "/tools/sandhi" },
-  { icon: "plant", title: "Dh\u0101tu Explorer", desc: "Browse verbal roots: ga\u1E47a, meaning and present-tense forms.", link: "/tools/dhatu" },
-  { icon: "palette", title: "3D Manuscript Viewer", desc: "Interactive 3D palm-leaf models with digitized text overlays.", link: "/visualization/3d" },
-  { icon: "grammar", title: "Grammar & Mind Maps", desc: "P\u0101\u1E47ini's rules as branching diagrams. Philosophy networks visualized.", link: "/visualization/grammar" },
-  { icon: "chart", title: "Evolutionary Timeline", desc: "3000 years of Sanskrit evolution on an interactive timeline.", link: "/visualization/timeline" },
-  { icon: "teacher", title: "Teacher Dashboard", desc: "Lesson plans, exercises, manuscript annotations for your class.", link: "/teaching/dashboard" },
-  { icon: "student", title: "Student Workspace", desc: "Guided learning with interactive texts and collaboration tools.", link: "/teaching/workspace" },
-  { icon: "feather", title: "Assessment Engine", desc: "Auto-generated drills for declensions, sandhi, and grammar.", link: "/teaching/assessment" },
-  { icon: "mic", title: "AI Viva Simulator", desc: "Oral exams with audio evaluation and real-time pronunciation feedback.", link: "/viva/simulator" },
-  { icon: "analytics", title: "Analytics Engine", desc: "Track performance, find weak areas, get customized study paths.", link: "/viva/analytics" },
-  { icon: "smile", title: "Fun Learning Mode", desc: "Kid-friendly flashcards, picture-word games, and colorful activities.", link: "/learning/child" },
-  { icon: "bot", title: "AI Sanskrit Tutor", desc: "Chat with an AI tutor about Sanskrit grammar, texts, and philosophy.", link: "/tools/tutor" },
-  { icon: "mic", title: "Voice Mode", desc: "Speak in Sanskrit or Hindi \u2014 hear the word, its meaning, and a spoken reply. Works offline.", link: "/tools/voice" },
-  { icon: "puzzle", title: "Sentence Builder", desc: "Tap word cards in order to build Sanskrit sentences \u2014 learn word order through play.", link: "/tools/sentence" },
-  { icon: "health", title: "Fix My Sanskrit", desc: "Paste any sentence and get instant grammar fixes: punctuation, sandhi, missing spaces and more.", link: "/tools/fix" },
-  { icon: "book", title: "Story Generator", desc: "Pick a theme and two words \u2014 get a Sanskrit story with translation, ready to hear aloud.", link: "/tools/story" },
-  { icon: "globe", title: "Sanskrit \u2192 Real World", desc: "Ancient ideas alive today: karma, yoga, zero, dharma \u2014 the word behind daily life.", link: "/tools/realworld" },
-  { icon: "calendar", title: "Culture Calendar", desc: "Festivals, tithis and the six seasons \u2014 the Sanskrit year on your calendar.", link: "/tools/calendar" },
-  { icon: "quote", title: "Who Said It?", desc: "Match famous Sanskrit verses to their speakers \u2014 from the G\u012Bt\u0101 to K\u0101lid\u0101sa.", link: "/tools/whosaid" },
-  { icon: "plant", title: "Etymology Tree", desc: "One verbal root, many words \u2014 watch Sanskrit words grow from their roots.", link: "/tools/etymology" },
-  { icon: "search", title: "Concept Explorer", desc: "Grammar, philosophy, values and texts \u2014 big Sanskrit ideas, plainly explained.", link: "/tools/concepts" },
-  { icon: "game", title: "Learn Through Games", desc: "Word match, number blitz and sandhi chase \u2014 three quick games to keep Sanskrit sharp.", link: "/tools/games" },
-  { icon: "sword", title: "Debate Mode", desc: "Pick a topic and a side \u2014 argue in Sanskrit and hear the counter-argument.", link: "/tools/debate" },
-  { icon: "palette", title: "Creative Studio", desc: "Compose your own verse \u2014 pick a theme and meter, hear it come alive.", link: "/tools/studio" },
-  { icon: "cards", title: "SRS Flashcards", desc: "Anki-style spaced repetition for vocabulary, grammar, and more.", link: "/tools/flashcards" },
-  { icon: "user", title: "Account & Auth", desc: "Sign up or sign in to track your progress across devices.", link: "/auth" }
+import ShlokaRecitationSection from "../../components/ShlokaRecitationSection";
+import ExplorePanel from "../../components/ExplorePanel";
+
+// Complete directory of all program sections available across SanskritLab
+const allProgramSections = [
+  // ─── RESEARCH & DIGITIZATION ───
+  {
+    category: "research",
+    categoryLabel: "Research & Digitization",
+    categoryLabelHi: "अनुसन्धानम् एवं डिजिटलीकरणम्",
+    icon: "manuscript",
+    title: "Manuscript Digitization (OCR)",
+    desc: "Convert scanned Devanāgarī & Grantha manuscripts into searchable Unicode with native neural OCR.",
+    link: "/research/ocr"
+  },
+  {
+    category: "research",
+    categoryLabel: "Research & Digitization",
+    categoryLabelHi: "अनुसन्धानम् एवं डिजिटलीकरणम्",
+    icon: "temple",
+    title: "Smart Corpus & Semantic Search",
+    desc: "Explore 3,000 years of classical texts by chronological era with deep dictionary integration.",
+    link: "/research/corpus"
+  },
+  {
+    category: "research",
+    categoryLabel: "Research & Digitization",
+    categoryLabelHi: "अनुसन्धानम् एवं डिजिटलीकरणम्",
+    icon: "temple",
+    title: "Layered Annotation Tool",
+    desc: "Multi-layered critical apparatus: attach grammatical analysis, commentaries, and multi-lingual translations.",
+    link: "/research/annotate"
+  },
+  {
+    category: "research",
+    categoryLabel: "Research & Digitization",
+    categoryLabelHi: "अनुसन्धानम् एवं डिजिटलीकरणम्",
+    icon: "book",
+    title: "NCERT Sanskrit Library",
+    desc: "Complete Class 6–12 textbooks (Deepakam, Shemushi, Bhaswati, Shashwati) with digitized reader.",
+    link: "/research/ncert"
+  },
+  {
+    category: "research",
+    categoryLabel: "Research & Digitization",
+    categoryLabelHi: "अनुसन्धानम् एवं डिजिटलीकरणम्",
+    icon: "feather",
+    title: "NCERT Board Sample Papers",
+    desc: "Class 10 & 12 board sample question papers with marking schemes, answer keys, and PDF view.",
+    link: "/ncert/papers"
+  },
+
+  // ─── 3D VISUALIZATION & HISTORY ───
+  {
+    category: "visualization",
+    categoryLabel: "3D & Visualization",
+    categoryLabelHi: "त्रिआयामी दृश्यीकरणम्",
+    icon: "palette",
+    title: "3D Manuscript Viewer",
+    desc: "Interactive 3D palm-leaf and birch-bark manuscript inspection with digitized transcription overlays.",
+    link: "/visualization/3d"
+  },
+  {
+    category: "visualization",
+    categoryLabel: "3D & Visualization",
+    categoryLabelHi: "त्रिआयामी दृश्यीकरणम्",
+    icon: "grammar",
+    title: "Grammar & Philosophy Maps",
+    desc: "Pāṇini's Aṣṭādhyāyī rules as branching trees; Nyāya, Vedānta, and Mīmāṃsā networks visualized.",
+    link: "/visualization/grammar"
+  },
+  {
+    category: "visualization",
+    categoryLabel: "3D & Visualization",
+    categoryLabelHi: "त्रिआयामी दृश्यीकरणम्",
+    icon: "chart",
+    title: "Evolutionary Timeline",
+    desc: "Interactive chronological journey mapping Vedic, Epic, Classical, and Modern Sanskrit evolution.",
+    link: "/visualization/timeline"
+  },
+
+  // ─── TEACHING & ACADEMICS ───
+  {
+    category: "teaching",
+    categoryLabel: "Teaching & Academics",
+    categoryLabelHi: "शिक्षणम् एवं संस्था",
+    icon: "teacher",
+    title: "Institution HQ",
+    desc: "Institutional dashboard for school administration, student roster management, and institutional analytics.",
+    link: "/teaching/school"
+  },
+  {
+    category: "teaching",
+    categoryLabel: "Teaching & Academics",
+    categoryLabelHi: "शिक्षणम् एवं संस्था",
+    icon: "teacher",
+    title: "Teacher Dashboard",
+    desc: "Lesson builder, classroom assignments, student tracking, and manuscript annotation modules.",
+    link: "/teaching/dashboard"
+  },
+  {
+    category: "teaching",
+    categoryLabel: "Teaching & Academics",
+    categoryLabelHi: "शिक्षणम् एवं संस्था",
+    icon: "student",
+    title: "Student Workspace",
+    desc: "Guided learning workbench with interactive texts, assigned drills, and collaborative tools.",
+    link: "/teaching/workspace"
+  },
+  {
+    category: "teaching",
+    categoryLabel: "Teaching & Academics",
+    categoryLabelHi: "शिक्षणम् एवं संस्था",
+    icon: "feather",
+    title: "Assessment Engine",
+    desc: "Auto-generated diagnostic quizzes for noun declensions (vibhakti), verb conjugations, and sandhi.",
+    link: "/teaching/assessment"
+  },
+
+  // ─── ADAPTIVE LEARNING ───
+  {
+    category: "learning",
+    categoryLabel: "Adaptive Learning",
+    categoryLabelHi: "अनुकूली शिक्षणम्",
+    icon: "plant",
+    title: "Learning Path (Skill Tree)",
+    desc: "Structured curriculum from beginner to advanced with XP, streaks, quizzes, and unlocking milestones.",
+    link: "/learning/tree"
+  },
+  {
+    category: "learning",
+    categoryLabel: "Adaptive Learning",
+    categoryLabelHi: "अनुकूली शिक्षणम्",
+    icon: "smile",
+    title: "Fun Learning Mode (Kids)",
+    desc: "Delightful alphabet cards, picture-word matching, sound association, and playful mini-challenges.",
+    link: "/learning/child"
+  },
+  {
+    category: "learning",
+    categoryLabel: "Adaptive Learning",
+    categoryLabelHi: "अनुकूली शिक्षणम्",
+    icon: "temple",
+    title: "PhD Research Workspace",
+    desc: "Collation workbench for manuscript witnesses, apparatus criticus generation, and paleography.",
+    link: "/learning/research"
+  },
+  {
+    category: "learning",
+    categoryLabel: "Adaptive Learning",
+    categoryLabelHi: "अनुकूली शिक्षणम्",
+    icon: "teacher",
+    title: "Curriculum Builder",
+    desc: "Design custom instructional syllabi, export PDF lesson plans, and structure graded benchmarks.",
+    link: "/learning/curriculum"
+  },
+
+  // ─── AI TOOLS & LINGUISTIC SUITE ───
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "search",
+    title: "Sanskrit Search",
+    desc: "Search words, lessons, texts, and topics in Devanagari or English with live smart suggestions.",
+    link: "/search"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "sparkles",
+    title: "Explore Mode",
+    desc: "Inspect any Sanskrit word to reveal morphological roots, vibhakti, pronunciation, and textual citations.",
+    link: "/explore"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "book",
+    title: "Monier-Williams Sanskrit Dictionary",
+    desc: "Comprehensive Sanskrit-English lexicon with Devanagari, IAST, etymological roots, and examples.",
+    link: "/dictionary"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "sun",
+    title: "Daily Sanskrit",
+    desc: "Word, phrase, and proverb of the day along with a 5-minute cultural immersion challenge.",
+    link: "/daily"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "bot",
+    title: "AI Sanskrit Tutor",
+    desc: "Engage in intelligent dialogue with an AI tutor on Pāṇinian grammar, philosophy, and classical poetry.",
+    link: "/tools/tutor"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "mic",
+    title: "Voice Mode",
+    desc: "Speak naturally in Sanskrit or Hindi — receive instant auditory pronunciation analysis and spoken reply.",
+    link: "/tools/voice"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "puzzle",
+    title: "Sentence Builder",
+    desc: "Interactive tile-based puzzle to construct grammatically sound Sanskrit sentences through play.",
+    link: "/tools/sentence"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "health",
+    title: "Fix My Sanskrit",
+    desc: "Paste any composition for instant grammar validation: sandhi splitting, concord, and punctuation repair.",
+    link: "/tools/fix"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "book",
+    title: "Story Generator",
+    desc: "Generate whimsical or historical Sanskrit stories with parallel translations and audio narration.",
+    link: "/tools/story"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "globe",
+    title: "Sanskrit → Real World",
+    desc: "Explore how ancient Sanskrit concepts — karma, yoga, zero, guru, mantra — shape the modern world.",
+    link: "/tools/realworld"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "calendar",
+    title: "Culture Calendar",
+    desc: "Track traditional panchang tithis, six seasons (ṛtus), and cultural festivals on a synchronized calendar.",
+    link: "/tools/calendar"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "quote",
+    title: "Who Said It?",
+    desc: "Attribution quiz: match immortal Sanskrit shlokas and dialogues to their canonical authors.",
+    link: "/tools/whosaid"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "plant",
+    title: "Etymology Tree",
+    desc: "Trace single verbal roots (dhātus) branching into hundreds of words across grammar and linguistics.",
+    link: "/tools/etymology"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "search",
+    title: "Concept Explorer",
+    desc: "Plain-language deep-dives into core philosophical concepts, darśanas, and grammatical sutras.",
+    link: "/tools/concepts"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "game",
+    title: "Learn Through Games",
+    desc: "Interactive word match, Devanagari number blitz, and Sandhi chase to keep language skills sharp.",
+    link: "/tools/games"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "sword",
+    title: "Vāda (Debate Mode)",
+    desc: "Classical philosophical disputation mode: formulate Sanskrit arguments and counter-theses.",
+    link: "/tools/debate"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "palette",
+    title: "Creative Studio",
+    desc: "Compose metered poetry: choose poetic meters (chandas), verify syllables, and hear the cadence.",
+    link: "/tools/studio"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "cards",
+    title: "SRS Flashcards",
+    desc: "Scientifically optimized spaced-repetition flashcards for vocabulary, noun tables, and roots.",
+    link: "/tools/flashcards"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "book",
+    title: "Digital Bookshelf",
+    desc: "Classical Sanskrit library spanning Rāmāyaṇa, Mahābhārata, Kālidāsa, Pañcatantra, and Hitopadeśa.",
+    link: "/tools/bookshelf"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "alphabet",
+    title: "Transliteration Engine",
+    desc: "Live bidirectional conversion between Devanagari, IAST, Harvard-Kyoto, and ITRANS.",
+    link: "/tools/transliterate"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "audio",
+    title: "Sandhi Tool",
+    desc: "Join and split Sanskrit words with exact rule-by-rule Pāṇinian explanations for Guṇa, Vṛddhi, Yaṇ, and Visarga.",
+    link: "/tools/sandhi"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "plant",
+    title: "Dhātu Explorer",
+    desc: "Comprehensive catalogue of Sanskrit verb roots with gaṇa, pada, artha, and present tense conjugations.",
+    link: "/tools/dhatu"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "shloka",
+    title: "Shloka Explorer Studio",
+    desc: "Annotated verses with word-by-word sandhi breakdown, metrical analysis, and audio recitation.",
+    link: "/tools/shloka"
+  },
+  {
+    category: "tools",
+    categoryLabel: "AI & Linguistic Tools",
+    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
+    icon: "trophy",
+    title: "Sanskrit Jeopardy Hub",
+    desc: "Exciting classroom Jeopardy game with board builder, test simulator, and category questions.",
+    link: "/tools/jeopardy"
+  },
+
+  // ─── VIVA & EXAM PRACTICE ───
+  {
+    category: "viva",
+    categoryLabel: "Viva & Exam Practice",
+    categoryLabelHi: "मौखिकपरीक्षा एवं मूल्यांकनम्",
+    icon: "mic",
+    title: "AI Viva Simulator",
+    desc: "Realistic oral viva practice with AI speech evaluation, question variations, and instant feedback.",
+    link: "/viva/simulator"
+  },
+  {
+    category: "viva",
+    categoryLabel: "Viva & Exam Practice",
+    categoryLabelHi: "मौखिकपरीक्षा एवं मूल्यांकनम्",
+    icon: "alphabet",
+    title: "Language Lab",
+    desc: "Phonetic pronunciation laboratory for institutional labs and rigorous recitation training.",
+    link: "/viva/lab"
+  },
+  {
+    category: "viva",
+    categoryLabel: "Viva & Exam Practice",
+    categoryLabelHi: "मौखिकपरीक्षा एवं मूल्यांकनम्",
+    icon: "analytics",
+    title: "Performance Analytics Engine",
+    desc: "Track proficiency metrics, identify pronunciation or grammar gaps, and receive tailored study plans.",
+    link: "/viva/analytics"
+  }
 ];
+
+const programFilterCategories = [
+  { id: "all", label: "All Programs", labelHi: "सर्वाणि साधनानि" },
+  { id: "research", label: "Research & OCR", labelHi: "अनुसन्धानम्" },
+  { id: "visualization", label: "3D & Maps", labelHi: "दृश्यीकरणम्" },
+  { id: "teaching", label: "Teaching & School", labelHi: "शिक्षणम्" },
+  { id: "learning", label: "Learning Paths", labelHi: "शिक्षणमार्गाः" },
+  { id: "tools", label: "AI & Linguistics", labelHi: "भाषासाधनानि" },
+  { id: "viva", label: "Viva & Practice", labelHi: "मौखिकपरीक्षा" }
+];
+
 const testimonials = [
-  { text: "This platform transformed how I teach Sanskrit. The annotation tools and 3D manuscripts bring ancient texts to life for my students.", author: "Dr. Ananya Sharma", role: "Professor, University of Delhi", initial: "A" },
-  { text: "The adaptive learning path from alphabet to critical editions is incredible. I went from zero to reading K\u0101lid\u0101sa in 6 months.", author: "Rajesh Patel", role: "PhD Candidate, Oxford", initial: "R" },
-  { text: "My 8-year-old loves the fun mode! The picture-word matching makes learning Sanskrit feel like play.", author: "Priya Krishnan", role: "Parent & Homeschool Teacher", initial: "P" },
-  { text: "The AI viva simulator helped me prepare for my oral exams with accurate pronunciation feedback.", author: "Sneha Reddy", role: "MA Sanskrit Student", initial: "S" }
+  {
+    text: "This platform transformed how I teach Sanskrit. The annotation tools and 3D manuscripts bring ancient texts to life for my students.",
+    author: "Dr. Ananya Sharma",
+    role: "Professor, University of Delhi",
+    initial: "A"
+  },
+  {
+    text: "The adaptive learning path from alphabet to critical editions is incredible. I went from zero to reading Kālidāsa in 6 months.",
+    author: "Rajesh Patel",
+    role: "PhD Candidate, Oxford",
+    initial: "R"
+  },
+  {
+    text: "My 8-year-old loves the fun mode! The picture-word matching makes learning Sanskrit feel like play.",
+    author: "Priya Krishnan",
+    role: "Parent & Educator",
+    initial: "P"
+  },
+  {
+    text: "The AI viva simulator helped me prepare for my oral exams with accurate pronunciation feedback.",
+    author: "Sneha Reddy",
+    role: "MA Sanskrit Student",
+    initial: "S"
+  }
 ];
+
 function Dashboard() {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { guest } = useRole();
-  return <>
-      {
-    /* HERO */
-  }
-      {guest && <div style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 12,
-    flexWrap: "wrap",
-    padding: "10px 16px",
-    margin: "12px 0",
-    borderRadius: 10,
-    background: "rgba(255,140,0,0.1)",
-    border: "1px solid rgba(255,140,0,0.35)"
-  }}>
-          <span style={{ fontSize: 13, color: "var(--vt-text)", display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <Award size={15} color="var(--vt-orange)" /> {t("You are in Guest mode — progress is kept on this device only.")}
-          </span>
-          <button className="btn btn-sm btn-primary" onClick={() => navigate("/auth")}>{t("Create Free Account")}</button>
-          <button className="btn btn-sm btn-outline" onClick={() => navigate("/auth/login")}>{t("Sign In")}</button>
-        </div>}
-      <section className="hero">
-        <div className="hero-inner">
-          <div className="hero-content">
-            <div className="hero-tag">
-              <Sparkles size={14} /> <span>{t("India's Most Advanced Sanskrit Platform")}</span>
+  const hi = lang === "hi";
+
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [searchFilter, setSearchFilter] = useState("");
+  const [exploreWord, setExploreWord] = useState(null);
+
+  // Filter program sections based on category and search query
+  const filteredPrograms = useMemo(() => {
+    return allProgramSections.filter((item) => {
+      const matchCategory =
+        activeFilter === "all" || item.category === activeFilter;
+      if (!matchCategory) return false;
+
+      if (!searchFilter.trim()) return true;
+      const q = searchFilter.toLowerCase().trim();
+      return (
+        item.title.toLowerCase().includes(q) ||
+        item.desc.toLowerCase().includes(q) ||
+        item.categoryLabel.toLowerCase().includes(q)
+      );
+    });
+  }, [activeFilter, searchFilter]);
+
+  const scrollToSection = (id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <>
+      {/* ─── 1. HERO SECTION — INSTITUTIONAL ILLUSTRATION (FULL SCREEN WIDTH) ─── */}
+      <section className="institutional-hero">
+        <img
+          src={institutionHeroImg}
+          alt="SanskritLab Institutional Illustration"
+          className="institutional-hero-bg"
+          loading="eager"
+        />
+        <div className="institutional-hero-overlay">
+          <div className="institutional-hero-content">
+            <div className="institutional-badge">
+              <Sparkles size={14} />
+              <span>
+                {hi
+                  ? "संस्कृतम् — राष्ट्रिय अनुसन्धान एवं शिक्षण प्रतिष्ठानम्"
+                  : "संस्कृतम् — SanskritLab · Academic & Research Sanctuary"}
+              </span>
             </div>
+
             <h1>
-              {t("Bridge ")}<span className="highlight">{t("Ancient Wisdom")}</span><br />{t("with Modern Technology")}
+              {hi ? "प्राचीन ज्ञानस्य " : "Bridging "}
+              <span className="highlight">
+                {hi ? "आधुनिक विज्ञानं च" : "Ancient Wisdom"}
+              </span>
+              <br />
+              {hi ? "संयोजनम्" : "with Modern Technology"}
             </h1>
-            <p>
-              {t("From playful alphabet games for children to PhD-level critical edition tools \u2014 \n              SanskritLab brings 3000 years of language, literature, and philosophy to your fingertips.")}
+
+            <p className="hero-tagline">
+              {hi
+                ? "पाण्डुलिपि डिजिटलीकरणम्, ३डी दृश्यीकरणम्, कृत्रिमबुद्धि-साधनानि एवं सस्वर श्लोकपाठशाला — बालकेभ्यः अनुसन्धानछात्रेभ्यश्च।"
+                : "A sanctuary for manuscript preservation, interactive 3D visualization, neural linguistics, and traditional shloka recitation — from playful beginnings to doctoral critical editions."}
             </p>
-            <div className="hero-actions">
-              <button className="btn btn-primary" onClick={() => navigate("/learning/tree")}>
-                {t("Start Learning Free")} <ArrowRight size={16} />
+
+            <div className="institutional-hero-actions">
+              <button
+                className="btn btn-primary"
+                onClick={() => scrollToSection("shlokas")}
+              >
+                <Scroll size={16} />
+                <span>{hi ? "श्लोक श्रवणम्" : "Listen to Shlokas"}</span>
               </button>
-              <button className="btn btn-outline" onClick={() => navigate("/research/corpus")}>
-                {t("Explore Corpus")}
+
+              <button
+                className="btn btn-outline"
+                onClick={() => scrollToSection("programs")}
+              >
+                <Compass size={16} />
+                <span>{hi ? "सर्वाणि साधनानि" : "Explore All Sections"}</span>
               </button>
-            </div>
-          </div>
-          <div className="hero-right">
-            <div className="hero-card">
-              <div className="price">{t("100% Free")}</div>
-              <div className="price-label">{t("Lifetime access \xB7 No hidden fees")}</div>
-              <ul>
-                <li>{t("12+ curated lessons")}</li>
-                <li>{t("5 learning tracks (Child \u2192 PhD)")}</li>
-                <li>{t("AI viva simulator")}</li>
-                <li>{t("Research & annotation tools")}</li>
-                <li>{t("3D manuscript viewer")}</li>
-                <li>{t("Open source")}</li>
-              </ul>
-              <button className="btn btn-primary" style={{ width: "100%", justifyContent: "center" }} onClick={() => navigate("/learning/tree")}>
-                {t("Get Started Free")}
+
+              <button
+                className="btn btn-outline"
+                onClick={() => navigate("/research/ncert")}
+              >
+                <BookMarked size={16} />
+                <span>{hi ? "NCERT पाठ्यक्रमः" : "NCERT Curriculum"}</span>
+              </button>
+
+              <button
+                className="btn btn-outline"
+                onClick={() => navigate("/learning/tree")}
+              >
+                <GraduationCap size={16} />
+                <span>{hi ? "शिक्षण मार्गः" : "Learning Path"}</span>
               </button>
             </div>
           </div>
         </div>
       </section>
 
-      {
-    /* STATS BAR */
-  }
+      {/* ─── 2. ALL PROGRAM CONTENTS ORGANIZED & CENTRALIZED DIRECTLY BELOW HERO ─── */}
+      <section className="programs-section" id="programs">
+        <div className="section-header" style={{ textAlign: "center", maxWidth: 840, margin: "0 auto 32px" }}>
+          <div className="shloka-header-badge" style={{ background: "rgba(63, 81, 181, 0.1)", color: "var(--vt-blue)", borderColor: "rgba(63, 81, 181, 0.25)" }}>
+            <Compass size={14} />
+            <span>{hi ? "संस्कृतम् सर्वाणि कार्यक्षेत्राणि" : "Complete Program Directory"}</span>
+          </div>
+          <h2>{hi ? "कार्यक्षेत्राणि एवं भाषासाधनानि" : "All Program Suites & Learning Tools"}</h2>
+          <p style={{ margin: "0 auto" }}>
+            {hi
+              ? "अनुसन्धानम्, पाण्डुलिपि-डिजिटलीकरणम्, ३डी दृश्यीकरणम्, कक्षाशिक्षणम्, भाषासाधनानि एवं मौखिकपरीक्षा — सर्वं एकत्र सुसङ्गतम्।"
+              : "Discover and launch every workspace, research tool, and interactive module in SanskritLab from one centralized directory."}
+          </p>
+        </div>
+
+        {/* Filter Tabs & Search Bar */}
+        <div className="programs-filter-bar">
+          <div className="programs-tabs">
+            {programFilterCategories.map((tab) => {
+              const active = activeFilter === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  className={`programs-tab-btn ${active ? "active" : ""}`}
+                  onClick={() => setActiveFilter(tab.id)}
+                >
+                  {hi ? tab.labelHi : tab.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="programs-search-box">
+            <Search size={16} className="search-icon" />
+            <input
+              type="text"
+              placeholder={hi ? "साधनं खोजें..." : "Search all tools & features..."}
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
+            />
+          </div>
+        </div>
+
+        {/* Responsive Grid of Cards for Every Program Section */}
+        {filteredPrograms.length === 0 ? (
+          <div className="programs-empty-state">
+            <BookOpen size={32} />
+            <h4>{t("No program section matches your search")}</h4>
+            <p>{t("Clear your filter to view all available suites.")}</p>
+            <button
+              className="btn btn-sm btn-outline"
+              onClick={() => {
+                setActiveFilter("all");
+                setSearchFilter("");
+              }}
+              style={{ marginTop: 8 }}
+            >
+              {t("View All Sections")}
+            </button>
+          </div>
+        ) : (
+          <div className="card-grid">
+            {filteredPrograms.map((p) => (
+              <div
+                key={p.title}
+                className="vt-card"
+                onClick={() => navigate(p.link)}
+              >
+                <div
+                  className="card-icon"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--vt-orange)"
+                  }}
+                >
+                  <DynamicIcon name={p.icon} size={28} />
+                </div>
+                <h3>{t(p.title)}</h3>
+                <p>{t(p.desc)}</p>
+                <span
+                  className="card-link"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+                >
+                  {t("Open Section")} <ArrowRight size={14} />
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* ─── 3. SEPARATE DEDICATED SANSKRIT SHLOKA SECTION WITH RECITATION FEATURE ─── */}
+      <ShlokaRecitationSection onExploreWord={(word) => setExploreWord(word)} />
+
+      {/* ─── NCERT CURRICULUM BANNER ─── */}
+      <section className="section" style={{ paddingTop: 12, paddingBottom: 16 }}>
+        <div
+          className="ncert-hero-banner"
+          onClick={() => navigate("/research/ncert")}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            textAlign: "center",
+            gap: 16,
+            padding: "28px 32px",
+            borderRadius: 14,
+            background: "linear-gradient(135deg, #10b981 0%, #0284c7 100%)",
+            color: "#fff",
+            cursor: "pointer",
+            boxShadow: "0 8px 24px rgba(16, 185, 129, 0.25)",
+            maxWidth: 1000,
+            margin: "0 auto"
+          }}
+        >
+          <BookMarked size={44} />
+          <div>
+            <h3 style={{ margin: 0, fontSize: 22, color: "#fff", textAlign: "center" }}>
+              {t("NCERT Sanskrit Curriculum")}
+            </h3>
+            <p style={{ margin: "6px auto 0", opacity: 0.95, fontSize: 14, maxWidth: 600, textAlign: "center" }}>
+              {t(
+                "Class 6–12 textbooks (Deepakam, Shemushi, Bhaswati & Shashwati) with digitized reader and board sample papers."
+              )}
+            </p>
+          </div>
+          <span
+            style={{
+              fontSize: 14,
+              fontWeight: 700,
+              whiteSpace: "nowrap",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              background: "rgba(255, 255, 255, 0.2)",
+              padding: "8px 20px",
+              borderRadius: 50
+            }}
+          >
+            {t("Browse Library")} <ArrowRight size={16} />
+          </span>
+        </div>
+      </section>
+
+      {/* ─── ACADEMIC STATS BAR ─── */}
       <div className="stats-bar">
         <div className="stat-item">
           <div className="stat-value">3,000+</div>
           <div className="stat-label">{t("Years of Texts")}</div>
         </div>
         <div className="stat-item">
-          <div className="stat-value">12</div>
+          <div className="stat-value">12+</div>
           <div className="stat-label">{t("Curated Lessons")}</div>
         </div>
         <div className="stat-item">
           <div className="stat-value">5</div>
-          <div className="stat-label">{t("Learning Tracks")}</div>
+          <div className="stat-label">{t("Adaptive Tracks")}</div>
         </div>
         <div className="stat-item">
-          <div className="stat-value">2.1k+</div>
-          <div className="stat-label">{t("Lines of Code")}</div>
+          <div className="stat-value">10,000+</div>
+          <div className="stat-label">{t("Verses & Lexicon")}</div>
         </div>
         <div className="stat-item">
-          <div className="stat-value">100%</div>
-          <div className="stat-label">{t("Free & Open")}</div>
+          <div className="stat-value">35+</div>
+          <div className="stat-label">{t("Scholarly Tools")}</div>
         </div>
       </div>
 
-      {
-    /* NCERT CTA BANNER */
-  }
-      <section className="section" style={{ paddingTop: 8 }}>
-        <div
-    className="ncert-hero-banner"
-    onClick={() => navigate("/research/ncert")}
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 20,
-      padding: "24px 32px",
-      borderRadius: 12,
-      background: "linear-gradient(135deg, #2ecc71, #2980b9)",
-      color: "#fff",
-      cursor: "pointer",
-      marginBottom: 8
-    }}
-  >
-          <BookMarked size={44} />
-          <div style={{ flex: 1 }}>
-            <h3 style={{ margin: 0, fontSize: 22, color: "#fff" }}>{t("NCERT Sanskrit Curriculum")}</h3>
-            <p style={{ margin: "4px 0 0", opacity: 0.9, fontSize: 14 }}>
-              {t("Class 6\u201312 textbooks (Deepakam, Shemushi, Bhaswati & Shashwati) \u2014 all NCERT content in one place")}
-            </p>
-          </div>
-          <span style={{ fontSize: 14, fontWeight: 600, whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: 6 }}>
-            {t("Browse Library")} <ArrowRight size={16} />
-          </span>
-        </div>
-      </section>
-
-      {
-    /* LEARNING TRACKS */
-  }
-      <section className="section">
+      {/* ─── LEARNING TRACKS ─── */}
+      <section className="section" style={{ paddingTop: 16 }}>
         <div className="section-header">
           <h2>{t("Choose Your Learning Path")}</h2>
-          <p>{t("From young beginners to doctoral researchers \u2014 a track for every stage")}</p>
+          <p>
+            {t(
+              "From young beginners to doctoral researchers — a tailored track for every stage"
+            )}
+          </p>
         </div>
         <div className="track-row">
-          {tracks.map((track) => <div key={track.id} className="track-card" onClick={() => navigate("/learning/tree")}>
-              <span className="track-icon" style={{ display: "inline-flex", justifyContent: "center", width: "100%", color: track.color }}>
+          {tracks.map((track) => (
+            <div
+              key={track.id}
+              className="track-card"
+              onClick={() => navigate("/learning/tree")}
+            >
+              <span
+                className="track-icon"
+                style={{
+                  display: "inline-flex",
+                  justifyContent: "center",
+                  width: "100%",
+                  color: track.color
+                }}
+              >
                 <DynamicIcon name={track.icon} size={32} />
               </span>
               <h3>{t(track.label)}</h3>
               <div className="track-desc">{t(track.description)}</div>
               <div className="track-age">{t(track.classRange)}</div>
-            </div>)}
+            </div>
+          ))}
         </div>
       </section>
 
-      {
-    /* FEATURES */
-  }
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="section-header">
-          <h2>{t("Everything You Need")}</h2>
-          <p>{t("Research tools, visualization, teaching, assessment \u2014 all in one platform")}</p>
-        </div>
-        <div className="card-grid">
-          {features.map((f) => <div key={f.title} className="vt-card" onClick={() => navigate(f.link)}>
-              <div className="card-icon" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", color: "var(--vt-orange)" }}>
-                <DynamicIcon name={f.icon} size={28} />
-              </div>
-              <h3>{t(f.title)}</h3>
-              <p>{t(f.desc)}</p>
-              <span className="card-link" style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
-                {t("Explore")} <ArrowRight size={14} />
-              </span>
-            </div>)}
-        </div>
-      </section>
-
-      {
-    /* TESTIMONIALS */
-  }
+      {/* ─── TESTIMONIALS ─── */}
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="section-header">
           <h2>{t("What Our Users Say")}</h2>
           <p>{t("Loved by students, teachers, and researchers worldwide")}</p>
         </div>
         <div className="testimonial-row">
-          {testimonials.map((tm) => <div key={tm.author} className="testimonial-card">
-              <div className="stars" style={{ display: "flex", gap: 2, color: "#ff9800" }}>
+          {testimonials.map((tm) => (
+            <div key={tm.author} className="testimonial-card">
+              <div
+                className="stars"
+                style={{ display: "flex", gap: 2, color: "#ff9800" }}
+              >
                 <Star size={14} fill="#ff9800" />
                 <Star size={14} fill="#ff9800" />
                 <Star size={14} fill="#ff9800" />
@@ -239,22 +803,36 @@ function Dashboard() {
                   <div className="role">{t(tm.role)}</div>
                 </div>
               </div>
-            </div>)}
+            </div>
+          ))}
         </div>
       </section>
 
-      {
-    /* CTA */
-  }
+      {/* ─── CALL TO ACTION BAR (PROMOTIONAL 100% FREE TEXT REMOVED) ─── */}
       <div className="cta-bar">
-        <h2>{t("Ready to Begin Your Journey?")}</h2>
-        <p>{t("Join thousands of learners exploring Sanskrit through cutting-edge technology. Free forever.")}</p>
-        <button className="btn btn-primary" onClick={() => navigate("/learning/tree")}>
+        <h2>{t("Ready to Begin Your Sanskrit Journey?")}</h2>
+        <p>
+          {t(
+            "Join thousands of learners, teachers, and researchers discovering 3,000 years of Sanskrit wisdom through cutting-edge technology."
+          )}
+        </p>
+        <button
+          className="btn btn-primary"
+          onClick={() => navigate("/learning/tree")}
+        >
           {t("Start Learning Now")} <ArrowRight size={16} />
         </button>
       </div>
-    </>;
+
+      {/* EXPLORE PANEL MODAL ON WORD CLICK */}
+      {exploreWord && (
+        <ExplorePanel
+          word={exploreWord}
+          onClose={() => setExploreWord(null)}
+        />
+      )}
+    </>
+  );
 }
-export {
-  Dashboard as default
-};
+
+export default Dashboard;
