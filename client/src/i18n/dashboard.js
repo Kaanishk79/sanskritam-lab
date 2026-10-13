@@ -32,8 +32,7 @@ const dashboardHi = {
   "Everything You Need": "वह सब जो आपको चाहिए",
   "Research tools, visualization, teaching, assessment — all in one platform": "अनुसंधान उपकरण, विज़ुअलाइज़ेशन, शिक्षण, मूल्यांकन — सब एक ही मंच पर",
   "Explore →": "देखें →",
-  "What Our Users Say": "हमारे उपयोगकर्ता क्या कहते हैं",
-  "Loved by students, teachers, and researchers worldwide": "दुनिया भर के छात्रों, शिक्षकों और शोधकर्ताओं द्वारा प्रिय",
+  
   "Ready to Begin Your Sanskrit Journey?": "अपनी संस्कृत यात्रा शुरू करने के लिए तैयार हैं?",
   "Join thousands of learners, teachers, and researchers discovering 3,000 years of Sanskrit wisdom through cutting-edge technology.": "अत्याधुनिक तकनीक से संस्कृत के ३००० वर्षों के ज्ञान की खोज करने वाले हज़ारों शिक्षार्थियों, शिक्षकों एवं शोधकर्ताओं से जुड़ें।",
   "Start Learning Now": "अभी सीखना शुरू करें",
@@ -89,9 +88,6 @@ const dashboardHi = {
   // ─── Learning Program Sections ───
   "Learning Path (Skill Tree)": "शिक्षण मार्ग (दक्षता वृक्ष)",
   "Structured curriculum from beginner to advanced with XP, streaks, quizzes, and unlocking milestones.": "प्रारम्भिक से उन्नत स्तर तक संरचित पाठ्यक्रम — अंक, निरंतरता और स्तर-उन्मोचन सहित।",
-  "Fun Learning Mode (Kids)": "बालक विनोद शिक्षण मोड",
-  "Delightful alphabet cards, picture-word matching, sound association, and playful mini-challenges.": "मनोरंजक वर्णमाला कार्ड, चित्र-शब्द मिलान, ध्वनि सम्बन्ध और बाल-चुनौतियाँ।",
-  "PhD Research Workspace": "शोध छात्र (PhD) कार्यक्षेत्र",
   "Collation workbench for manuscript witnesses, apparatus criticus generation, and paleography.": "पाण्डुलिपि साक्ष्य तुलना, पाठ-समीक्षा उपकरण निर्माण और पुरालेख शास्त्र।",
   "Curriculum Builder": "पाठ्यक्रम निर्माता",
   "Design custom instructional syllabi, export PDF lesson plans, and structure graded benchmarks.": "कक्षा अनुसार पाठ योजना बनाएँ, पीडीएफ निर्यात करें और मानक तय करें।",
@@ -105,8 +101,6 @@ const dashboardHi = {
   "Comprehensive Sanskrit-English lexicon with Devanagari, IAST, etymological roots, and examples.": "देवनागरी, आईएस्टी, व्युत्पत्ति और उदाहरणों सहित विस्तृत शब्दकोश।",
   "Daily Sanskrit": "दैनिक संस्कृत",
   "Word, phrase, and proverb of the day along with a 5-minute cultural immersion challenge.": "आज का शब्द, सुभाषित और 5 मिनट की सांस्कृतिक भाषा-चुनौती।",
-  "AI Sanskrit Tutor": "एआई संस्कृत शिक्षक",
-  "Engage in intelligent dialogue with an AI tutor on Pāṇinian grammar, philosophy, and classical poetry.": "पाणिनीय व्याकरण, दर्शन और शास्त्रीय काव्य पर एआई शिक्षक से वार्तालाप करें।",
   "Voice Mode": "ध्वनि मोड (संभाषण)",
   "Speak naturally in Sanskrit or Hindi — receive instant auditory pronunciation analysis and spoken reply.": "संस्कृत या हिन्दी में बोलें — त्वरित उच्चारण विश्लेषण और मौखिक उत्तर प्राप्त करें।",
   "Sentence Builder": "वाक्य रचनाकार",
@@ -172,14 +166,7 @@ const dashboardHi = {
   "Copied!": "कॉपी किया गया!",
 
   // ─── Testimonials & Misc ───
-  "This platform transformed how I teach Sanskrit. The annotation tools and 3D manuscripts bring ancient texts to life for my students.": "इस मंच ने मेरे संस्कृत पढ़ाने के तरीके को बदल दिया। एनोटेशन उपकरण और 3डी पाण्डुलिपियाँ मेरे छात्रों के लिए प्राचीन ग्रन्थों को जीवंत बना देती हैं।",
-  "Professor, University of Delhi": "प्रोफ़ेसर, दिल्ली विश्वविद्यालय",
-  "The adaptive learning path from alphabet to critical editions is incredible. I went from zero to reading Kālidāsa in 6 months.": "वर्णमाला से समालोचनात्मक संस्करणों तक का अनुकूली अधिगम पथ अविश्वसनीय है। मैं ६ महीनों में शून्य से कालिदास पढ़ने तक पहुँच गया।",
-  "PhD Candidate, Oxford": "पीएचडी उम्मीदवार, ऑक्सफ़ोर्ड",
-  "My 8-year-old loves the fun mode! The picture-word matching makes learning Sanskrit feel like play.": "मेरा ८ वर्षीय बच्चा मज़ेदार मोड पसंद करता है! चित्र-शब्द मिलान से संस्कृत सीखना खेल जैसा लगता है।",
-  "Parent & Homeschool Teacher": "अभिभावक एवं गृह-विद्यालय शिक्षक",
-  "The AI viva simulator helped me prepare for my oral exams with accurate pronunciation feedback.": "एआई वाइवा सिमुलेटर ने सटीक उच्चारण प्रतिक्रिया के साथ मेरी मौखिक परीक्षाओं की तैयारी में मदद की।",
-  "MA Sanskrit Student": "एमए संस्कृत छात्र",
+  
   "Create Free Account": "मुफ़्त खाता बनाएँ",
   "You are in Guest mode — progress is kept on this device only.": "आप अतिथि मोड में हैं — प्रगति केवल इस डिवाइस पर सहेजी जाती है।"
 };

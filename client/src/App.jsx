@@ -35,7 +35,6 @@ const CurriculumBuilderPage = lazy(() => import("./pages/learning/CurriculumBuil
 const LoginPage = lazy(() => import("./pages/auth/LoginPage"));
 const SignupPage = lazy(() => import("./pages/auth/SignupPage"));
 const RolePickPage = lazy(() => import("./pages/auth/RolePickPage"));
-const AITutorPage = lazy(() => import("./pages/tools/AITutorPage"));
 const VoiceModePage = lazy(() => import("./pages/tools/VoiceModePage"));
 const SentenceBuilderPage = lazy(() => import("./pages/tools/SentenceBuilderPage"));
 const FixMySanskritPage = lazy(() => import("./pages/tools/FixMySanskritPage"));
@@ -96,7 +95,6 @@ export default function App() {
               <Route path="learning/child" element={<ChildModePage />} />
               <Route path="learning/research" element={<ResearchWorkspacePage />} />
               <Route path="learning/curriculum" element={<CurriculumBuilderPage />} />
-              <Route path="tools/tutor" element={<AITutorPage />} />
               <Route path="tools/voice" element={<VoiceModePage />} />
               <Route path="tools/sentence" element={<SentenceBuilderPage />} />
               <Route path="tools/fix" element={<FixMySanskritPage />} />

@@ -15,7 +15,7 @@ import {
   Mic,
   Compass
 } from "lucide-react";
-import institutionHeroImg from "../../assets/images.png";
+import institutionHeroImg from "../../assets/image-aspera.jpg";
 import { tracks } from "../../data/tracks";
 import { DynamicIcon } from "../../components/icons";
 import { useLanguage } from "../../context/LanguageContext";
@@ -40,23 +40,6 @@ const allProgramSections = [
     categoryLabelHi: "अनुसन्धानम् एवं डिजिटलीकरणम्",
     icon: "temple",
     title: "Smart Corpus & Semantic Search",
-    desc: "Explore 3,000 years of classical texts by chronological era with deep dictionary integration.",
-    link: "/research/corpus"
-  },
-  {
-    category: "research",
-    categoryLabel: "Research & Digitization",
-    categoryLabelHi: "अनुसन्धानम् एवं डिजिटलीकरणम्",
-    icon: "temple",
-    title: "Layered Annotation Tool",
-    desc: "Multi-layered critical apparatus: attach grammatical analysis, commentaries, and multi-lingual translations.",
-    link: "/research/annotate"
-  },
-  {
-    category: "research",
-    categoryLabel: "Research & Digitization",
-    categoryLabelHi: "अनुसन्धानम् एवं डिजिटलीकरणम्",
-    icon: "book",
     title: "NCERT Sanskrit Library",
     desc: "Complete Class 6–12 textbooks (Deepakam, Shemushi, Bhaswati, Shashwati) with digitized reader.",
     link: "/research/ncert"
@@ -152,24 +135,6 @@ const allProgramSections = [
     category: "learning",
     categoryLabel: "Adaptive Learning",
     categoryLabelHi: "अनुकूली शिक्षणम्",
-    icon: "smile",
-    title: "Fun Learning Mode (Kids)",
-    desc: "Delightful alphabet cards, picture-word matching, sound association, and playful mini-challenges.",
-    link: "/learning/child"
-  },
-  {
-    category: "learning",
-    categoryLabel: "Adaptive Learning",
-    categoryLabelHi: "अनुकूली शिक्षणम्",
-    icon: "temple",
-    title: "PhD Research Workspace",
-    desc: "Collation workbench for manuscript witnesses, apparatus criticus generation, and paleography.",
-    link: "/learning/research"
-  },
-  {
-    category: "learning",
-    categoryLabel: "Adaptive Learning",
-    categoryLabelHi: "अनुकूली शिक्षणम्",
     icon: "teacher",
     title: "Curriculum Builder",
     desc: "Design custom instructional syllabi, export PDF lesson plans, and structure graded benchmarks.",
@@ -212,15 +177,6 @@ const allProgramSections = [
     title: "Daily Sanskrit",
     desc: "Word, phrase, and proverb of the day along with a 5-minute cultural immersion challenge.",
     link: "/daily"
-  },
-  {
-    category: "tools",
-    categoryLabel: "AI & Linguistic Tools",
-    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
-    icon: "bot",
-    title: "AI Sanskrit Tutor",
-    desc: "Engage in intelligent dialogue with an AI tutor on Pāṇinian grammar, philosophy, and classical poetry.",
-    link: "/tools/tutor"
   },
   {
     category: "tools",
@@ -434,32 +390,7 @@ const programFilterCategories = [
   { id: "viva", label: "Viva & Practice", labelHi: "मौखिकपरीक्षा" }
 ];
 
-const testimonials = [
-  {
-    text: "This platform transformed how I teach Sanskrit. The annotation tools and 3D manuscripts bring ancient texts to life for my students.",
-    author: "Dr. Ananya Sharma",
-    role: "Professor, University of Delhi",
-    initial: "A"
-  },
-  {
-    text: "The adaptive learning path from alphabet to critical editions is incredible. I went from zero to reading Kālidāsa in 6 months.",
-    author: "Rajesh Patel",
-    role: "PhD Candidate, Oxford",
-    initial: "R"
-  },
-  {
-    text: "My 8-year-old loves the fun mode! The picture-word matching makes learning Sanskrit feel like play.",
-    author: "Priya Krishnan",
-    role: "Parent & Educator",
-    initial: "P"
-  },
-  {
-    text: "The AI viva simulator helped me prepare for my oral exams with accurate pronunciation feedback.",
-    author: "Sneha Reddy",
-    role: "MA Sanskrit Student",
-    initial: "S"
-  }
-];
+
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -767,38 +698,6 @@ function Dashboard() {
               <h3>{t(track.label)}</h3>
               <div className="track-desc">{t(track.description)}</div>
               <div className="track-age">{t(track.classRange)}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ─── TESTIMONIALS ─── */}
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="section-header">
-          <h2>{t("What Our Users Say")}</h2>
-          <p>{t("Loved by students, teachers, and researchers worldwide")}</p>
-        </div>
-        <div className="testimonial-row">
-          {testimonials.map((tm) => (
-            <div key={tm.author} className="testimonial-card">
-              <div
-                className="stars"
-                style={{ display: "flex", gap: 2, color: "#ff9800" }}
-              >
-                <Star size={14} fill="#ff9800" />
-                <Star size={14} fill="#ff9800" />
-                <Star size={14} fill="#ff9800" />
-                <Star size={14} fill="#ff9800" />
-                <Star size={14} fill="#ff9800" />
-              </div>
-              <div className="quote">"{t(tm.text)}"</div>
-              <div className="author">
-                <div className="avatar">{tm.initial}</div>
-                <div>
-                  <div className="name">{tm.author}</div>
-                  <div className="role">{t(tm.role)}</div>
-                </div>
-              </div>
             </div>
           ))}
         </div>

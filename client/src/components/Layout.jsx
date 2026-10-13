@@ -73,8 +73,7 @@ const navSections = [
     title: "Learning",
     links: [
       { to: "/learning/tree", icon: <TreePine size={18} />, label: "Learning Path" },
-      { to: "/learning/child", icon: <Smile size={18} />, label: "Fun Mode (Kids)" },
-      { to: "/learning/research", icon: <Landmark size={18} />, label: "Research Workspace" },
+      
       { to: "/learning/curriculum", icon: <GraduationCap size={18} />, label: "Curriculum Builder" }
     ]
   },
@@ -83,7 +82,7 @@ const navSections = [
     links: [
       { to: "/research/corpus", icon: <PalmLeafIcon size={18} />, label: "Corpus & Search" },
       { to: "/research/ocr", icon: <FileText size={18} />, label: "Manuscript OCR" },
-      { to: "/research/annotate", icon: <TempleIcon size={18} />, label: "Annotation Tool" }
+      
     ]
   },
   {
@@ -106,8 +105,7 @@ const navSections = [
   {
     title: "AI Tools",
     links: [
-      { to: "/tools/tutor", icon: <Bot size={18} />, label: "AI Sanskrit Tutor" },
-      { to: "/tools/voice", icon: <Mic size={18} />, label: "Voice Mode" },
+      
       { to: "/tools/sentence", icon: <Puzzle size={18} />, label: "Sentence Builder" },
       { to: "/tools/fix", icon: <Stethoscope size={18} />, label: "Fix My Sanskrit" },
       { to: "/tools/story", icon: <BookOpen size={18} />, label: "Story Generator" },
@@ -297,8 +295,7 @@ function Layout() {
             <div className="footer-col">
               <h4>{t("Research")}</h4>
               <a onClick={() => navigate("/research/ocr")}>{t("Manuscript OCR")}</a>
-              <a onClick={() => navigate("/research/annotate")}>{t("Annotation Tool")}</a>
-              <a onClick={() => navigate("/learning/research")}>{t("Research Workspace")}</a>
+              
               <a onClick={() => navigate("/visualization/timeline")}>{t("Timeline")}</a>
             </div>
             <div className="footer-col">
@@ -309,8 +306,7 @@ function Layout() {
               <a href="https://www.youtube.com/@sourabhjain32" target="_blank" rel="noopener noreferrer">
                 Sanskrit Online Pathshala ↗
               </a>
-              <a onClick={() => navigate("/learning/child")}>{t("Kids Mode")}</a>
-              <a onClick={() => navigate("/visualization/3d")}>{t("3D Viewer")}</a>
+              
             </div>
           </div>
 
