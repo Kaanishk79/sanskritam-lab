@@ -5,7 +5,6 @@ import {
   ArrowRight,
   BookMarked,
   Award,
-  Star,
   Search,
   BookOpen,
   Scroll,
@@ -380,6 +379,74 @@ const allProgramSections = [
   }
 ];
 
+const programIconMap = {
+  "/research/ocr": "/sanskritlab-icons/1_Research_and_Digitization/card-ocr.png",
+  "/research/corpus": "/sanskritlab-icons/1_Research_and_Digitization/card-corpus.png",
+  "/research/annotate": "/sanskritlab-icons/1_Research_and_Digitization/card-annotate.png",
+  "/research/ncert": "/sanskritlab-icons/1_Research_and_Digitization/card-ncert-lib.png",
+  "/ncert/papers": "/sanskritlab-icons/1_Research_and_Digitization/card-ncert-papers.png",
+
+  "/visualization/3d": "/sanskritlab-icons/2_3D_and_Visualization/card-3d-viewer.png",
+  "/visualization/grammar": "/sanskritlab-icons/2_3D_and_Visualization/card-grammar-maps.png",
+  "/visualization/timeline": "/sanskritlab-icons/2_3D_and_Visualization/card-timeline.png",
+
+  "/teaching/school": "/sanskritlab-icons/3_Teaching_and_Academics/card-school-hq.png",
+  "/teaching/dashboard": "/sanskritlab-icons/3_Teaching_and_Academics/card-teacher-dash.png",
+  "/teaching/workspace": "/sanskritlab-icons/3_Teaching_and_Academics/card-student-space.png",
+  "/teaching/assessment": "/sanskritlab-icons/3_Teaching_and_Academics/card-assessment.png",
+
+  "/learning/tree": "/sanskritlab-icons/4_Learning_and_Adaptive_Modules/card-skill-tree.png",
+  "/learning/child": "/sanskritlab-icons/4_Learning_and_Adaptive_Modules/card-child-mode.png",
+  "/learning/research": "/sanskritlab-icons/4_Learning_and_Adaptive_Modules/card-phd-space.png",
+  "/learning/curriculum": "/sanskritlab-icons/4_Learning_and_Adaptive_Modules/card-curriculum.png",
+
+  "/search": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-search.png",
+  "/explore": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-explore.png",
+  "/dictionary": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-dictionary.png",
+  "/daily": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-daily.png",
+  "/tools/tutor": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-ai-tutor.png",
+  "/tools/voice": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-voice.png",
+  "/tools/sentence": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-sentence.png",
+  "/tools/fix": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-fix.png",
+  "/tools/story": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-story.png",
+  "/tools/realworld": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-realworld.png",
+  "/tools/calendar": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-calendar.png",
+  "/tools/whosaid": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-whosaid.png",
+  "/tools/etymology": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-etymology.png",
+  "/tools/concepts": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-concepts.png",
+  "/tools/games": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-games.png",
+  "/tools/debate": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-debate.png",
+  "/tools/studio": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-studio.png",
+  "/tools/flashcards": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-flashcards.png",
+  "/tools/bookshelf": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-bookshelf.png",
+  "/tools/transliterate": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-transliterate.png",
+  "/tools/sandhi": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-sandhi.png",
+  "/tools/dhatu": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-dhatu.png",
+  "/tools/shloka": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-shloka.png",
+  "/tools/jeopardy": "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-jeopardy.png",
+
+  "/viva/simulator": "/sanskritlab-icons/6_Viva_and_Exam_Practice/card-viva-sim.png",
+  "/viva/lab": "/sanskritlab-icons/6_Viva_and_Exam_Practice/card-viva-sim.png",
+  "/viva/analytics": "/sanskritlab-icons/6_Viva_and_Exam_Practice/card-analytics.png",
+};
+
+const filterCategoryIcons = {
+  research: "/sanskritlab-icons/1_Research_and_Digitization/card-corpus.png",
+  visualization: "/sanskritlab-icons/2_3D_and_Visualization/card-3d-viewer.png",
+  teaching: "/sanskritlab-icons/3_Teaching_and_Academics/card-school-hq.png",
+  learning: "/sanskritlab-icons/4_Learning_and_Adaptive_Modules/card-skill-tree.png",
+  tools: "/sanskritlab-icons/5_AI_and_Linguistic_Tools/card-ai-tutor.png",
+  viva: "/sanskritlab-icons/6_Viva_and_Exam_Practice/card-viva-sim.png",
+};
+
+const trackIconMap = {
+  child: "/sanskritlab-icons/4_Learning_and_Adaptive_Modules/card-child-mode.png",
+  teen: "/sanskritlab-icons/1_Research_and_Digitization/card-ncert-lib.png",
+  undergrad: "/sanskritlab-icons/3_Teaching_and_Academics/card-teacher-dash.png",
+  graduate: "/sanskritlab-icons/1_Research_and_Digitization/card-corpus.png",
+  phd: "/sanskritlab-icons/4_Learning_and_Adaptive_Modules/card-phd-space.png",
+};
+
 const programFilterCategories = [
   { id: "all", label: "All Programs", labelHi: "सर्वाणि साधनानि" },
   { id: "research", label: "Research & OCR", labelHi: "अनुसन्धानम्" },
@@ -389,8 +456,6 @@ const programFilterCategories = [
   { id: "tools", label: "AI & Linguistics", labelHi: "भाषासाधनानि" },
   { id: "viva", label: "Viva & Practice", labelHi: "मौखिकपरीक्षा" }
 ];
-
-
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -519,13 +584,21 @@ function Dashboard() {
           <div className="programs-tabs">
             {programFilterCategories.map((tab) => {
               const active = activeFilter === tab.id;
+              const tabIcon = filterCategoryIcons[tab.id];
               return (
                 <button
                   key={tab.id}
                   className={`programs-tab-btn ${active ? "active" : ""}`}
                   onClick={() => setActiveFilter(tab.id)}
                 >
-                  {hi ? tab.labelHi : tab.label}
+                  {tabIcon && (
+                    <img
+                      src={tabIcon}
+                      alt={tab.label}
+                      className="tab-icon-img"
+                    />
+                  )}
+                  <span>{hi ? tab.labelHi : tab.label}</span>
                 </button>
               );
             })}
@@ -561,33 +634,36 @@ function Dashboard() {
           </div>
         ) : (
           <div className="card-grid">
-            {filteredPrograms.map((p) => (
-              <div
-                key={p.title}
-                className="vt-card"
-                onClick={() => navigate(p.link)}
-              >
+            {filteredPrograms.map((p) => {
+              const iconImg = programIconMap[p.link];
+              return (
                 <div
-                  className="card-icon"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "var(--vt-orange)"
-                  }}
+                  key={p.title}
+                  className="vt-card"
+                  onClick={() => navigate(p.link)}
                 >
-                  <DynamicIcon name={p.icon} size={28} />
+                  <div className="card-icon">
+                    {iconImg ? (
+                      <img
+                        src={iconImg}
+                        alt={p.title}
+                        className="card-icon-img"
+                      />
+                    ) : (
+                      <DynamicIcon name={p.icon} size={28} />
+                    )}
+                  </div>
+                  <h3>{t(p.title)}</h3>
+                  <p>{t(p.desc)}</p>
+                  <span
+                    className="card-link"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+                  >
+                    {t("Open Section")} <ArrowRight size={14} />
+                  </span>
                 </div>
-                <h3>{t(p.title)}</h3>
-                <p>{t(p.desc)}</p>
-                <span
-                  className="card-link"
-                  style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
-                >
-                  {t("Open Section")} <ArrowRight size={14} />
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </section>
@@ -700,6 +776,31 @@ function Dashboard() {
               <div className="track-age">{t(track.classRange)}</div>
             </div>
           ))}
+          {tracks.map((track) => {
+            const trackImg = trackIconMap[track.id];
+            return (
+              <div
+                key={track.id}
+                className="track-card"
+                onClick={() => navigate("/learning/tree")}
+              >
+                <span className="track-icon">
+                  {trackImg ? (
+                    <img
+                      src={trackImg}
+                      alt={track.label}
+                      className="track-icon-img"
+                    />
+                  ) : (
+                    <DynamicIcon name={track.icon} size={32} />
+                  )}
+                </span>
+                <h3>{t(track.label)}</h3>
+                <div className="track-desc">{t(track.description)}</div>
+                <div className="track-age">{t(track.classRange)}</div>
+              </div>
+            );
+          })}
         </div>
       </section>
 

@@ -95,6 +95,7 @@ export default function App() {
               <Route path="learning/child" element={<ChildModePage />} />
               <Route path="learning/research" element={<ResearchWorkspacePage />} />
               <Route path="learning/curriculum" element={<CurriculumBuilderPage />} />
+              <Route path="tools/tutor" element={<Navigate to="/tools/voice" replace />} />
               <Route path="tools/voice" element={<VoiceModePage />} />
               <Route path="tools/sentence" element={<SentenceBuilderPage />} />
               <Route path="tools/fix" element={<FixMySanskritPage />} />
