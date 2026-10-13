@@ -216,22 +216,29 @@ function Layout() {
           </div>
           <div className="top-nav-right">
             <button
-    className={`btn btn-sm ${lang === "hi" ? "btn-primary" : "btn-outline"}`}
-    style={{ marginLeft: 8 }}
-    onClick={toggleLang}
-    title={t("Language / \u092D\u093E\u0937\u093E")}
-  >
+              className="theme-btn"
+              onClick={toggle}
+              title={theme === "dark" ? (t("Switch to light mode") || "Light mode") : (t("Switch to dark mode") || "Dark mode")}
+              aria-label={t("Toggle theme")}
+            >
+              {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+            </button>
+            <button
+              className={`btn btn-sm ${lang === "hi" ? "btn-primary" : "btn-outline"}`}
+              style={{ marginLeft: 8 }}
+              onClick={toggleLang}
+              title={t("Language / \u092D\u093E\u0937\u093E")}
+            >
               {lang === "hi" ? "EN" : "\u0939\u093F"}
             </button>
             <button
-    className={`btn btn-sm ${keyboardVisible ? "btn-primary" : "btn-outline"}`}
-    style={{ marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 6 }}
-    onClick={() => toggleKeyboard(kbDummyRef)}
-    title={t("Devanagari Keyboard")}
-  >
+              className={`btn btn-sm ${keyboardVisible ? "btn-primary" : "btn-outline"}`}
+              style={{ marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 6 }}
+              onClick={() => toggleKeyboard(kbDummyRef)}
+              title={t("Devanagari Keyboard")}
+            >
               <Keyboard size={15} /> <span>देव</span>
             </button>
-            <button className="theme-btn" onClick={toggle} title={t("Toggle theme")}>{theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}</button>
             <button className="btn btn-sm btn-outline" style={{ marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 6 }} onClick={() => navigate("/tools/tutor")}>
               <Bot size={15} /> <span>{t("Tutor")}</span>
             </button>
