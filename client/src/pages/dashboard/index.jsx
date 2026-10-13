@@ -5,7 +5,6 @@ import {
   ArrowRight,
   BookMarked,
   Award,
-  Star,
   Search,
   BookOpen,
   Scroll,
@@ -213,15 +212,6 @@ const allProgramSections = [
     title: "Daily Sanskrit",
     desc: "Word, phrase, and proverb of the day along with a 5-minute cultural immersion challenge.",
     link: "/daily"
-  },
-  {
-    category: "tools",
-    categoryLabel: "AI & Linguistic Tools",
-    categoryLabelHi: "कृत्रिमबुद्धिः भाषासाधनानि च",
-    icon: "bot",
-    title: "AI Sanskrit Tutor",
-    desc: "Engage in intelligent dialogue with an AI tutor on Pāṇinian grammar, philosophy, and classical poetry.",
-    link: "/tools/tutor"
   },
   {
     category: "tools",
@@ -501,33 +491,6 @@ const programFilterCategories = [
   { id: "learning", label: "Learning Paths", labelHi: "शिक्षणमार्गाः" },
   { id: "tools", label: "AI & Linguistics", labelHi: "भाषासाधनानि" },
   { id: "viva", label: "Viva & Practice", labelHi: "मौखिकपरीक्षा" }
-];
-
-const testimonials = [
-  {
-    text: "This platform transformed how I teach Sanskrit. The annotation tools and 3D manuscripts bring ancient texts to life for my students.",
-    author: "Dr. Ananya Sharma",
-    role: "Professor, University of Delhi",
-    initial: "A"
-  },
-  {
-    text: "The adaptive learning path from alphabet to critical editions is incredible. I went from zero to reading Kālidāsa in 6 months.",
-    author: "Rajesh Patel",
-    role: "PhD Candidate, Oxford",
-    initial: "R"
-  },
-  {
-    text: "My 8-year-old loves the fun mode! The picture-word matching makes learning Sanskrit feel like play.",
-    author: "Priya Krishnan",
-    role: "Parent & Educator",
-    initial: "P"
-  },
-  {
-    text: "The AI viva simulator helped me prepare for my oral exams with accurate pronunciation feedback.",
-    author: "Sneha Reddy",
-    role: "MA Sanskrit Student",
-    initial: "S"
-  }
 ];
 
 function Dashboard() {
@@ -855,38 +818,6 @@ function Dashboard() {
               </div>
             );
           })}
-        </div>
-      </section>
-
-      {/* ─── TESTIMONIALS ─── */}
-      <section className="section" style={{ paddingTop: 0 }}>
-        <div className="section-header">
-          <h2>{t("What Our Users Say")}</h2>
-          <p>{t("Loved by students, teachers, and researchers worldwide")}</p>
-        </div>
-        <div className="testimonial-row">
-          {testimonials.map((tm) => (
-            <div key={tm.author} className="testimonial-card">
-              <div
-                className="stars"
-                style={{ display: "flex", gap: 2, color: "#ff9800" }}
-              >
-                <Star size={14} fill="#ff9800" />
-                <Star size={14} fill="#ff9800" />
-                <Star size={14} fill="#ff9800" />
-                <Star size={14} fill="#ff9800" />
-                <Star size={14} fill="#ff9800" />
-              </div>
-              <div className="quote">"{t(tm.text)}"</div>
-              <div className="author">
-                <div className="avatar">{tm.initial}</div>
-                <div>
-                  <div className="name">{tm.author}</div>
-                  <div className="role">{t(tm.role)}</div>
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
